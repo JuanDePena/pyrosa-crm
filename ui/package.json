@@ -1,0 +1,34 @@
+{
+  "name": "pyrosa-crm-ui",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "db:migrate": "node ./scripts/apply-migration.mjs",
+    "build:client": "vite build",
+    "build:server": "rm -rf build/server && tsc -p tsconfig.server.json",
+    "typecheck:client": "tsc --noEmit -p tsconfig.json",
+    "typecheck:server": "tsc --noEmit -p tsconfig.server.json",
+    "typecheck": "npm run typecheck:client && npm run typecheck:server",
+    "build": "npm run typecheck && npm run build:client && npm run build:server",
+    "preview": "vite preview --host 0.0.0.0",
+    "serve": "node server.mjs",
+    "start": "node server.mjs"
+  },
+  "dependencies": {
+    "lucide-react": "^0.468.0",
+    "pg": "^8.20.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.19.18",
+    "@types/pg": "^8.20.0",
+    "@types/react": "^18.3.18",
+    "@types/react-dom": "^18.3.5",
+    "@vitejs/plugin-react": "^4.3.4",
+    "typescript": "^5.7.3",
+    "vite": "^6.0.7"
+  }
+}

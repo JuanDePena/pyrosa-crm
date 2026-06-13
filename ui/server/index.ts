@@ -1,0 +1,297 @@
+import { createServer, type IncomingMessage, type ServerResponse } from "node:http";
+import {
+  CrmAuthError,
+  buildLoginRedirect,
+  buildLogoutRedirect,
+  clearSessionCookie,
+  createSessionFromTicket,
+  decodeState,
+  loadCrmSession,
+  normalizeReturnTo,
+  setSessionCookie,
+  type CrmSession
+} from "./auth.js";
+import { loadConfig, type CrmServerConfig } from "./config.js";
+import { closePostgres, loadDatabaseStatus } from "./db.js";
+import {
+  applyCommonHeaders,
+  assertStaticShellExists,
+  createRequestContext,
+  logAccess,
+  sendJson,
+  sendText,
+  serveStatic
+} from "./http.js";
+
+export function createCrmServer(config: CrmServerConfig = loadConfig()) {
+  const server = createServer((req, res) => {
+    void handleRequest(req, res, config).catch((error) => {
+      if (res.headersSent) {
+        res.destroy(error);
+        return;
+      }
+      if (error instanceof CrmAuthError) {
+        sendJson(res, error.status, {
+          ok: false,
+          error: error.code,
+          message: error.message
+        });
+        return;
+      }
+      sendJson(res, 500, {
+        ok: false,
+        error: "crm_runtime_error",
+        message: "PYROSA CRM no pudo completar la solicitud.",
+        detail: error instanceof Error ? error.message : String(error)
+      });
+    });
+  });
+
+  server.requestTimeout = 120000;
+  server.headersTimeout = 65000;
+  server.keepAliveTimeout = 5000;
+
+  return server;
+}
+
+export function startServer(config: CrmServerConfig = loadConfig()): ReturnType<typeof createCrmServer> {
+  assertStaticShellExists(config);
+
+  const server = createCrmServer(config);
+  server.listen(config.port, config.host, () => {
+    console.log(`PYROSA CRM listening on http://${config.host}:${config.port}`);
+  });
+
+  for (const signal of ["SIGINT", "SIGTERM"] as const) {
+    process.on(signal, () => {
+      console.log(`PYROSA CRM received ${signal}; closing server`);
+      server.close((error) => {
+        if (error) {
+          console.error(`PYROSA CRM shutdown failed: ${error.message}`);
+          void closePostgres().finally(() => process.exit(1));
+          return;
+        }
+        void closePostgres().finally(() => process.exit(0));
+      });
+    });
+  }
+
+  return server;
+}
+
+async function handleRequest(
+  req: IncomingMessage,
+  res: ServerResponse,
+  config: CrmServerConfig
+): Promise<void> {
+  const context = createRequestContext(req);
+  applyCommonHeaders(res, context.requestId);
+  logAccess(req, res, context, config);
+
+  if (context.url.pathname === config.healthPath) {
+    if (req.method !== "GET" && req.method !== "HEAD") {
+      sendText(res, 405, "Method Not Allowed");
+      return;
+    }
+    const db = await loadDatabaseStatus(config);
+    const payload: Record<string, unknown> = {
+      ok: db.ok === true,
+      service: "pyrosa-crm",
+      version: config.version,
+      branch: config.branch,
+      database: db
+    };
+    if (config.healthDetails) {
+      payload.distDir = config.distDir;
+      payload.platform = buildPlatformContracts(config);
+    }
+    sendJson(res, db.ok === true ? 200 : 503, payload, context.headOnly);
+    return;
+  }
+
+  if (isLoginPath(context.url.pathname)) {
+    if (!allowGetOrHead(req, res)) {
+      return;
+    }
+    const session = await loadCrmSession(req, res, config);
+    if (session) {
+      sendRedirect(res, 302, "/ui", context.headOnly);
+      return;
+    }
+    const returnTo = normalizeReturnTo(context.url.searchParams.get("return_to") ?? "/ui");
+    sendRedirect(res, 302, buildLoginRedirect(config, returnTo), context.headOnly);
+    return;
+  }
+
+  if (context.url.pathname === "/auth/callback") {
+    if (!allowGetOrHead(req, res)) {
+      return;
+    }
+    const ticket = context.url.searchParams.get("ticket");
+    if (!ticket) {
+      sendText(res, 400, "Falta el ticket de autenticacion.\n");
+      return;
+    }
+    const state = decodeState(context.url.searchParams.get("state"));
+    const session = await createSessionFromTicket(req, config, ticket);
+    setSessionCookie(req, res, config, session);
+    sendRedirect(res, 302, state?.returnTo ?? "/ui", context.headOnly);
+    return;
+  }
+
+  if (context.url.pathname === "/logout" || context.url.pathname === "/auth/logout") {
+    if (!allowGetOrHead(req, res)) {
+      return;
+    }
+    clearSessionCookie(req, res);
+    sendRedirect(res, 302, buildLogoutRedirect(req, config), context.headOnly);
+    return;
+  }
+
+  if (context.url.pathname === "/") {
+    if (!allowGetOrHead(req, res)) {
+      return;
+    }
+    const session = await loadCrmSession(req, res, config);
+    sendRedirect(res, 302, session ? "/ui" : "/auth/login", context.headOnly);
+    return;
+  }
+
+  if (context.url.pathname === "/api/crm/session") {
+    if (req.method !== "GET" && req.method !== "HEAD") {
+      sendText(res, 405, "Method Not Allowed");
+      return;
+    }
+    const session = await loadCrmSession(req, res, config);
+    if (!session) {
+      sendJson(res, 401, { ok: false, error: "auth_required", message: "Autenticacion requerida." }, context.headOnly);
+      return;
+    }
+    sendJson(res, 200, { ok: true, session: publicSession(session) }, context.headOnly);
+    return;
+  }
+
+  if (context.url.pathname === "/api/crm/bootstrap") {
+    if (req.method !== "GET" && req.method !== "HEAD") {
+      sendText(res, 405, "Method Not Allowed");
+      return;
+    }
+    const session = await loadCrmSession(req, res, config);
+    if (!session) {
+      sendJson(res, 401, { ok: false, error: "auth_required", message: "Autenticacion requerida." }, context.headOnly);
+      return;
+    }
+    sendJson(
+      res,
+      200,
+      {
+        app: {
+          name: "PYROSA CRM",
+          version: config.version,
+          branch: config.branch
+        },
+        platform: buildPlatformContracts(config),
+        auth: {
+          mode: "delegated-ui-auth",
+          session: publicSession(session)
+        },
+        modules: [
+          { key: "accounts", label: "Cuentas", status: "planned" },
+          { key: "contacts", label: "Contactos", status: "planned" },
+          { key: "opportunities", label: "Oportunidades", status: "planned" },
+          { key: "activities", label: "Actividades", status: "planned" }
+        ]
+      },
+      context.headOnly
+    );
+    return;
+  }
+
+  if (context.url.pathname.startsWith("/api/")) {
+    sendJson(res, 404, { ok: false, error: "not_found", message: "Ruta API no encontrada." });
+    return;
+  }
+
+  if (context.url.pathname.startsWith("/assets/") || context.url.pathname.startsWith("/public/")) {
+    serveStatic(req, res, context.url.pathname, config);
+    return;
+  }
+
+  if (context.url.pathname === "/ui" || context.url.pathname.startsWith("/ui/")) {
+    const session = await loadCrmSession(req, res, config);
+    if (!session) {
+      const returnTo = encodeURIComponent(normalizeReturnTo(withQuery(context.url)));
+      sendRedirect(res, 302, `/auth/login?return_to=${returnTo}`, context.headOnly);
+      return;
+    }
+    serveStatic(req, res, context.url.pathname, config);
+    return;
+  }
+
+  sendText(res, 404, "Not Found");
+}
+
+function buildPlatformContracts(config: CrmServerConfig) {
+  return {
+    platform: {
+      service: "pyrosa-platform",
+      publicBaseUrl: config.platformBaseUrl,
+      internalBaseUrl: config.platformInternalBaseUrl,
+      owns: ["catalogo de apps", "gobierno visual", "contratos runtime", "estado operativo"]
+    },
+    iam: {
+      service: "pyrosa-iam",
+      publicBaseUrl: config.iamBaseUrl,
+      internalBaseUrl: config.iamInternalBaseUrl,
+      auth: {
+        mode: "delegated-ui-auth",
+        clientSlug: config.iamClientSlug,
+        callbackUrl: config.iamCallbackUrl,
+        sessionCheckMs: config.iamSessionCheckMs
+      },
+      owns: ["autenticacion", "MFA", "tickets ui-auth", "sesiones globales"]
+    },
+    accounts: {
+      service: "pyrosa-accounts",
+      publicBaseUrl: config.accountsBaseUrl,
+      internalBaseUrl: config.accountsInternalBaseUrl,
+      owns: ["centro de cuenta", "perfil de usuario", "preferencias", "autoservicio"]
+    }
+  };
+}
+
+function allowGetOrHead(req: IncomingMessage, res: ServerResponse): boolean {
+  if (req.method === "GET" || req.method === "HEAD") {
+    return true;
+  }
+  sendText(res, 405, "Method Not Allowed");
+  return false;
+}
+
+function sendRedirect(res: ServerResponse, status: number, location: string, headOnly = false): void {
+  const body = `Redirecting to ${location}\n`;
+  res.statusCode = status;
+  res.setHeader("Location", location);
+  res.setHeader("Cache-Control", "no-store");
+  res.setHeader("Content-Type", "text/plain; charset=utf-8");
+  res.setHeader("Content-Length", headOnly ? "0" : String(Buffer.byteLength(body)));
+  res.end(headOnly ? undefined : body);
+}
+
+function isLoginPath(pathname: string): boolean {
+  return pathname === "/login" || pathname === "/auth/login";
+}
+
+function withQuery(url: URL): string {
+  return `${url.pathname}${url.search}`;
+}
+
+function publicSession(session: CrmSession) {
+  return {
+    sid: session.sid,
+    expiresAt: session.expiresAt,
+    uiAuthSessionId: session.uiAuthSessionId,
+    uiAuthAuthenticatedAt: session.uiAuthAuthenticatedAt,
+    user: session.user
+  };
+}

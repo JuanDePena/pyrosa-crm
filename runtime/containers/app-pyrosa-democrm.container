@@ -1,0 +1,27 @@
+[Unit]
+Description=Application container for pyrosa-democrm
+After=network-online.target
+Wants=network-online.target
+
+[Container]
+ContainerName=app-pyrosa-democrm
+Image=docker.io/library/node:22-bookworm-slim
+Pull=never
+PublishPort=127.0.0.1:10166:10166
+EnvironmentFile=/etc/containers/systemd/env/app-pyrosa-democrm.env
+Environment=NODE_ENV=production
+Environment=PYROSA_CRM_UI_HOST=0.0.0.0
+Environment=PYROSA_CRM_UI_PORT=10166
+Volume=/srv/containers/apps/pyrosa-democrm/app:/srv/containers/apps/pyrosa-democrm/app:Z
+Volume=/srv/containers/apps/pyrosa-democrm/uploads:/srv/containers/apps/pyrosa-democrm/uploads:Z
+WorkingDir=/srv/containers/apps/pyrosa-democrm/app/ui
+User=node
+Exec=node server.mjs
+
+[Service]
+Restart=always
+RestartSec=5
+TimeoutStartSec=900
+
+[Install]
+WantedBy=multi-user.target

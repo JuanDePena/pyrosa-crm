@@ -1,0 +1,28 @@
+# Runtime and local state
+.env
+.env.*
+!.env.example
+storage/*
+public/uploads/*
+uploads/*
+
+# Node / TypeScript
+node_modules/
+dist/
+ui/build/
+ui/dist/
+ui/node_modules/
+.next/
+.vite/
+coverage/
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Logs and temporary files
+*.log
+tmp/
+.DS_Store
