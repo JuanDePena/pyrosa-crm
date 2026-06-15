@@ -89,6 +89,12 @@ Incluye:
 - templates de Quadlet, env y Apache;
 - documentacion inicial de producto, arquitectura, ambientes y releases.
 
+## Sistema visual
+
+`pyrosa-democrm` / `pyrosa-crm` es consumidor futuro de `pyrosa-ui` con perfil
+`business-ops`. El siguiente corte es inventario visual de listas comerciales,
+formularios, pipeline y estados antes de activar paquetes compartidos.
+
 Siguientes cortes previstos:
 
 - completar el dominio funcional inicial de CRM v2606;
@@ -136,4 +142,5 @@ requerir variables equivalentes al entorno demo.
 - release flow: `docs/ops/release-flow.md`
 - roadmap: `docs/roadmap/v2606.md`
 - contrato de marca: `docs/brand-assets.md`
+- adopcion visual: `docs/pyrosa-ui-adoption.md`
 - decisiones de arquitectura: `docs/adr/`

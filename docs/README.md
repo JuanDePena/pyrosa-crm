@@ -12,4 +12,5 @@ Recommended reading order:
 6. [Secrets Management](ops/secrets-management.md)
 7. [Release Flow](ops/release-flow.md)
 8. [Roadmap v2606](roadmap/v2606.md)
-9. [Architecture Decision Records](adr/)
+9. [Pyrosa UI Adoption](pyrosa-ui-adoption.md)
+10. [Architecture Decision Records](adr/)
