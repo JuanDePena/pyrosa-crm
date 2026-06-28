@@ -27,7 +27,7 @@ ambientes, runtime y release flow esta distribuida en:
 - runtime SimpleHostMan: `docs/ops/runtime-simplehostman.md`
 - gestion de secretos: `docs/ops/secrets-management.md`
 - flujo de releases: `docs/ops/release-flow.md`
-- roadmap: `docs/roadmap/v2606.md`
+- roadmap: `docs/plans/plan-roadmap-v2606.md`
 
 ## Branding
 
@@ -140,7 +140,7 @@ requerir variables equivalentes al entorno demo.
 - runtime SimpleHostMan: `docs/ops/runtime-simplehostman.md`
 - gestion de secretos: `docs/ops/secrets-management.md`
 - release flow: `docs/ops/release-flow.md`
-- roadmap: `docs/roadmap/v2606.md`
+- roadmap: `docs/plans/plan-roadmap-v2606.md`
 - contrato de marca: `docs/brand-assets.md`
-- adopcion visual: `docs/pyrosa-ui-adoption.md`
+- adopcion visual: `docs/plans/plan-pyrosa-ui-adoption.md`
 - decisiones de arquitectura: `docs/adr/`
