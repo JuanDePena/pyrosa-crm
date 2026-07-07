@@ -1,6 +1,6 @@
 # Adopcion Pyrosa UI
 
-Fecha: `2026-06-15`
+Fecha: `2026-07-07`
 
 `pyrosa-democrm` / `pyrosa-crm` consume `pyrosa-ui` con perfil
 `business-ops` para el scaffold CRM demo.
@@ -25,6 +25,17 @@ contactos, oportunidades, pipeline ni actividades fuera del dominio CRM.
 - Tablas compactas, filtros, tabs, detalle y acciones no mutantes sobre
   contratos API iniciales.
 - Smoke visual repetible con `npm run qa:visual`.
+
+## Inventario 2026-07-07
+
+El inventario de corrida 3 queda documentado en
+[`pyrosa-ui-visual-inventory-2026-07-07.md`](./pyrosa-ui-visual-inventory-2026-07-07.md).
+
+Resultado:
+
+- primer target operativo: `cuentas` read-only con datos CRM reales;
+- siguientes targets: `contactos` y `oportunidades`;
+- no se habilitan mutaciones sin contrato, validacion y auditoria.
 
 ## Proximo Corte De Dominio
 
