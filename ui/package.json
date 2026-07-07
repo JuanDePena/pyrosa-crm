@@ -17,6 +17,12 @@
     "start": "node server.mjs"
   },
   "dependencies": {
+    "@pyrosa/ui": "file:../../../pyrosa-ui/app/packages/ui",
+    "@pyrosa/ui-icons": "file:../../../pyrosa-ui/app/packages/icons",
+    "@pyrosa/ui-layouts": "file:../../../pyrosa-ui/app/packages/layouts",
+    "@pyrosa/ui-templates": "file:../../../pyrosa-ui/app/packages/templates",
+    "@pyrosa/ui-theme": "file:../../../pyrosa-ui/app/packages/theme",
+    "@pyrosa/ui-tokens": "file:../../../pyrosa-ui/app/packages/tokens",
     "lucide-react": "^0.468.0",
     "pg": "^8.20.0",
     "react": "^18.3.1",
