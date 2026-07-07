@@ -21,13 +21,23 @@ ambientes, runtime y release flow esta distribuida en:
 - indice de docs: `docs/README.md`
 - vision de producto: `docs/product/vision-v2606.md`
 - modulos iniciales: `docs/product/modules-v2606.md`
-- mapa del ecosistema: `docs/ecosystem/pyrosa-app-map.md`
-- arquitectura: `docs/architecture/overview.md`
+- mapa del ecosistema: `docs/design/ecosystem/pyrosa-app-map.md`
+- arquitectura: `docs/design/architecture/overview.md`
 - ambientes: `docs/ops/environments.md`
 - runtime SimpleHostMan: `docs/ops/runtime-simplehostman.md`
 - gestion de secretos: `docs/ops/secrets-management.md`
 - flujo de releases: `docs/ops/release-flow.md`
 - roadmap: `docs/plans/plan-roadmap-v2606.md`
+
+## Gobierno De Releases
+
+Cada app Pyrosa conserva su propio release flow, pero todo release debe dejar
+tag UTC `vYYMM.DDHHmm`, commit, ambiente, validacion de build/test, evidencia
+minima y owner. Si el cambio afecta `pyrosa-ui`, debe registrar version de
+paquete/tema, manifest, excepciones visuales y validacion responsive. Si afecta
+IAM, debe registrar cliente, scopes/roles, pruebas de login/logout, impacto
+MFA/AAL y rollback. Platform cataloga version, canal, ambiente y evidencia
+transversal.
 
 ## Branding
 
@@ -40,7 +50,7 @@ ambientes, runtime y release flow esta distribuida en:
   - `ui/public/public/assets/brand/crm-logo-*.png`
   - `ui/public/public/favicon.ico`
 - contrato tecnico:
-  - `docs/brand-assets.md`
+  - `docs/design/brand-assets.md`
 
 ## Superficie y ambientes
 
@@ -134,13 +144,13 @@ requerir variables equivalentes al entorno demo.
 - indice de docs: `docs/README.md`
 - vision de producto: `docs/product/vision-v2606.md`
 - modulos iniciales: `docs/product/modules-v2606.md`
-- mapa del ecosistema: `docs/ecosystem/pyrosa-app-map.md`
-- arquitectura: `docs/architecture/overview.md`
+- mapa del ecosistema: `docs/design/ecosystem/pyrosa-app-map.md`
+- arquitectura: `docs/design/architecture/overview.md`
 - ambientes: `docs/ops/environments.md`
 - runtime SimpleHostMan: `docs/ops/runtime-simplehostman.md`
 - gestion de secretos: `docs/ops/secrets-management.md`
 - release flow: `docs/ops/release-flow.md`
 - roadmap: `docs/plans/plan-roadmap-v2606.md`
-- contrato de marca: `docs/brand-assets.md`
+- contrato de marca: `docs/design/brand-assets.md`
 - adopcion visual: `docs/plans/plan-pyrosa-ui-adoption.md`
 - decisiones de arquitectura: `docs/adr/`
