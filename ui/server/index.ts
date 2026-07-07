@@ -22,6 +22,7 @@ import {
   sendText,
   serveStatic
 } from "./http.js";
+import { buildActionPreview, buildCrmContracts } from "./contracts.js";
 
 export function createCrmServer(config: CrmServerConfig = loadConfig()) {
   const server = createServer((req, res) => {
@@ -162,9 +163,8 @@ async function handleRequest(
       sendText(res, 405, "Method Not Allowed");
       return;
     }
-    const session = await loadCrmSession(req, res, config);
+    const session = await requireCrmSession(req, res, config, context.headOnly);
     if (!session) {
-      sendJson(res, 401, { ok: false, error: "auth_required", message: "Autenticacion requerida." }, context.headOnly);
       return;
     }
     sendJson(res, 200, { ok: true, session: publicSession(session) }, context.headOnly);
@@ -176,9 +176,8 @@ async function handleRequest(
       sendText(res, 405, "Method Not Allowed");
       return;
     }
-    const session = await loadCrmSession(req, res, config);
+    const session = await requireCrmSession(req, res, config, context.headOnly);
     if (!session) {
-      sendJson(res, 401, { ok: false, error: "auth_required", message: "Autenticacion requerida." }, context.headOnly);
       return;
     }
     sendJson(
@@ -204,6 +203,51 @@ async function handleRequest(
       },
       context.headOnly
     );
+    return;
+  }
+
+  if (context.url.pathname === "/api/crm/contracts") {
+    if (req.method !== "GET" && req.method !== "HEAD") {
+      sendText(res, 405, "Method Not Allowed");
+      return;
+    }
+    const session = await requireCrmSession(req, res, config, context.headOnly);
+    if (!session) {
+      return;
+    }
+    sendJson(res, 200, buildCrmContracts(config, session), context.headOnly);
+    return;
+  }
+
+  if (context.url.pathname === "/api/crm/contracts/action-preview") {
+    if (req.method !== "GET" && req.method !== "HEAD") {
+      sendText(res, 405, "Method Not Allowed");
+      return;
+    }
+    const session = await requireCrmSession(req, res, config, context.headOnly);
+    if (!session) {
+      return;
+    }
+    void session;
+    const preview = buildActionPreview(
+      String(context.url.searchParams.get("scope") ?? ""),
+      String(context.url.searchParams.get("record_id") ?? ""),
+      String(context.url.searchParams.get("action") ?? "")
+    );
+    if (!preview) {
+      sendJson(
+        res,
+        404,
+        {
+          ok: false,
+          error: "contract_action_not_found",
+          message: "No existe una accion contract-first para el registro solicitado."
+        },
+        context.headOnly
+      );
+      return;
+    }
+    sendJson(res, 200, preview, context.headOnly);
     return;
   }
 
@@ -266,6 +310,20 @@ function allowGetOrHead(req: IncomingMessage, res: ServerResponse): boolean {
   }
   sendText(res, 405, "Method Not Allowed");
   return false;
+}
+
+async function requireCrmSession(
+  req: IncomingMessage,
+  res: ServerResponse,
+  config: CrmServerConfig,
+  headOnly = false
+): Promise<CrmSession | null> {
+  const session = await loadCrmSession(req, res, config);
+  if (!session) {
+    sendJson(res, 401, { ok: false, error: "auth_required", message: "Autenticacion requerida." }, headOnly);
+    return null;
+  }
+  return session;
 }
 
 function sendRedirect(res: ServerResponse, status: number, location: string, headOnly = false): void {

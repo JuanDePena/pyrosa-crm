@@ -8,11 +8,13 @@ import {
   CheckCircle2,
   Database,
   DollarSign,
+  Eye,
   FileText,
   Gauge,
   Image as ImageIcon,
   LayoutDashboard,
   Link2,
+  ListChecks,
   LogOut,
   Search,
   Settings,
@@ -30,6 +32,7 @@ import {
   EmptyState,
   EntityCell,
   FilterPanel,
+  IconButton,
   MetricCard,
   MetricGrid,
   Panel,
@@ -39,7 +42,9 @@ import {
   StatusBadge,
   StatusStrip,
   Tabs,
+  TableActionGroup,
   Topbar,
+  ViewNotice,
   ViewGrid
 } from "@pyrosa/ui";
 import type { DataTableColumn } from "@pyrosa/ui";
@@ -90,6 +95,33 @@ type BootstrapResponse = {
   platform?: Record<string, unknown>;
 };
 
+type RecordAction = {
+  description: string;
+  endpoint: string;
+  id: string;
+  label: string;
+  method: "GET";
+  mutates: false;
+};
+
+type ActionPreview = {
+  action: string;
+  description: string;
+  endpoint: string;
+  method: string;
+  mutates: boolean;
+  recordId: string;
+  recordTitle: string;
+  scope: string;
+  status: string;
+  validation: string[];
+};
+
+type ActionPreviewResponse = {
+  ok?: boolean;
+  preview?: ActionPreview;
+};
+
 type CrmRouteId =
   | "dashboard"
   | "cuentas"
@@ -117,15 +149,15 @@ type RouteDefinition = {
 
 type ModuleCard = {
   detail: string;
-  icon: React.ReactNode;
+  icon?: React.ReactNode;
   key: string;
   label: string;
-  owner: string;
+  owner?: string;
   status: string;
 };
 
 type PlatformService = {
-  icon: React.ReactNode;
+  icon?: React.ReactNode;
   name: string;
   owns: string;
   service: string;
@@ -135,6 +167,7 @@ type PlatformService = {
 type WorkbenchRouteId = Exclude<CrmRouteId, "dashboard" | "plataforma" | "marca" | "runtime">;
 
 type CrmRecord = {
+  actions?: RecordAction[];
   description: string;
   details: Array<{ label: string; value: string }>;
   id: string;
@@ -157,6 +190,28 @@ type CrmRouteConfig = {
   rows: CrmRecord[];
   tabs: Array<{ id: string; label: string }>;
   title: string;
+};
+
+type DomainContracts = {
+  actionCatalog: string[];
+  app: {
+    branch?: string;
+    version?: string;
+  };
+  contractVersion: string;
+  modules: ModuleCard[];
+  platformServices: PlatformService[];
+  sessionContext?: {
+    role?: string;
+    status?: string;
+    userId?: number;
+  };
+  workbench: Partial<Record<WorkbenchRouteId, Omit<CrmRouteConfig, "icon">>>;
+};
+
+type ContractsResponse = {
+  contracts?: DomainContracts;
+  ok?: boolean;
 };
 
 const routeDefinitions: RouteDefinition[] = [
@@ -736,6 +791,9 @@ function activeRouteFromLocation(): CrmRouteId {
 function App() {
   const [session, setSession] = React.useState<ClientSession | null>(null);
   const [bootstrap, setBootstrap] = React.useState<BootstrapResponse | null>(null);
+  const [contracts, setContracts] = React.useState<DomainContracts | null>(null);
+  const [contractsError, setContractsError] = React.useState<string | null>(null);
+  const [actionPreview, setActionPreview] = React.useState<ActionPreview | null>(null);
   const [brandLogoReady, setBrandLogoReady] = React.useState(true);
   const [activeRoute, setActiveRoute] = React.useState<CrmRouteId>(activeRouteFromLocation);
 
@@ -744,8 +802,9 @@ function App() {
 
     void Promise.allSettled([
       fetchJson<SessionResponse>("/api/crm/session"),
-      fetchJson<BootstrapResponse>("/api/crm/bootstrap")
-    ]).then(([sessionResult, bootstrapResult]) => {
+      fetchJson<BootstrapResponse>("/api/crm/bootstrap"),
+      fetchJson<ContractsResponse>("/api/crm/contracts")
+    ]).then(([sessionResult, bootstrapResult, contractsResult]) => {
       if (!active) {
         return;
       }
@@ -754,6 +813,12 @@ function App() {
       }
       if (bootstrapResult.status === "fulfilled" && bootstrapResult.value) {
         setBootstrap(bootstrapResult.value);
+      }
+      if (contractsResult.status === "fulfilled" && contractsResult.value?.contracts) {
+        setContracts(contractsResult.value.contracts);
+        setContractsError(null);
+      } else {
+        setContractsError("No se pudo leer el contrato CRM; usando fallback local.");
       }
     });
 
@@ -778,9 +843,12 @@ function App() {
   const displayName = session?.user?.displayName || session?.user?.email || "Sesion delegada";
   const displayEmail = session?.user?.email || session?.user?.primaryEmail?.email || "pyrosa-iam";
   const brandLogoUrl = "/public/assets/brand/crm-logo.png";
-  const branch = bootstrap?.app?.branch ?? "main";
-  const version = bootstrap?.app?.version ?? "v2606";
-  const bootstrapModules = bootstrap?.modules?.length ? bootstrap.modules : modules;
+  const branch = contracts?.app.branch ?? bootstrap?.app?.branch ?? "main";
+  const version = contracts?.app.version ?? bootstrap?.app?.version ?? "v2606";
+  const moduleCards = moduleCardsWithIcons(contracts?.modules ?? modules);
+  const platformData = platformServicesWithIcons(contracts?.platformServices ?? platformServices);
+  const workbenchData = mergeWorkbenchContracts(contracts);
+  const bootstrapModules = bootstrap?.modules?.length ? bootstrap.modules : moduleCards;
   const activeRouteDefinition = routeById[activeRoute];
   const mfaLabel = session?.user?.security?.activeMfaMethods
     ? `${session.user.security.activeMfaMethods} MFA`
@@ -800,6 +868,31 @@ function App() {
     window.location.assign("/logout");
   }
 
+  async function handleActionPreview(scope: string, recordId: string, actionId: string) {
+    const params = new URLSearchParams({ action: actionId, record_id: recordId, scope });
+    try {
+      const payload = await fetchJson<ActionPreviewResponse>(`/api/crm/contracts/action-preview?${params.toString()}`);
+      if (payload?.preview) {
+        setActionPreview(payload.preview);
+        return;
+      }
+    } catch {
+      // The fallback below keeps the UX deterministic if the preview endpoint is temporarily unavailable.
+    }
+    setActionPreview({
+      action: actionId,
+      description: "Preview local fallback para accion contract-first.",
+      endpoint: `/api/crm/contracts/action-preview?${params.toString()}`,
+      method: "GET",
+      mutates: false,
+      recordId,
+      recordTitle: recordId,
+      scope,
+      status: "fallback-preview",
+      validation: ["requiere sesion CRM activa", "no ejecuta escrituras", "endpoint productivo pendiente"]
+    });
+  }
+
   const navItems = routeDefinitions.map((route) => ({
     active: activeRoute === route.id,
     groupId: route.groupId,
@@ -811,7 +904,7 @@ function App() {
     itemOrder: route.itemOrder,
     label: route.label,
     onSelect: () => navigateToRoute(route.id),
-    status: <StatusBadge tone="info">{routeRecordCount(route.id)}</StatusBadge>
+    status: <StatusBadge tone="info">{routeRecordCount(route.id, platformData, workbenchData)}</StatusBadge>
   }));
 
   return (
@@ -884,21 +977,44 @@ function App() {
         <StatusStrip
           items={[
             { icon: <Gauge aria-hidden="true" />, key: "view", label: "Vista", tone: "info", value: activeRouteDefinition.label },
-            { icon: <Database aria-hidden="true" />, key: "records", label: "Registros", tone: "success", value: routeRecordCount(activeRoute) },
+            { icon: <Database aria-hidden="true" />, key: "records", label: "Registros", tone: "success", value: routeRecordCount(activeRoute, platformData, workbenchData) },
             { icon: <ShieldCheck aria-hidden="true" />, key: "security", label: "Seguridad", tone: "info", value: mfaLabel },
             { icon: <CheckCircle2 aria-hidden="true" />, key: "runtime", label: "Runtime", tone: "success", value: "v2606" }
           ]}
         />
 
+        {contractsError ? (
+          <ViewNotice
+            action={{ label: "Cerrar", onClick: () => setContractsError(null) }}
+            message={contractsError}
+            title="Contrato local"
+            tone="warning"
+          />
+        ) : null}
+
+        {actionPreview ? (
+          <ViewNotice
+            action={{ label: "Cerrar", onClick: () => setActionPreview(null) }}
+            message={`${actionPreview.recordTitle}: ${actionPreview.description}`}
+            title={`Preview ${actionPreview.action}`}
+            tone="info"
+          />
+        ) : null}
+
         {renderRoute({
+          actionPreview,
           activeRoute,
           bootstrap,
           brandLogoReady,
           brandLogoUrl,
           displayEmail,
           displayName,
+          moduleCards,
+          onActionPreview: handleActionPreview,
+          platformData,
           setBrandLogoReady,
-          setRoute: navigateToRoute
+          setRoute: navigateToRoute,
+          workbenchData
         })}
       </WorkspaceLayout>
     </AppShell>
@@ -914,26 +1030,36 @@ async function fetchJson<T>(url: string): Promise<T | null> {
 }
 
 function renderRoute({
+  actionPreview,
   activeRoute,
   bootstrap,
   brandLogoReady,
   brandLogoUrl,
   displayEmail,
   displayName,
+  moduleCards,
+  onActionPreview,
+  platformData,
   setBrandLogoReady,
-  setRoute
+  setRoute,
+  workbenchData
 }: {
+  actionPreview: ActionPreview | null;
   activeRoute: CrmRouteId;
   bootstrap: BootstrapResponse | null;
   brandLogoReady: boolean;
   brandLogoUrl: string;
   displayEmail: string;
   displayName: string;
+  moduleCards: ModuleCard[];
+  onActionPreview: (scope: string, recordId: string, actionId: string) => void;
+  platformData: PlatformService[];
   setBrandLogoReady: (ready: boolean) => void;
   setRoute: (routeId: CrmRouteId) => void;
+  workbenchData: Record<WorkbenchRouteId, CrmRouteConfig>;
 }) {
   if (activeRoute === "plataforma") {
-    return <PlatformRoute />;
+    return <PlatformRoute rows={platformData} />;
   }
   if (activeRoute === "marca") {
     return <BrandRoute brandLogoReady={brandLogoReady} brandLogoUrl={brandLogoUrl} setBrandLogoReady={setBrandLogoReady} />;
@@ -942,24 +1068,35 @@ function renderRoute({
     return <RuntimeRoute bootstrap={bootstrap} displayEmail={displayEmail} displayName={displayName} />;
   }
   if (activeRoute === "dashboard") {
-    return <DashboardRoute bootstrap={bootstrap} setRoute={setRoute} />;
+    return <DashboardRoute bootstrap={bootstrap} moduleCards={moduleCards} setRoute={setRoute} workbenchData={workbenchData} />;
   }
-  return <WorkbenchRoute config={workbenchRoutes[activeRoute]} />;
+  return (
+    <WorkbenchRoute
+      actionPreview={actionPreview}
+      config={workbenchData[activeRoute]}
+      onActionPreview={onActionPreview}
+    />
+  );
 }
 
 function DashboardRoute({
   bootstrap,
-  setRoute
+  moduleCards,
+  setRoute,
+  workbenchData
 }: {
   bootstrap: BootstrapResponse | null;
+  moduleCards: ModuleCard[];
   setRoute: (routeId: CrmRouteId) => void;
+  workbenchData: Record<WorkbenchRouteId, CrmRouteConfig>;
 }) {
-  const bootstrapModules = bootstrap?.modules?.length ? bootstrap.modules : modules;
+  const bootstrapModules = bootstrap?.modules?.length ? bootstrap.modules : moduleCards;
+  const totalRecords = Object.values(workbenchData).reduce((sum, route) => sum + route.rows.length, 0);
   return (
     <>
       <MetricGrid columns={4} density="comfortable">
         <MetricCard detail="rutas shell" icon={<LayoutDashboard />} label="Vistas" value={routeDefinitions.length} />
-        <MetricCard detail="cuentas/contactos/pipeline" icon={<Building2 />} label="Dominios" tone="green" value={modules.length} />
+        <MetricCard detail="filas contract-first" icon={<Building2 />} label="Registros" tone="green" value={totalRecords} />
         <MetricCard detail="pipeline contract-first" icon={<DollarSign />} label="Forecast" value="121K" />
         <MetricCard detail="desde bootstrap" icon={<CheckCircle2 />} label="Modulos" tone="amber" value={bootstrapModules.length} />
       </MetricGrid>
@@ -983,9 +1120,9 @@ function DashboardRoute({
 
         <Panel eyebrow="Modulos" title="Contratos iniciales">
           <div className="crm-module-stack">
-            {modules.map((module) => (
+            {moduleCards.map((module) => (
               <div className="crm-module-row" key={module.key}>
-                {module.icon}
+                {module.icon ?? moduleIcon(module.key)}
                 <span>
                   <strong>{module.label}</strong>
                   <small>{module.detail}</small>
@@ -1000,7 +1137,17 @@ function DashboardRoute({
   );
 }
 
-function RecordDetail({ rows }: { rows: Array<[string, string]> }) {
+function RecordDetail({
+  actionPreview,
+  actions,
+  onAction,
+  rows
+}: {
+  actionPreview?: ActionPreview | null;
+  actions?: RecordAction[];
+  onAction?: (actionId: string) => void;
+  rows: Array<[string, string]>;
+}) {
   return (
     <div className="crm-detail-stack">
       <dl className="crm-detail-list">
@@ -1012,14 +1159,28 @@ function RecordDetail({ rows }: { rows: Array<[string, string]> }) {
         ))}
       </dl>
       <div className="crm-readonly-actions">
-        <StatusBadge tone="info">ui-contract-v0</StatusBadge>
+        {actions?.length && onAction ? <RecordActions actions={actions} onAction={onAction} /> : <StatusBadge tone="info">ui-contract-v0</StatusBadge>}
         <StatusBadge tone="warning">mutaciones bloqueadas</StatusBadge>
       </div>
+      {actionPreview ? (
+        <div className="crm-action-preview">
+          <strong>{actionPreview.status}</strong>
+          <span>{actionPreview.validation.join(" · ")}</span>
+        </div>
+      ) : null}
     </div>
   );
 }
 
-function WorkbenchRoute({ config }: { config: CrmRouteConfig }) {
+function WorkbenchRoute({
+  actionPreview,
+  config,
+  onActionPreview
+}: {
+  actionPreview: ActionPreview | null;
+  config: CrmRouteConfig;
+  onActionPreview: (scope: string, recordId: string, actionId: string) => void;
+}) {
   const [query, setQuery] = React.useState("");
   const [status, setStatus] = React.useState("all");
   const [tab, setTab] = React.useState(config.tabs[0]?.id ?? "all");
@@ -1059,7 +1220,18 @@ function WorkbenchRoute({ config }: { config: CrmRouteConfig }) {
     { key: "owner", label: "Owner", render: (row) => <DataTableInline>{row.owner}</DataTableInline> },
     { key: "metric", label: "Metrica", render: (row) => <DataTableInline strong>{row.metric}</DataTableInline> },
     { key: "source", label: "Fuente", render: (row) => <DataTableInline>{row.source}</DataTableInline> },
-    { key: "status", label: "Estado", render: (row) => <StatusBadge tone={statusTone(row.status)}>{row.status}</StatusBadge> }
+    { key: "status", label: "Estado", render: (row) => <StatusBadge tone={statusTone(row.status)}>{row.status}</StatusBadge> },
+    {
+      key: "actions",
+      kind: "actions",
+      label: "Acciones",
+      render: (row) => (
+        <RecordActions
+          actions={recordActions(row)}
+          onAction={(actionId) => onActionPreview(row.routeId, row.id, actionId)}
+        />
+      )
+    }
   ];
 
   return (
@@ -1132,6 +1304,9 @@ function WorkbenchRoute({ config }: { config: CrmRouteConfig }) {
         <Panel className="crm-detail-panel" eyebrow="Detalle" title={selectedRow?.title ?? "Sin seleccion"}>
           {selectedRow ? (
             <RecordDetail
+              actionPreview={actionPreview?.recordId === selectedRow.id ? actionPreview : null}
+              actions={recordActions(selectedRow)}
+              onAction={(actionId) => onActionPreview(selectedRow.routeId, selectedRow.id, actionId)}
               rows={[
                 ["Tipo", selectedRow.kind],
                 ["Owner", selectedRow.owner],
@@ -1150,12 +1325,12 @@ function WorkbenchRoute({ config }: { config: CrmRouteConfig }) {
   );
 }
 
-function PlatformRoute() {
+function PlatformRoute({ rows }: { rows: PlatformService[] }) {
   const columns: Array<DataTableColumn<PlatformService>> = [
     {
       key: "service",
       label: "Servicio",
-      render: (row) => <EntityCell description={row.service} icon={row.icon} title={row.name} />,
+      render: (row) => <EntityCell description={row.service} icon={row.icon ?? platformIcon(row.service)} title={row.name} />,
       width: "30%"
     },
     { key: "owns", label: "Responsabilidad", render: (row) => <DataTableInline>{row.owns}</DataTableInline> },
@@ -1169,7 +1344,7 @@ function PlatformRoute() {
       eyebrow="Plataforma"
       title="Contratos con servicios Pyrosa"
     >
-      <DataTable columns={columns} density="compact" getRowId={(row) => row.service} rows={platformServices} tableMinWidth="760px" />
+      <DataTable columns={columns} density="compact" getRowId={(row) => row.service} rows={rows} tableMinWidth="760px" />
     </Panel>
   );
 }
@@ -1254,17 +1429,130 @@ function RuntimeRoute({
   );
 }
 
-function routeRecordCount(routeId: CrmRouteId) {
+function RecordActions({
+  actions,
+  onAction
+}: {
+  actions: RecordAction[];
+  onAction: (actionId: string) => void;
+}) {
+  if (!actions.length) {
+    return <DataTableInline>sin acciones</DataTableInline>;
+  }
+  return (
+    <TableActionGroup>
+      {actions.map((action) => (
+        <IconButton
+          icon={action.id === "prepare" ? <ListChecks aria-hidden="true" /> : <Eye aria-hidden="true" />}
+          key={action.id}
+          label={action.label}
+          onClick={(event) => {
+            event.stopPropagation();
+            onAction(action.id);
+          }}
+          title={`${action.label}: ${action.description}`}
+          variant="secondary"
+        />
+      ))}
+    </TableActionGroup>
+  );
+}
+
+function routeRecordCount(
+  routeId: CrmRouteId,
+  platformData: PlatformService[],
+  workbenchData: Record<WorkbenchRouteId, CrmRouteConfig>
+) {
   if (routeId === "dashboard") {
     return routeDefinitions.length;
   }
   if (routeId === "plataforma") {
-    return platformServices.length;
+    return platformData.length;
   }
   if (routeId === "marca" || routeId === "runtime") {
     return 1;
   }
-  return workbenchRoutes[routeId].rows.length;
+  return workbenchData[routeId].rows.length;
+}
+
+function mergeWorkbenchContracts(contracts: DomainContracts | null): Record<WorkbenchRouteId, CrmRouteConfig> {
+  const routeIds = Object.keys(workbenchRoutes) as WorkbenchRouteId[];
+  return Object.fromEntries(
+    routeIds.map((routeId) => {
+      const fallback = workbenchRoutes[routeId];
+      const contract = contracts?.workbench[routeId];
+      return [
+        routeId,
+        {
+          ...fallback,
+          ...contract,
+          icon: fallback.icon,
+          rows: contract?.rows ?? fallback.rows,
+          tabs: contract?.tabs ?? fallback.tabs
+        }
+      ];
+    })
+  ) as Record<WorkbenchRouteId, CrmRouteConfig>;
+}
+
+function moduleCardsWithIcons(rows: ModuleCard[]): ModuleCard[] {
+  return rows.map((row) => ({
+    ...row,
+    icon: row.icon ?? moduleIcon(row.key)
+  }));
+}
+
+function moduleIcon(key: string) {
+  if (key.includes("account")) {
+    return <Building2 aria-hidden="true" />;
+  }
+  if (key.includes("contact")) {
+    return <UsersRound aria-hidden="true" />;
+  }
+  if (key.includes("opportunit")) {
+    return <Target aria-hidden="true" />;
+  }
+  if (key.includes("activit")) {
+    return <CalendarClock aria-hidden="true" />;
+  }
+  return <Database aria-hidden="true" />;
+}
+
+function platformServicesWithIcons(rows: PlatformService[]): PlatformService[] {
+  return rows.map((row) => ({
+    ...row,
+    icon: row.icon ?? platformIcon(row.service)
+  }));
+}
+
+function platformIcon(service: string) {
+  if (service.includes("platform")) {
+    return <Database aria-hidden="true" />;
+  }
+  if (service.includes("iam")) {
+    return <ShieldCheck aria-hidden="true" />;
+  }
+  if (service.includes("account")) {
+    return <UserRound aria-hidden="true" />;
+  }
+  return <Link2 aria-hidden="true" />;
+}
+
+function recordActions(row: CrmRecord): RecordAction[] {
+  return row.actions?.length ? row.actions : [readonlyAction(row.routeId, row.id, "inspect"), readonlyAction(row.routeId, row.id, "prepare")];
+}
+
+function readonlyAction(scope: string, recordId: string, actionId: "inspect" | "prepare"): RecordAction {
+  return {
+    description: actionId === "prepare"
+      ? "Prepara el comando futuro y devuelve su checklist de validacion."
+      : "Devuelve una vista segura del contrato CRM sin mutar datos.",
+    endpoint: `/api/crm/contracts/action-preview?scope=${scope}&record_id=${recordId}&action=${actionId}`,
+    id: actionId,
+    label: actionId === "prepare" ? "Preparar" : "Inspeccionar",
+    method: "GET",
+    mutates: false
+  };
 }
 
 function filteredCrmRows(rows: CrmRecord[], tab: string, query: string, status: string) {
