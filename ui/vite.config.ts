@@ -25,6 +25,21 @@ export default defineConfig({
   },
   build: {
     outDir: "dist",
-    emptyOutDir: true
+    emptyOutDir: true,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          "vendor-icons": ["lucide-react"],
+          "pyrosa-ui": [
+            "@pyrosa/ui",
+            "@pyrosa/ui-icons",
+            "@pyrosa/ui-layouts",
+            "@pyrosa/ui-templates",
+            "@pyrosa/ui-theme",
+            "@pyrosa/ui-tokens"
+          ]
+        }
+      }
+    }
   }
 });

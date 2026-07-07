@@ -12,6 +12,7 @@ dist/
 ui/build/
 ui/dist/
 ui/node_modules/
+ui/tmp/
 .next/
 .vite/
 coverage/

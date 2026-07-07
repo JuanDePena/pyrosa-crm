@@ -12,6 +12,7 @@
     "typecheck:server": "tsc --noEmit -p tsconfig.server.json",
     "typecheck": "npm run typecheck:client && npm run typecheck:server",
     "build": "npm run typecheck && npm run build:client && npm run build:server",
+    "qa:visual": "node ./scripts/qa-visual-smoke.mjs",
     "preview": "vite preview --host 0.0.0.0",
     "serve": "node server.mjs",
     "start": "node server.mjs"
