@@ -213,6 +213,95 @@ dl {
   margin-top: 3px;
 }
 
+.crm-field {
+  display: grid;
+  gap: 6px;
+  min-width: min(100%, 360px);
+}
+
+.crm-field > span:first-child {
+  color: #10243a;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.crm-search-control {
+  display: block;
+  position: relative;
+}
+
+.crm-search-control svg {
+  color: #587083;
+  height: 16px;
+  left: 10px;
+  pointer-events: none;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 16px;
+}
+
+.crm-search-control .py-input {
+  padding-left: 34px;
+  width: 100%;
+}
+
+.crm-tabs {
+  margin-top: 14px;
+}
+
+.crm-tabs .py-tabs__panel {
+  margin-top: 12px;
+}
+
+.crm-inventory-layout {
+  align-items: start;
+}
+
+.crm-table-panel,
+.crm-detail-panel {
+  min-width: 0;
+}
+
+.crm-detail-stack {
+  display: grid;
+  gap: 12px;
+}
+
+.crm-detail-list {
+  background: #f8fafc;
+  border: 1px solid #d8e2ea;
+  border-radius: 8px;
+  display: grid;
+  gap: 10px;
+  padding: 14px;
+}
+
+.crm-detail-list div {
+  min-width: 0;
+}
+
+.crm-detail-list dt {
+  color: #587083;
+  font-size: 12px;
+  font-weight: 800;
+  margin-bottom: 4px;
+}
+
+.crm-detail-list dd {
+  color: #1d466f;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  font-size: 12px;
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.crm-readonly-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
 .crm-module-stack,
 .crm-service-grid {
   display: grid;

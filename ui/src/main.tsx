@@ -4,32 +4,45 @@ import {
   Activity,
   Bell,
   Building2,
+  CalendarClock,
   CheckCircle2,
   Database,
+  DollarSign,
   FileText,
   Gauge,
   Image as ImageIcon,
   LayoutDashboard,
   Link2,
   LogOut,
+  Search,
   Settings,
   ShieldCheck,
+  Target,
   UserRound,
-  UsersRound
+  UsersRound,
+  X
 } from "lucide-react";
 import {
   AppShell,
   Button,
+  DataTable,
+  DataTableInline,
+  EmptyState,
+  EntityCell,
+  FilterPanel,
   MetricCard,
   MetricGrid,
   Panel,
+  SelectField,
   ShellMetaBadge,
   Sidebar,
   StatusBadge,
   StatusStrip,
+  Tabs,
   Topbar,
   ViewGrid
 } from "@pyrosa/ui";
+import type { DataTableColumn } from "@pyrosa/ui";
 import { WorkspaceLayout } from "@pyrosa/ui-layouts";
 import "@pyrosa/ui/styles.css";
 import "@pyrosa/ui-layouts/styles.css";
@@ -117,6 +130,33 @@ type PlatformService = {
   owns: string;
   service: string;
   status: string;
+};
+
+type WorkbenchRouteId = Exclude<CrmRouteId, "dashboard" | "plataforma" | "marca" | "runtime">;
+
+type CrmRecord = {
+  description: string;
+  details: Array<{ label: string; value: string }>;
+  id: string;
+  kind: string;
+  metric: string;
+  owner: string;
+  routeId: WorkbenchRouteId;
+  segment: string;
+  source: string;
+  status: string;
+  title: string;
+};
+
+type CrmRouteConfig = {
+  description: string;
+  emptyMessage: string;
+  eyebrow: string;
+  icon: React.ReactNode;
+  id: WorkbenchRouteId;
+  rows: CrmRecord[];
+  tabs: Array<{ id: string; label: string }>;
+  title: string;
 };
 
 const routeDefinitions: RouteDefinition[] = [
@@ -308,6 +348,383 @@ const platformServices: PlatformService[] = [
   }
 ];
 
+const statusOptions = [
+  { label: "Todos", value: "all" },
+  { label: "Scaffold", value: "scaffold" },
+  { label: "Review", value: "review" },
+  { label: "Planned", value: "planned" },
+  { label: "External", value: "external" }
+];
+
+const workbenchRoutes: Record<WorkbenchRouteId, CrmRouteConfig> = {
+  cuentas: {
+    description: "Organizaciones comerciales simuladas para validar busqueda, filtros y seleccion de filas.",
+    emptyMessage: "No hay cuentas para los filtros actuales.",
+    eyebrow: "Inventario CRM",
+    icon: <Building2 aria-hidden="true" />,
+    id: "cuentas",
+    rows: [
+      {
+        description: "Cuenta enterprise para validar relacion cuenta-contactos-oportunidades.",
+        details: [
+          { label: "Segmento", value: "Enterprise" },
+          { label: "Territorio", value: "Santo Domingo" },
+          { label: "Siguiente paso", value: "conectar API de lectura de cuentas" }
+        ],
+        id: "acct-atlas",
+        kind: "Enterprise",
+        metric: "USD 86K ARR",
+        owner: "Equipo comercial",
+        routeId: "cuentas",
+        segment: "enterprise",
+        source: "ui-contract-v0",
+        status: "scaffold",
+        title: "Atlas Retail Group"
+      },
+      {
+        description: "Cuenta mid-market con pipeline activo y contacto principal asociado.",
+        details: [
+          { label: "Segmento", value: "Mid-market" },
+          { label: "Territorio", value: "Santiago" },
+          { label: "Siguiente paso", value: "normalizar owner y stage desde contrato CRM" }
+        ],
+        id: "acct-nova",
+        kind: "Mid-market",
+        metric: "3 oportunidades",
+        owner: "Ventas Norte",
+        routeId: "cuentas",
+        segment: "midmarket",
+        source: "ui-contract-v0",
+        status: "review",
+        title: "Nova Servicios"
+      },
+      {
+        description: "Cuenta partner para probar estados externos y ownership compartido.",
+        details: [
+          { label: "Segmento", value: "Partner" },
+          { label: "Territorio", value: "Regional" },
+          { label: "Siguiente paso", value: "definir contrato con Directory para membresias externas" }
+        ],
+        id: "acct-caribe",
+        kind: "Partner",
+        metric: "2 cuentas referidas",
+        owner: "Canales",
+        routeId: "cuentas",
+        segment: "partner",
+        source: "directory-link",
+        status: "external",
+        title: "Caribe Partners"
+      }
+    ],
+    tabs: [
+      { id: "all", label: "Todas" },
+      { id: "enterprise", label: "Enterprise" },
+      { id: "midmarket", label: "Mid-market" },
+      { id: "partner", label: "Partners" }
+    ],
+    title: "Cuentas"
+  },
+  contactos: {
+    description: "Personas y roles comerciales con datos contract-first sin persistencia productiva todavia.",
+    emptyMessage: "No hay contactos para los filtros actuales.",
+    eyebrow: "Inventario CRM",
+    icon: <UsersRound aria-hidden="true" />,
+    id: "contactos",
+    rows: [
+      {
+        description: "Decision maker asociado a cuenta enterprise.",
+        details: [
+          { label: "Cuenta", value: "Atlas Retail Group" },
+          { label: "Canal", value: "email verificado" },
+          { label: "Siguiente paso", value: "modelar preferencias y consentimiento" }
+        ],
+        id: "contact-maria",
+        kind: "Decision maker",
+        metric: "AAL2",
+        owner: "Ventas Enterprise",
+        routeId: "contactos",
+        segment: "decisores",
+        source: "iam-profile-link",
+        status: "scaffold",
+        title: "Maria Alvarez"
+      },
+      {
+        description: "Contacto tecnico para validacion de integraciones.",
+        details: [
+          { label: "Cuenta", value: "Nova Servicios" },
+          { label: "Canal", value: "telefono + correo" },
+          { label: "Siguiente paso", value: "definir relacion contacto-oportunidad" }
+        ],
+        id: "contact-luis",
+        kind: "Tecnico",
+        metric: "2 actividades",
+        owner: "Preventa",
+        routeId: "contactos",
+        segment: "tecnicos",
+        source: "ui-contract-v0",
+        status: "review",
+        title: "Luis Batista"
+      },
+      {
+        description: "Representante de canal para probar contacto externo.",
+        details: [
+          { label: "Cuenta", value: "Caribe Partners" },
+          { label: "Canal", value: "Directory external" },
+          { label: "Siguiente paso", value: "conectar fuente Directory/Accounts si aplica" }
+        ],
+        id: "contact-ana",
+        kind: "Partner",
+        metric: "4 referidos",
+        owner: "Canales",
+        routeId: "contactos",
+        segment: "partners",
+        source: "directory-link",
+        status: "external",
+        title: "Ana Rosario"
+      }
+    ],
+    tabs: [
+      { id: "all", label: "Todos" },
+      { id: "decisores", label: "Decisores" },
+      { id: "tecnicos", label: "Tecnicos" },
+      { id: "partners", label: "Partners" }
+    ],
+    title: "Contactos"
+  },
+  oportunidades: {
+    description: "Pipeline base para validar columnas comerciales, filtros por etapa y detalle lateral.",
+    emptyMessage: "No hay oportunidades para los filtros actuales.",
+    eyebrow: "Pipeline",
+    icon: <Target aria-hidden="true" />,
+    id: "oportunidades",
+    rows: [
+      {
+        description: "Renovacion anual con alcance multi-tenant.",
+        details: [
+          { label: "Cuenta", value: "Atlas Retail Group" },
+          { label: "Etapa", value: "Propuesta" },
+          { label: "Siguiente paso", value: "contrato de forecast y aprobaciones" }
+        ],
+        id: "opp-atlas-renewal",
+        kind: "Renewal",
+        metric: "72% prob.",
+        owner: "Ventas Enterprise",
+        routeId: "oportunidades",
+        segment: "propuesta",
+        source: "ui-contract-v0",
+        status: "scaffold",
+        title: "Atlas renovacion 2026"
+      },
+      {
+        description: "Proyecto de onboarding para nuevo tenant regional.",
+        details: [
+          { label: "Cuenta", value: "Nova Servicios" },
+          { label: "Etapa", value: "Descubrimiento" },
+          { label: "Siguiente paso", value: "API de etapas y montos ponderados" }
+        ],
+        id: "opp-nova-onboarding",
+        kind: "New business",
+        metric: "USD 24K",
+        owner: "Ventas Norte",
+        routeId: "oportunidades",
+        segment: "descubrimiento",
+        source: "ui-contract-v0",
+        status: "review",
+        title: "Nova onboarding"
+      },
+      {
+        description: "Oportunidad referida por partner en revision comercial.",
+        details: [
+          { label: "Cuenta", value: "Caribe Partners" },
+          { label: "Etapa", value: "Calificacion" },
+          { label: "Siguiente paso", value: "definir modelo de comisiones y ownership" }
+        ],
+        id: "opp-caribe-referral",
+        kind: "Referral",
+        metric: "USD 11K",
+        owner: "Canales",
+        routeId: "oportunidades",
+        segment: "calificacion",
+        source: "directory-link",
+        status: "planned",
+        title: "Referral Caribe"
+      }
+    ],
+    tabs: [
+      { id: "all", label: "Todas" },
+      { id: "calificacion", label: "Calificacion" },
+      { id: "descubrimiento", label: "Descubrimiento" },
+      { id: "propuesta", label: "Propuesta" }
+    ],
+    title: "Oportunidades"
+  },
+  actividades: {
+    description: "Seguimientos y tareas para probar agenda comercial sin mutaciones reales.",
+    emptyMessage: "No hay actividades para los filtros actuales.",
+    eyebrow: "Agenda",
+    icon: <CalendarClock aria-hidden="true" />,
+    id: "actividades",
+    rows: [
+      {
+        description: "Llamada de revision de propuesta con decision maker.",
+        details: [
+          { label: "Relacionado", value: "Atlas renovacion 2026" },
+          { label: "Canal", value: "llamada" },
+          { label: "Siguiente paso", value: "crear endpoint read-only de actividades" }
+        ],
+        id: "act-atlas-call",
+        kind: "Llamada",
+        metric: "hoy",
+        owner: "Ventas Enterprise",
+        routeId: "actividades",
+        segment: "llamadas",
+        source: "ui-contract-v0",
+        status: "scaffold",
+        title: "Revision Atlas"
+      },
+      {
+        description: "Correo de seguimiento posterior a demo tecnica.",
+        details: [
+          { label: "Relacionado", value: "Nova onboarding" },
+          { label: "Canal", value: "email" },
+          { label: "Siguiente paso", value: "integrar notificaciones Directory si aplica" }
+        ],
+        id: "act-nova-email",
+        kind: "Email",
+        metric: "24h",
+        owner: "Preventa",
+        routeId: "actividades",
+        segment: "emails",
+        source: "directory-notifications",
+        status: "external",
+        title: "Follow-up Nova"
+      },
+      {
+        description: "Tarea de validacion interna para oportunidad referida.",
+        details: [
+          { label: "Relacionado", value: "Referral Caribe" },
+          { label: "Canal", value: "tarea interna" },
+          { label: "Siguiente paso", value: "definir permisos antes de mutaciones" }
+        ],
+        id: "act-caribe-task",
+        kind: "Tarea",
+        metric: "pendiente",
+        owner: "Canales",
+        routeId: "actividades",
+        segment: "tareas",
+        source: "ui-contract-v0",
+        status: "planned",
+        title: "Validar partner"
+      }
+    ],
+    tabs: [
+      { id: "all", label: "Todas" },
+      { id: "llamadas", label: "Llamadas" },
+      { id: "emails", label: "Emails" },
+      { id: "tareas", label: "Tareas" }
+    ],
+    title: "Actividades"
+  },
+  reportes: {
+    description: "Lecturas comerciales base para validar tableros antes de conectar consultas productivas.",
+    emptyMessage: "No hay reportes para los filtros actuales.",
+    eyebrow: "Analitica",
+    icon: <Database aria-hidden="true" />,
+    id: "reportes",
+    rows: [
+      {
+        description: "Resumen de pipeline ponderado por etapa.",
+        details: [
+          { label: "Frecuencia", value: "diaria" },
+          { label: "Dataset", value: "opportunities" },
+          { label: "Siguiente paso", value: "query productiva con snapshot auditable" }
+        ],
+        id: "report-forecast",
+        kind: "Forecast",
+        metric: "USD 121K",
+        owner: "Direccion comercial",
+        routeId: "reportes",
+        segment: "pipeline",
+        source: "ui-contract-v0",
+        status: "planned",
+        title: "Forecast ponderado"
+      },
+      {
+        description: "Resumen de actividad por owner comercial.",
+        details: [
+          { label: "Frecuencia", value: "semanal" },
+          { label: "Dataset", value: "activities" },
+          { label: "Siguiente paso", value: "definir metrica de completitud" }
+        ],
+        id: "report-activity",
+        kind: "Actividad",
+        metric: "7 seguimientos",
+        owner: "Operacion comercial",
+        routeId: "reportes",
+        segment: "actividad",
+        source: "ui-contract-v0",
+        status: "review",
+        title: "Actividad semanal"
+      }
+    ],
+    tabs: [
+      { id: "all", label: "Todos" },
+      { id: "pipeline", label: "Pipeline" },
+      { id: "actividad", label: "Actividad" }
+    ],
+    title: "Reportes"
+  },
+  configuracion: {
+    description: "Preferencias y fronteras de integracion que aun no realizan cambios mutables.",
+    emptyMessage: "No hay configuraciones para los filtros actuales.",
+    eyebrow: "Configuracion",
+    icon: <Settings aria-hidden="true" />,
+    id: "configuracion",
+    rows: [
+      {
+        description: "Parametros de pipeline y etapas visibles.",
+        details: [
+          { label: "Ambito", value: "tenant demo" },
+          { label: "Mutacion", value: "bloqueada" },
+          { label: "Siguiente paso", value: "API read-only de preferencias CRM" }
+        ],
+        id: "cfg-pipeline",
+        kind: "Pipeline",
+        metric: "3 etapas",
+        owner: "Gobierno CRM",
+        routeId: "configuracion",
+        segment: "pipeline",
+        source: "ui-contract-v0",
+        status: "scaffold",
+        title: "Etapas comerciales"
+      },
+      {
+        description: "Mapa de integraciones externas consumidas por DemoCRM.",
+        details: [
+          { label: "Ambito", value: "Platform/IAM/Directory" },
+          { label: "Mutacion", value: "bloqueada" },
+          { label: "Siguiente paso", value: "contrato de estado de conectores" }
+        ],
+        id: "cfg-integrations",
+        kind: "Integraciones",
+        metric: "3 servicios",
+        owner: "Platform",
+        routeId: "configuracion",
+        segment: "integraciones",
+        source: "platform-contracts",
+        status: "external",
+        title: "Fronteras Pyrosa"
+      }
+    ],
+    tabs: [
+      { id: "all", label: "Todas" },
+      { id: "pipeline", label: "Pipeline" },
+      { id: "integraciones", label: "Integraciones" }
+    ],
+    title: "Configuracion"
+  }
+};
+
 function activeRouteFromLocation(): CrmRouteId {
   if (typeof window === "undefined") {
     return "dashboard";
@@ -394,11 +811,7 @@ function App() {
     itemOrder: route.itemOrder,
     label: route.label,
     onSelect: () => navigateToRoute(route.id),
-    status: route.id === "dashboard"
-      ? <StatusBadge tone="info">{modules.length}</StatusBadge>
-      : route.id === "plataforma"
-        ? <StatusBadge tone="info">{platformServices.length}</StatusBadge>
-        : undefined
+    status: <StatusBadge tone="info">{routeRecordCount(route.id)}</StatusBadge>
   }));
 
   return (
@@ -471,7 +884,7 @@ function App() {
         <StatusStrip
           items={[
             { icon: <Gauge aria-hidden="true" />, key: "view", label: "Vista", tone: "info", value: activeRouteDefinition.label },
-            { icon: <Database aria-hidden="true" />, key: "modules", label: "Modulos", tone: "success", value: bootstrapModules.length },
+            { icon: <Database aria-hidden="true" />, key: "records", label: "Registros", tone: "success", value: routeRecordCount(activeRoute) },
             { icon: <ShieldCheck aria-hidden="true" />, key: "security", label: "Seguridad", tone: "info", value: mfaLabel },
             { icon: <CheckCircle2 aria-hidden="true" />, key: "runtime", label: "Runtime", tone: "success", value: "v2606" }
           ]}
@@ -531,7 +944,7 @@ function renderRoute({
   if (activeRoute === "dashboard") {
     return <DashboardRoute bootstrap={bootstrap} setRoute={setRoute} />;
   }
-  return <ModuleRoute route={routeById[activeRoute]} />;
+  return <WorkbenchRoute config={workbenchRoutes[activeRoute]} />;
 }
 
 function DashboardRoute({
@@ -547,7 +960,7 @@ function DashboardRoute({
       <MetricGrid columns={4} density="comfortable">
         <MetricCard detail="rutas shell" icon={<LayoutDashboard />} label="Vistas" value={routeDefinitions.length} />
         <MetricCard detail="cuentas/contactos/pipeline" icon={<Building2 />} label="Dominios" tone="green" value={modules.length} />
-        <MetricCard detail="Platform, IAM, Accounts" icon={<Link2 />} label="Servicios" value={platformServices.length} />
+        <MetricCard detail="pipeline contract-first" icon={<DollarSign />} label="Forecast" value="121K" />
         <MetricCard detail="desde bootstrap" icon={<CheckCircle2 />} label="Modulos" tone="amber" value={bootstrapModules.length} />
       </MetricGrid>
 
@@ -587,66 +1000,176 @@ function DashboardRoute({
   );
 }
 
-function ModuleRoute({ route }: { route: RouteDefinition }) {
-  const module = modules.find((entry) => entry.label === route.label);
+function RecordDetail({ rows }: { rows: Array<[string, string]> }) {
   return (
-    <ViewGrid variant="wide-main">
-      <Panel eyebrow="CRM" title={route.title}>
-        <div className="crm-domain-panel">
-          <span className="crm-domain-panel__icon">{route.icon}</span>
-          <dl className="crm-facts">
-            <div>
-              <dt>Estado</dt>
-              <dd>{module?.status ?? "planned"}</dd>
-            </div>
-            <div>
-              <dt>Owner</dt>
-              <dd>{module?.owner ?? "CRM"}</dd>
-            </div>
-            <div>
-              <dt>Contrato</dt>
-              <dd>ui-contract-v0</dd>
-            </div>
-          </dl>
-        </div>
-      </Panel>
+    <div className="crm-detail-stack">
+      <dl className="crm-detail-list">
+        {rows.map(([label, value]) => (
+          <div key={label}>
+            <dt>{label}</dt>
+            <dd>{value}</dd>
+          </div>
+        ))}
+      </dl>
+      <div className="crm-readonly-actions">
+        <StatusBadge tone="info">ui-contract-v0</StatusBadge>
+        <StatusBadge tone="warning">mutaciones bloqueadas</StatusBadge>
+      </div>
+    </div>
+  );
+}
 
-      <Panel eyebrow="Siguiente" title="Contrato de datos">
-        <dl className="crm-facts">
-          <div>
-            <dt>Lectura</dt>
-            <dd>pendiente</dd>
-          </div>
-          <div>
-            <dt>Comandos</dt>
-            <dd>bloqueados hasta validacion</dd>
-          </div>
-          <div>
-            <dt>Auditoria</dt>
-            <dd>requerida para mutaciones</dd>
-          </div>
-        </dl>
-      </Panel>
-    </ViewGrid>
+function WorkbenchRoute({ config }: { config: CrmRouteConfig }) {
+  const [query, setQuery] = React.useState("");
+  const [status, setStatus] = React.useState("all");
+  const [tab, setTab] = React.useState(config.tabs[0]?.id ?? "all");
+  const [selectedRowId, setSelectedRowId] = React.useState(config.rows[0]?.id ?? "");
+  const rows = filteredCrmRows(config.rows, tab, query, status);
+  const selectedRow = config.rows.find((row) => row.id === selectedRowId) ?? rows[0] ?? null;
+  const hasFilters = Boolean(query.trim()) || status !== "all";
+
+  React.useEffect(() => {
+    setQuery("");
+    setStatus("all");
+    setTab(config.tabs[0]?.id ?? "all");
+    setSelectedRowId(config.rows[0]?.id ?? "");
+  }, [config]);
+
+  React.useEffect(() => {
+    if (selectedRow && rows.some((row) => row.id === selectedRow.id)) {
+      return;
+    }
+    setSelectedRowId(rows[0]?.id ?? "");
+  }, [rows, selectedRow]);
+
+  const columns: Array<DataTableColumn<CrmRecord>> = [
+    {
+      key: "record",
+      label: "Elemento",
+      render: (row) => (
+        <EntityCell
+          description={row.description}
+          icon={config.icon}
+          meta={<DataTableInline>{row.kind}</DataTableInline>}
+          title={row.title}
+        />
+      ),
+      width: "34%"
+    },
+    { key: "owner", label: "Owner", render: (row) => <DataTableInline>{row.owner}</DataTableInline> },
+    { key: "metric", label: "Metrica", render: (row) => <DataTableInline strong>{row.metric}</DataTableInline> },
+    { key: "source", label: "Fuente", render: (row) => <DataTableInline>{row.source}</DataTableInline> },
+    { key: "status", label: "Estado", render: (row) => <StatusBadge tone={statusTone(row.status)}>{row.status}</StatusBadge> }
+  ];
+
+  return (
+    <>
+      <FilterPanel
+        actions={
+          <Button
+            disabled={!hasFilters}
+            icon={<X aria-hidden="true" />}
+            onClick={() => {
+              setQuery("");
+              setStatus("all");
+            }}
+            variant="secondary"
+          >
+            Limpiar
+          </Button>
+        }
+        onEscapeClear={() => {
+          setQuery("");
+          setStatus("all");
+        }}
+      >
+        <label className="crm-field">
+          <span>Buscar</span>
+          <span className="crm-search-control">
+            <Search aria-hidden="true" />
+            <input
+              className={`py-input ${query.trim() ? "is-filter-active" : ""}`.trim()}
+              onChange={(event) => setQuery(event.target.value)}
+              placeholder="nombre, owner, fuente o tipo"
+              type="search"
+              value={query}
+            />
+          </span>
+        </label>
+        <SelectField active={status !== "all"} label="Estado" onValueChange={setStatus} options={statusOptions} value={status} />
+      </FilterPanel>
+
+      <ViewGrid className="crm-inventory-layout" variant="wide-main">
+        <Panel className="crm-table-panel" description={config.description} eyebrow={config.eyebrow} title={config.title}>
+          <Tabs
+            activeId={tab}
+            ariaLabel={`Inventario ${config.title}`}
+            className="crm-tabs"
+            onChange={setTab}
+            tabs={config.tabs.map((item) => ({
+              badge: item.id === "all" ? config.rows.length : config.rows.filter((row) => row.segment === item.id).length,
+              id: item.id,
+              label: item.label,
+              panel: (
+                <DataTable<CrmRecord>
+                  columns={columns}
+                  density="compact"
+                  emptyMessage={config.emptyMessage}
+                  getRowId={(row) => row.id}
+                  onRowClick={(row) => setSelectedRowId(row.id)}
+                  onSelectedRowIdChange={setSelectedRowId}
+                  rows={rows}
+                  scrollPersistenceKey={`democrm-${config.id}-${item.id}`}
+                  selectedRowId={selectedRow?.id}
+                  selectedRowPersistenceKey={`democrm-${config.id}-${item.id}`}
+                  tableMinWidth="820px"
+                />
+              )
+            }))}
+          />
+        </Panel>
+
+        <Panel className="crm-detail-panel" eyebrow="Detalle" title={selectedRow?.title ?? "Sin seleccion"}>
+          {selectedRow ? (
+            <RecordDetail
+              rows={[
+                ["Tipo", selectedRow.kind],
+                ["Owner", selectedRow.owner],
+                ["Fuente", selectedRow.source],
+                ["Estado", selectedRow.status],
+                ["Descripcion", selectedRow.description],
+                ...selectedRow.details.map((item) => [item.label, item.value] as [string, string])
+              ]}
+            />
+          ) : (
+            <EmptyState>Selecciona un elemento.</EmptyState>
+          )}
+        </Panel>
+      </ViewGrid>
+    </>
   );
 }
 
 function PlatformRoute() {
+  const columns: Array<DataTableColumn<PlatformService>> = [
+    {
+      key: "service",
+      label: "Servicio",
+      render: (row) => <EntityCell description={row.service} icon={row.icon} title={row.name} />,
+      width: "30%"
+    },
+    { key: "owns", label: "Responsabilidad", render: (row) => <DataTableInline>{row.owns}</DataTableInline> },
+    { key: "status", label: "Estado", render: (row) => <StatusBadge tone="info">{row.status}</StatusBadge> }
+  ];
+
   return (
-    <Panel eyebrow="Plataforma" title="Contratos con servicios Pyrosa">
-      <div className="crm-service-grid">
-        {platformServices.map((service) => (
-          <article className="crm-service-row" key={service.name}>
-            {service.icon}
-            <div>
-              <h3>{service.name}</h3>
-              <p className="crm-mono">{service.service}</p>
-              <p>{service.owns}</p>
-            </div>
-            <StatusBadge tone="info">{service.status}</StatusBadge>
-          </article>
-        ))}
-      </div>
+    <Panel
+      className="crm-table-panel"
+      description="Frontera de servicios consumidos por DemoCRM sin duplicar ownership de Platform, IAM o Accounts."
+      eyebrow="Plataforma"
+      title="Contratos con servicios Pyrosa"
+    >
+      <DataTable columns={columns} density="compact" getRowId={(row) => row.service} rows={platformServices} tableMinWidth="760px" />
     </Panel>
   );
 }
@@ -729,6 +1252,47 @@ function RuntimeRoute({
       </Panel>
     </ViewGrid>
   );
+}
+
+function routeRecordCount(routeId: CrmRouteId) {
+  if (routeId === "dashboard") {
+    return routeDefinitions.length;
+  }
+  if (routeId === "plataforma") {
+    return platformServices.length;
+  }
+  if (routeId === "marca" || routeId === "runtime") {
+    return 1;
+  }
+  return workbenchRoutes[routeId].rows.length;
+}
+
+function filteredCrmRows(rows: CrmRecord[], tab: string, query: string, status: string) {
+  const needle = query.trim().toLowerCase();
+  return rows.filter((row) => {
+    const tabMatches = tab === "all" || row.segment === tab;
+    const statusMatches = status === "all" || row.status === status;
+    const queryMatches =
+      !needle ||
+      [row.title, row.description, row.kind, row.owner, row.metric, row.source, row.status]
+        .join(" ")
+        .toLowerCase()
+        .includes(needle);
+    return tabMatches && statusMatches && queryMatches;
+  });
+}
+
+function statusTone(status: string): "neutral" | "success" | "warning" | "info" {
+  if (status === "scaffold") {
+    return "success";
+  }
+  if (status === "review" || status === "external") {
+    return "warning";
+  }
+  if (status === "planned") {
+    return "info";
+  }
+  return "neutral";
 }
 
 createRoot(document.getElementById("root") as HTMLElement).render(
