@@ -16,4 +16,5 @@ Recommended reading order:
 10. [Plans Index](plans/README.md)
 11. [Roadmap v2606](plans/plan-roadmap-v2606.md)
 12. [Pyrosa UI Adoption](plans/plan-pyrosa-ui-adoption.md)
-13. [Architecture Decision Records](design/adr/)
+13. [SharedShell Visual Convergence](plans/plan-democrm-shared-shell-visual-convergence.md)
+14. [Architecture Decision Records](design/adr/)
