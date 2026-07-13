@@ -15,8 +15,8 @@ salir solo desde tags aprobados.
 
 ## Fuente de verdad
 
-La fuente canonica para producto, arquitectura, fronteras de plataforma,
-ambientes, runtime y release flow esta distribuida en:
+Las fuentes para producto, arquitectura, fronteras de plataforma y operacion
+estan distribuidas en:
 
 - indice de docs: `docs/README.md`
 - vision de producto: `docs/product/vision-v2606.md`
@@ -25,19 +25,20 @@ ambientes, runtime y release flow esta distribuida en:
 - arquitectura: `docs/design/architecture/overview.md`
 - ambientes: `docs/ops/environments.md`
 - runtime SimpleHostMan: `docs/ops/runtime-simplehostman.md`
-- gestion de secretos: `docs/ops/secrets-management.md`
-- flujo de releases: `docs/ops/release-flow.md`
+- gestion de secretos:
+  [politica transversal](https://github.com/JuanDePena/pyrosa-docs/blob/main/ops/secrets-management.md)
+  y [anexo CRM](docs/ops/secrets-management-local.md)
+- flujo de releases:
+  [politica transversal](https://github.com/JuanDePena/pyrosa-docs/blob/main/ops/release-flow.md)
 - roadmap: `docs/plans/plan-roadmap-v2606.md`
 
 ## Gobierno De Releases
 
-Cada app Pyrosa conserva su propio release flow, pero todo release debe dejar
-tag UTC `vYYMM.DDHHmm`, commit, ambiente, validacion de build/test, evidencia
-minima y owner. Si el cambio afecta `pyrosa-ui`, debe registrar version de
-paquete/tema, manifest, excepciones visuales y validacion responsive. Si afecta
-IAM, debe registrar cliente, scopes/roles, pruebas de login/logout, impacto
-MFA/AAL y rollback. Platform cataloga version, canal, ambiente y evidencia
-transversal.
+El flujo comun para commit, push y releases remotos se mantiene en la
+[politica transversal de releases Pyrosa](https://github.com/JuanDePena/pyrosa-docs/blob/main/ops/release-flow.md).
+CRM conserva localmente sus validaciones de build/test, el runtime demo, la
+promocion hacia el checkout estable desde un tag publicado y aprobado, y
+cualquier excepcion propia. El despliegue sigue siendo una operacion separada.
 
 ## Branding
 
@@ -148,8 +149,12 @@ requerir variables equivalentes al entorno demo.
 - arquitectura: `docs/design/architecture/overview.md`
 - ambientes: `docs/ops/environments.md`
 - runtime SimpleHostMan: `docs/ops/runtime-simplehostman.md`
-- gestion de secretos: `docs/ops/secrets-management.md`
-- release flow: `docs/ops/release-flow.md`
+- gestion de secretos:
+  [politica transversal](https://github.com/JuanDePena/pyrosa-docs/blob/main/ops/secrets-management.md)
+  y [anexo CRM](docs/ops/secrets-management-local.md)
+- release flow:
+  [politica transversal](https://github.com/JuanDePena/pyrosa-docs/blob/main/ops/release-flow.md)
+- convergencia de schema: `docs/ops/app-schema-convergence.md`
 - roadmap: `docs/plans/plan-roadmap-v2606.md`
 - contrato de marca: `docs/design/brand-assets.md`
 - adopcion visual: `docs/plans/plan-pyrosa-ui-adoption.md`
