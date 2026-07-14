@@ -1,0 +1,50 @@
+{
+  "schemaVersion": "pyrosa-platform-dictionary-governed-ddl-policy-v1",
+  "mode": "inventory-only",
+  "snapshotDate": "2026-07-14",
+  "sourceActionCommit": "87837e392e6247dad30d6ffa9a86d8caf4c192bd",
+  "repositories": [
+    {
+      "slug": "pyrosa-democrm",
+      "path": ".",
+      "branch": "main",
+      "snapshotCommit": "b09db84f315e965697ad7b89a981eb43d0ac50b2",
+      "owner": "pyrosa-democrm"
+    }
+  ],
+  "entries": [
+    {
+      "repo": "pyrosa-democrm",
+      "path": "database/migrations/0001_crm_core.sql",
+      "gitBlob": "be2dd9faa0a070e8580035fa2cd3271d6d728373",
+      "owner": "pyrosa-democrm",
+      "classification": "bootstrap-existing",
+      "disposition": "allow",
+      "justification": "Bootstrap inicial versionado del schema CRM; permitido solo para reproducir una base vacia con el blob auditado.",
+      "reviewBy": "2026-10-14",
+      "expiresOn": null
+    },
+    {
+      "repo": "pyrosa-democrm",
+      "path": "ui/scripts/apply-migration.mjs",
+      "gitBlob": "13f74c5462de2e633af8c0834eb2346f5041afd1",
+      "owner": "pyrosa-democrm",
+      "classification": "legacy-runner",
+      "disposition": "legacy-exception",
+      "justification": "Runner app-local historico que crea crm_schema_migrations y aplica SQL directo; debe migrarse al carril gobernado.",
+      "reviewBy": "2026-08-14",
+      "expiresOn": "2026-10-31"
+    },
+    {
+      "repo": "pyrosa-democrm",
+      "path": "ui/scripts/check-dictionary-governed-ddl.mjs",
+      "gitBlob": "569993cb7d2f5d542f7369aa99ca18fd563af3ab",
+      "owner": "pyrosa-platform",
+      "classification": "guard-pattern-definition",
+      "disposition": "ignored",
+      "justification": "Copia local byte-identica del guard Platform porque un repo publico no puede consumir una action privada.",
+      "reviewBy": "2026-10-14",
+      "expiresOn": null
+    }
+  ]
+}

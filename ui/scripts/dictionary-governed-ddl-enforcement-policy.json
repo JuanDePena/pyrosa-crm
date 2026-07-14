@@ -1,0 +1,23 @@
+{
+  "schemaVersion": "pyrosa-platform-dictionary-governed-ddl-enforcement-policy-v1",
+  "mode": "enforce",
+  "inherits": "dictionary-governed-ddl-policy.json",
+  "description": "DemoCRM public-repository overlay vendored byte-identically from pyrosa-platform commit 87837e392e6247dad30d6ffa9a86d8caf4c192bd; exact path and Git blob only.",
+  "temporaryExceptionContract": {
+    "requiredFields": [
+      "repo",
+      "path",
+      "gitBlob",
+      "owner",
+      "classification",
+      "disposition",
+      "justification",
+      "reviewBy",
+      "expiresOn"
+    ],
+    "disposition": "legacy-exception",
+    "wildcardsAllowed": false,
+    "rule": "A temporary bypass is valid only for one repo-relative path and one Git blob. Expired exceptions fail closed."
+  },
+  "entries": []
+}

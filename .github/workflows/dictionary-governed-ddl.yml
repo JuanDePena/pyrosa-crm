@@ -1,0 +1,21 @@
+name: Dictionary-governed DDL
+
+on:
+  pull_request:
+  push:
+
+permissions:
+  contents: read
+
+jobs:
+  guard:
+    name: Reject ungoverned DDL
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out the exact candidate tree
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+        with:
+          persist-credentials: false
+      - name: Enforce vendored Platform dictionary policy
+        run: node ui/scripts/check-dictionary-governed-ddl.mjs --repo-slug pyrosa-democrm --workspace .

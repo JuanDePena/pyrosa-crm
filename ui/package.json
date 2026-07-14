@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "db:migrate": "node ./scripts/apply-migration.mjs",
+    "check:dictionary-governed-ddl": "node ./scripts/check-dictionary-governed-ddl.mjs --repo-slug pyrosa-democrm --workspace ..",
     "build:client": "vite build",
     "build:server": "rm -rf build/server && tsc -p tsconfig.server.json",
     "typecheck:client": "tsc --noEmit -p tsconfig.json",
