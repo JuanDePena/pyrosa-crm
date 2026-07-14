@@ -2,6 +2,12 @@
 
 Date: `2026-06-13`
 
+## Transversal Baseline
+
+This product decision adopts the
+[Pyrosa architecture baseline](https://github.com/JuanDePena/pyrosa-docs/blob/main/design/architecture-baseline.md).
+This ADR remains the CRM-local record of runtime scope and consequences.
+
 ## Status
 
 Accepted for v2606 planning.
@@ -22,4 +28,3 @@ a coherent main stack while leaving room for specialized background work.
 - the initial app should not become two full web stacks
 - Python code must have a clear runtime boundary
 - worker contracts should be documented before production use
-

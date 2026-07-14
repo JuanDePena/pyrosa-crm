@@ -1,38 +1,36 @@
-# Pyrosa Ecosystem Map
+# Extension CRM Del Mapa De Aplicaciones Pyrosa
 
-Date: `2026-06-10`
+Fecha de actualizacion: `2026-07-13`
+Estado: `vigente`
 
-This snapshot focuses on Pyrosa application surfaces that define the intended
-CRM direction. Runtime details should be re-verified before operational
-changes.
+El catalogo de checkouts, repositorios, runtimes y ownership del ecosistema
+vive en el
+[mapa canonico de aplicaciones Pyrosa](https://github.com/JuanDePena/pyrosa-docs/blob/main/design/pyrosa-app-map.md).
+Este documento conserva solo las relaciones y decisiones propias de CRM.
 
-## CRM-Relevant App Catalog
+## Carriles CRM
 
-| Slug | Hostname | Port | Role | Product Class |
-| --- | --- | ---: | --- | --- |
-| `pyrosa-wp` | `pyrosa.com.do` | `10101` | public WordPress site | public web |
-| `pyrosa-portal` | `portal.pyrosa.com.do` | `10102` | placeholder portal | platform/client surface |
-| `pyrosa-demoportal` | `demoportal.pyrosa.com.do` | `10103` | demo portal | demo/client surface |
-| `pyrosa-crm` | `crm.pyrosa.com.do` | `10104` | production CRM placeholder | transactional |
-| `pyrosa-democrm` | `democrm.pyrosa.com.do` | `10166` | new CRM demo runtime | transactional/demo |
-| `pyrosa-api` | `api.pyrosa.com.do` | `10106` | API surface | platform |
-| `pyrosa-accounts` | `accounts.pyrosa.com.do` | `10124` | account center and profile surface | platform/account |
-| `pyrosa-iam` | `iam.pyrosa.com.do` | `10134` | authentication, MFA, OAuth/OIDC and ui-auth issuer | platform/security |
-| `pyrosa-platform` | `platform.pyrosa.com.do` | `10165` | app catalog, visual governance and runtime status | platform/governance |
-| `pyrosa-repos` | `repos.pyrosa.com.do` | `10141` | repository surface | platform |
-| `pyrosa-ldap` | `ldap.pyrosa.com.do` | `10142` | LDAP/auth support | platform |
-| `pyrosa-pgadmin` | `pgadmin.pyrosa.com.do` | `10143` | database administration | platform/internal |
-| `pyrosa-helpers` | `helpers.pyrosa.com.do` | `10161` | helper services | platform/helpers |
+| Carril | Estado local | Contrato |
+| --- | --- | --- |
+| `pyrosa-democrm` | sandbox activo | `democrm.pyrosa.com.do`, puerto `10166`, health `/__pyrosa_crm_health` |
+| `pyrosa-crm` | producto futuro | mismo repositorio GitHub; sin runtime productivo dedicado verificado en este corte |
 
-Additional active app units exist for Sync, Directory and helper variants. They
-are not part of this first CRM support boundary unless a later workflow chooses
-them explicitly.
+El sandbox no autoriza a inferir puerto, base, env o servicio del carril
+productivo. La promocion requiere un release aprobado y validacion propia.
 
-## CRM Relationship To Platform Apps
+## Relaciones CRM
 
-`pyrosa-crm` should depend on platform services through explicit contracts:
+CRM consume servicios compartidos mediante contratos explicitos:
 
-- `pyrosa-platform`: app catalog, visual governance, runtime status and
-  operational contracts
-- `pyrosa-iam`: authentication, MFA, sessions, OAuth/OIDC and `ui-auth`
-- `pyrosa-accounts`: account center, user profile and account self-service
+- `pyrosa-platform`: catalogo, gobierno de schemas, runtime y estado
+  operacional;
+- `pyrosa-iam`: autenticacion, MFA, sesiones, OAuth/OIDC y `ui-auth`;
+- `pyrosa-accounts`: Account Center, perfil, preferencias y autoservicio de
+  cuenta.
+
+CRM conserva ownership de cuentas comerciales, contactos, oportunidades,
+pipeline, actividades y autorizacion funcional. No persiste como autoridad los
+datos que pertenecen a Platform, IAM o Accounts.
+
+El acceso directo a tablas de otra app requiere una excepcion ADR documentada;
+la integracion normal usa APIs, eventos, jobs o contratos publicados.

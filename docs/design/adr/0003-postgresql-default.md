@@ -2,6 +2,12 @@
 
 Date: `2026-06-13`
 
+## Transversal Baseline
+
+This product decision adopts the
+[Pyrosa architecture baseline](https://github.com/JuanDePena/pyrosa-docs/blob/main/design/architecture-baseline.md).
+This ADR remains the CRM-local record of data-engine adoption.
+
 ## Status
 
 Accepted for v2606 planning.
@@ -18,5 +24,8 @@ consistency.
 
 ## Consequences
 
-- migrations belong in this repository once code begins
+- CRM owns its schema intent, versioned dictionary, compatibility artifacts and
+  functional validation
+- physical DDL is generated from the approved dictionary and applied only by
+  Pyrosa Platform; the CRM runtime role does not receive DDL privileges
 - MariaDB is reserved for compatibility cases, not new CRM defaults

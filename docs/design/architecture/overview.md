@@ -2,6 +2,13 @@
 
 Date: `2026-06-13`
 
+## Transversal Baseline
+
+CRM adopts the
+[Pyrosa architecture baseline](https://github.com/JuanDePena/pyrosa-docs/blob/main/design/architecture-baseline.md).
+This overview remains local because it records the concrete CRM runtime,
+authentication flow, integrations and deployment boundary.
+
 ## Target Shape
 
 Pyrosa CRM should be a single repository with clearly separated application
@@ -22,7 +29,8 @@ The active `v2606` scaffold uses:
 
 - `ui/server`: Node.js/TypeScript BFF and API runtime
 - `ui/src`: React/Vite UI shell
-- `database/migrations`: PostgreSQL migrations
+- `database/migrations`: CRM-owned schema intent and compatibility artifacts;
+  physical DDL is applied through Pyrosa Platform from an approved dictionary
 - `runtime`: Quadlet, env and Apache templates
 
 ## Language And Runtime
@@ -56,7 +64,10 @@ The schema should favor:
 - explicit foreign keys
 - audit-friendly state transitions
 - durable integration identifiers
-- migrations in source control
+- versioned dictionary, compatibility artifacts and validation evidence in
+  source control
+- physical DDL generated and applied by Pyrosa Platform, not by the CRM runtime
+  role
 - predictable local/demo/prod differences
 
 ## Integration Boundary

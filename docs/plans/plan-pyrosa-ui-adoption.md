@@ -5,6 +5,12 @@ Fecha: `2026-07-07`
 `pyrosa-democrm` / `pyrosa-crm` consume `pyrosa-ui` con perfil
 `business-ops` para el scaffold CRM demo.
 
+Los contratos transversales viven en
+[SharedShell](https://github.com/JuanDePena/pyrosa-docs/blob/main/design/shared-shell.md)
+y
+[navegacion y teclado SharedShell](https://github.com/JuanDePena/pyrosa-docs/blob/main/design/shared-shell-navigation-keyboard.md).
+Este plan conserva la adopcion, prioridades y evidencia propias de CRM.
+
 ## Estado
 
 - proveedor visual: `pyrosa-ui`

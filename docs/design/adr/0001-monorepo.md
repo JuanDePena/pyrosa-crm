@@ -2,6 +2,12 @@
 
 Date: `2026-06-13`
 
+## Transversal Baseline
+
+This product decision adopts the
+[Pyrosa architecture baseline](https://github.com/JuanDePena/pyrosa-docs/blob/main/design/architecture-baseline.md).
+This ADR remains the CRM-local record of acceptance, date and consequences.
+
 ## Status
 
 Accepted for v2606 planning.
@@ -21,4 +27,3 @@ formation and make deployment boundaries harder to see.
 - product docs, code, migrations, and operational notes live together
 - platform services remain separate repositories/apps
 - shared contracts must be explicit when crossing app boundaries
-

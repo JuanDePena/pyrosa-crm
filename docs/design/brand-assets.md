@@ -3,6 +3,13 @@
 Este documento fija el contrato tecnico de marca para `PYROSA CRM` y mantiene
 la misma convencion usada por las demas apps del ecosistema Pyrosa.
 
+## Gobierno transversal
+
+Las reglas de canvas, derivados, manifests y procedencia compartidas viven en
+[Gobierno de marca Pyrosa](https://github.com/JuanDePena/pyrosa-docs/blob/main/design/brand-governance.md).
+Este documento conserva unicamente los assets, paths, fallback y comandos
+propios de CRM.
+
 ## Contrato activo
 
 - Logo master cuadrado: `ui/public/public/assets/brand/crm-logo.png`

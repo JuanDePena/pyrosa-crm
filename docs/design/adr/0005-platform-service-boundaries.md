@@ -2,6 +2,12 @@
 
 Date: `2026-06-13`
 
+## Transversal Baseline
+
+This product decision adopts the
+[Pyrosa architecture baseline](https://github.com/JuanDePena/pyrosa-docs/blob/main/design/architecture-baseline.md).
+This ADR remains the CRM-local record of concrete service relationships.
+
 ## Status
 
 Accepted for v2606 planning.
@@ -23,5 +29,6 @@ replacement for the entire platform.
   uses the `crm` ui-auth client and `/auth/callback`
 - app governance, visual contracts, and runtime status integrate with
   `pyrosa-platform`
-- account-center concerns integrate with `pyrosa-accounts` where applicable
+- account-center, profile, preferences and account self-service integrate with
+  `pyrosa-accounts`; authentication authority remains in `pyrosa-iam`
 - direct cross-app database coupling requires a documented exception

@@ -16,6 +16,8 @@ El plan toma como plantilla reusable el cierre de Directory:
 
 ## Fuentes
 
+- [Contrato transversal SharedShell](https://github.com/JuanDePena/pyrosa-docs/blob/main/design/shared-shell.md)
+- [Navegacion y teclado SharedShell](https://github.com/JuanDePena/pyrosa-docs/blob/main/design/shared-shell-navigation-keyboard.md)
 - [`plan-pyrosa-ui-adoption.md`](plan-pyrosa-ui-adoption.md)
 - [`pyrosa-ui-visual-inventory-2026-07-07.md`](pyrosa-ui-visual-inventory-2026-07-07.md)
 - [`../ops/shared-shell-scaffold.md`](../ops/shared-shell-scaffold.md)
@@ -23,6 +25,9 @@ El plan toma como plantilla reusable el cierre de Directory:
 - `pyrosa-directory`: plantilla cerrada de SharedShell visual convergence
 - `pyrosa-platform`: referencia de Overview analitico, sidebar, header y
   `UserDrawer`
+
+Los canonicos gobiernan el contrato compartido. Este plan conserva el rollout,
+las decisiones de dominio y la evidencia propia de DemoCRM.
 
 ## Alcance
 

@@ -3,6 +3,16 @@
 Date: `2026-07-07`
 Status: `scaffold-ready`
 
+## Canonical Contracts
+
+The transversal shell and interaction rules live in:
+
+- [SharedShell](https://github.com/JuanDePena/pyrosa-docs/blob/main/design/shared-shell.md);
+- [SharedShell navigation and keyboard](https://github.com/JuanDePena/pyrosa-docs/blob/main/design/shared-shell-navigation-keyboard.md).
+
+This handoff remains local because it records the delivered CRM routes, auth,
+contracts, runtime and QA evidence.
+
 ## Scope
 
 `pyrosa-democrm` now has a functional React/Node scaffold for the CRM demo
