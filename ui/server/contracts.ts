@@ -1,4 +1,5 @@
 import type { CrmSession } from "./auth.js";
+import type { CrmApiPrincipal } from "./oauthApiAuth.js";
 import type { CrmServerConfig } from "./config.js";
 
 type ContractAction = {
@@ -243,7 +244,7 @@ const modules: ModuleContract[] = [
   { detail: "Seguimientos, tareas, recordatorios y proximas acciones.", key: "activities", label: "Actividades", status: "scaffold" }
 ];
 
-export function buildCrmContracts(config: CrmServerConfig, session: CrmSession) {
+export function buildCrmContracts(config: CrmServerConfig, session: CrmSession | CrmApiPrincipal) {
   return {
     ok: true,
     contracts: {
@@ -255,11 +256,9 @@ export function buildCrmContracts(config: CrmServerConfig, session: CrmSession) 
       contractVersion,
       modules,
       platformServices: buildPlatformServices(config),
-      sessionContext: {
-        role: session.user.role,
-        status: session.user.status,
-        userId: session.user.id
-      },
+      sessionContext: "user" in session
+        ? { auth: "delegated-ui-auth", role: session.user.role, status: session.user.status, userId: session.user.id }
+        : { auth: "oauth-api", issuer: session.issuer, subject: session.subject, principalType: session.principalType, roles: session.roles },
       workbench
     }
   };

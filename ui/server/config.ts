@@ -27,6 +27,14 @@ export type CrmServerConfig = {
   iamClientSecret: string | null;
   iamCallbackUrl: string;
   iamSessionCheckMs: number;
+  oauthApiEnabled: boolean;
+  oauthApiIssuer: string;
+  oauthApiIntrospectionUrl: string;
+  oauthApiClientId: string | null;
+  oauthApiClientSecret: string | null;
+  oauthApiAudience: string;
+  oauthApiReadScope: string;
+  oauthApiTimeoutMs: number;
   accountsBaseUrl: string;
   accountsInternalBaseUrl: string;
 };
@@ -96,6 +104,14 @@ export function loadConfig(): CrmServerConfig {
       normalizeOptionalString(process.env.PYROSA_CRM_IAM_CALLBACK_URL) ??
       "https://democrm.pyrosa.com.do/auth/callback",
     iamSessionCheckMs: parsePositiveInteger(process.env.PYROSA_CRM_IAM_SESSION_CHECK_MS, 30000),
+    oauthApiEnabled: parseBoolean(process.env.PYROSA_CRM_OAUTH_API_ENABLED, false),
+    oauthApiIssuer: normalizeOptionalString(process.env.PYROSA_CRM_OAUTH_API_ISSUER) ?? "https://iam.pyrosa.com.do",
+    oauthApiIntrospectionUrl: normalizeOptionalString(process.env.PYROSA_CRM_OAUTH_API_INTROSPECTION_URL) ?? "https://iam.pyrosa.com.do/oauth/introspect",
+    oauthApiClientId: normalizeOptionalString(process.env.PYROSA_CRM_OAUTH_API_CLIENT_ID),
+    oauthApiClientSecret: normalizeOptionalString(process.env.PYROSA_CRM_OAUTH_API_CLIENT_SECRET),
+    oauthApiAudience: normalizeOptionalString(process.env.PYROSA_CRM_OAUTH_API_AUDIENCE) ?? "pyrosa-crm",
+    oauthApiReadScope: normalizeOptionalString(process.env.PYROSA_CRM_OAUTH_API_READ_SCOPE) ?? "crm.read",
+    oauthApiTimeoutMs: parsePositiveInteger(process.env.PYROSA_CRM_OAUTH_API_TIMEOUT_MS, 4000),
     accountsBaseUrl:
       normalizeOptionalString(process.env.PYROSA_CRM_ACCOUNTS_BASE_URL) ??
       "https://accounts.pyrosa.com.do",

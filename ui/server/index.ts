@@ -23,6 +23,7 @@ import {
   serveStatic
 } from "./http.js";
 import { buildActionPreview, buildCrmContracts } from "./contracts.js";
+import { authenticateCrmApiBearer, hasApiAuthorization, type CrmApiPrincipal } from "./oauthApiAuth.js";
 
 export function createCrmServer(config: CrmServerConfig = loadConfig()) {
   const server = createServer((req, res) => {
@@ -211,7 +212,7 @@ async function handleRequest(
       sendText(res, 405, "Method Not Allowed");
       return;
     }
-    const session = await requireCrmSession(req, res, config, context.headOnly);
+    const session = await requireCrmApiIdentity(req, res, config, context.headOnly);
     if (!session) {
       return;
     }
@@ -224,7 +225,7 @@ async function handleRequest(
       sendText(res, 405, "Method Not Allowed");
       return;
     }
-    const session = await requireCrmSession(req, res, config, context.headOnly);
+    const session = await requireCrmApiIdentity(req, res, config, context.headOnly);
     if (!session) {
       return;
     }
@@ -324,6 +325,16 @@ async function requireCrmSession(
     return null;
   }
   return session;
+}
+
+async function requireCrmApiIdentity(
+  req: IncomingMessage,
+  res: ServerResponse,
+  config: CrmServerConfig,
+  headOnly = false
+): Promise<CrmSession | CrmApiPrincipal | null> {
+  if (hasApiAuthorization(req)) return authenticateCrmApiBearer(req, config);
+  return requireCrmSession(req, res, config, headOnly);
 }
 
 function sendRedirect(res: ServerResponse, status: number, location: string, headOnly = false): void {

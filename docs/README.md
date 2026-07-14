@@ -24,3 +24,4 @@ Recommended reading order:
 15. [Pyrosa UI Adoption](plans/plan-pyrosa-ui-adoption.md)
 16. [SharedShell Visual Convergence](plans/plan-democrm-shared-shell-visual-convergence.md)
 17. [Architecture Decision Records](design/adr/)
+18. [OAuth2 API consumer contract](design/oauth-api-consumer.md)

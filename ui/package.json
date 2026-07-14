@@ -12,6 +12,7 @@
     "typecheck:client": "tsc --noEmit -p tsconfig.json",
     "typecheck:server": "tsc --noEmit -p tsconfig.server.json",
     "typecheck": "npm run typecheck:client && npm run typecheck:server",
+    "test:oauth-api": "rm -rf build/oauth-api-test && tsc -p tsconfig.oauth-api-test.json && node --test build/oauth-api-test/oauthApiAuth.test.js",
     "build": "npm run typecheck && npm run build:client && npm run build:server",
     "qa:visual": "node ./scripts/qa-visual-smoke.mjs",
     "preview": "vite preview --host 0.0.0.0",
