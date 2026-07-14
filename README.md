@@ -102,9 +102,10 @@ Incluye:
 
 ## Sistema visual
 
-`pyrosa-democrm` / `pyrosa-crm` es consumidor futuro de `pyrosa-ui` con perfil
-`business-ops`. El siguiente corte es inventario visual de listas comerciales,
-formularios, pipeline y estados antes de activar paquetes compartidos.
+`pyrosa-democrm` / `pyrosa-crm` consume `pyrosa-ui` con perfil `business-ops` y
+su scaffold SharedShell ya esta listo. El inventario visual esta completado; el
+siguiente corte es `cuentas` read-only con datos CRM reales antes de habilitar
+mutaciones.
 
 Siguientes cortes previstos:
 

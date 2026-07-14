@@ -1,6 +1,8 @@
 # Adopcion Pyrosa UI
 
 Fecha: `2026-07-07`
+Estado: `en proceso`
+Plan transversal: [Adopcion Pyrosa UI](https://github.com/JuanDePena/pyrosa-docs/blob/main/plans/plan-pyrosa-ui-adoption.md)
 
 `pyrosa-democrm` / `pyrosa-crm` consume `pyrosa-ui` con perfil
 `business-ops` para el scaffold CRM demo.
@@ -35,7 +37,7 @@ contactos, oportunidades, pipeline ni actividades fuera del dominio CRM.
 ## Inventario 2026-07-07
 
 El inventario de corrida 3 queda documentado en
-[`pyrosa-ui-visual-inventory-2026-07-07.md`](./pyrosa-ui-visual-inventory-2026-07-07.md).
+[`pyrosa-ui-visual-inventory-2026-07-07.md`](../plans-completed/pyrosa-ui-visual-inventory-2026-07-07.md).
 
 Resultado:
 

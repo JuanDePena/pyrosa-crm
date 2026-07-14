@@ -19,7 +19,7 @@ El plan toma como plantilla reusable el cierre de Directory:
 - [Contrato transversal SharedShell](https://github.com/JuanDePena/pyrosa-docs/blob/main/design/shared-shell.md)
 - [Navegacion y teclado SharedShell](https://github.com/JuanDePena/pyrosa-docs/blob/main/design/shared-shell-navigation-keyboard.md)
 - [`plan-pyrosa-ui-adoption.md`](plan-pyrosa-ui-adoption.md)
-- [`pyrosa-ui-visual-inventory-2026-07-07.md`](pyrosa-ui-visual-inventory-2026-07-07.md)
+- [`pyrosa-ui-visual-inventory-2026-07-07.md`](../plans-completed/pyrosa-ui-visual-inventory-2026-07-07.md)
 - [`../ops/shared-shell-scaffold.md`](../ops/shared-shell-scaffold.md)
 - [`plan-roadmap-v2606.md`](plan-roadmap-v2606.md)
 - `pyrosa-directory`: plantilla cerrada de SharedShell visual convergence
