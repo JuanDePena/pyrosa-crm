@@ -1,7 +1,6 @@
 import React from "react";
 import { createRoot } from "react-dom/client";
 import {
-  Activity,
   Bell,
   Building2,
   CalendarClock,
@@ -11,11 +10,10 @@ import {
   Eye,
   FileText,
   Gauge,
-  Image as ImageIcon,
-  LayoutDashboard,
   Link2,
   ListChecks,
   LogOut,
+  MonitorSmartphone,
   Search,
   Settings,
   ShieldCheck,
@@ -25,10 +23,10 @@ import {
   X
 } from "lucide-react";
 import {
-  AppShell,
   Button,
   DataTable,
   DataTableInline,
+  DetailDrawer,
   EmptyState,
   EntityCell,
   FilterPanel,
@@ -37,20 +35,29 @@ import {
   MetricGrid,
   Panel,
   SelectField,
-  ShellMetaBadge,
-  Sidebar,
   StatusBadge,
   StatusStrip,
   Tabs,
   TableActionGroup,
-  Topbar,
+  UserDrawer,
   ViewNotice,
   ViewGrid
 } from "@pyrosa/ui";
-import type { DataTableColumn } from "@pyrosa/ui";
+import type { DataTableColumn, NavigationRoute } from "@pyrosa/ui";
 import { WorkspaceLayout } from "@pyrosa/ui-layouts";
+import { BusinessOpsShellTemplate } from "@pyrosa/ui-templates";
+import { createThemeCssVariables, pyrosaBaseThemeManifest } from "@pyrosa/ui-theme";
+import type { PyrosaThemeMode } from "@pyrosa/ui-theme";
+import {
+  createCrmSidebarItems,
+  resolveCrmRouteId,
+  routeById,
+  routeDefinitions
+} from "./routeRegistry";
+import type { CrmRouteId } from "./routeRegistry";
 import "@pyrosa/ui/styles.css";
 import "@pyrosa/ui-layouts/styles.css";
+import "@pyrosa/ui-templates/styles.css";
 import "./styles.css";
 
 type ClientSession = {
@@ -122,31 +129,6 @@ type ActionPreviewResponse = {
   preview?: ActionPreview;
 };
 
-type CrmRouteId =
-  | "dashboard"
-  | "cuentas"
-  | "contactos"
-  | "oportunidades"
-  | "actividades"
-  | "reportes"
-  | "configuracion"
-  | "plataforma"
-  | "marca"
-  | "runtime";
-
-type RouteDefinition = {
-  description: string;
-  groupId: "crm" | "plataforma";
-  groupLabel: string;
-  groupOrder: number;
-  hash: string;
-  icon: React.ReactNode;
-  id: CrmRouteId;
-  itemOrder: number;
-  label: string;
-  title: string;
-};
-
 type ModuleCard = {
   detail: string;
   icon?: React.ReactNode;
@@ -165,6 +147,8 @@ type PlatformService = {
 };
 
 type WorkbenchRouteId = Exclude<CrmRouteId, "dashboard" | "plataforma" | "marca" | "runtime">;
+type CrmShellRoute = NavigationRoute<CrmRouteId>;
+type OpenDrawer = "alerts" | "user" | null;
 
 type CrmRecord = {
   actions?: RecordAction[];
@@ -213,136 +197,6 @@ type ContractsResponse = {
   contracts?: DomainContracts;
   ok?: boolean;
 };
-
-const routeDefinitions: RouteDefinition[] = [
-  {
-    description: "Resumen del scaffold CRM y estado de la sesion delegada.",
-    groupId: "crm",
-    groupLabel: "CRM",
-    groupOrder: 1,
-    hash: "dashboard",
-    icon: <LayoutDashboard aria-hidden="true" />,
-    id: "dashboard",
-    itemOrder: 1,
-    label: "Dashboard",
-    title: "Dashboard CRM"
-  },
-  {
-    description: "Cuentas y organizaciones comerciales pendientes de contrato productivo.",
-    groupId: "crm",
-    groupLabel: "CRM",
-    groupOrder: 1,
-    hash: "cuentas",
-    icon: <Building2 aria-hidden="true" />,
-    id: "cuentas",
-    itemOrder: 2,
-    label: "Cuentas",
-    title: "Cuentas"
-  },
-  {
-    description: "Contactos, roles y preferencias comerciales.",
-    groupId: "crm",
-    groupLabel: "CRM",
-    groupOrder: 1,
-    hash: "contactos",
-    icon: <UsersRound aria-hidden="true" />,
-    id: "contactos",
-    itemOrder: 3,
-    label: "Contactos",
-    title: "Contactos"
-  },
-  {
-    description: "Pipeline, etapas, propuestas y probabilidad comercial.",
-    groupId: "crm",
-    groupLabel: "CRM",
-    groupOrder: 1,
-    hash: "oportunidades",
-    icon: <FileText aria-hidden="true" />,
-    id: "oportunidades",
-    itemOrder: 4,
-    label: "Oportunidades",
-    title: "Oportunidades"
-  },
-  {
-    description: "Seguimientos, tareas y proximas acciones.",
-    groupId: "crm",
-    groupLabel: "CRM",
-    groupOrder: 1,
-    hash: "actividades",
-    icon: <Bell aria-hidden="true" />,
-    id: "actividades",
-    itemOrder: 5,
-    label: "Actividades",
-    title: "Actividades"
-  },
-  {
-    description: "Lecturas comerciales y tableros por conectar a contratos CRM.",
-    groupId: "crm",
-    groupLabel: "CRM",
-    groupOrder: 1,
-    hash: "reportes",
-    icon: <Database aria-hidden="true" />,
-    id: "reportes",
-    itemOrder: 6,
-    label: "Reportes",
-    title: "Reportes"
-  },
-  {
-    description: "Parametros, fronteras de integracion y preferencias por tenant.",
-    groupId: "crm",
-    groupLabel: "CRM",
-    groupOrder: 1,
-    hash: "configuracion",
-    icon: <Settings aria-hidden="true" />,
-    id: "configuracion",
-    itemOrder: 7,
-    label: "Configuracion",
-    title: "Configuracion"
-  },
-  {
-    description: "Servicios Pyrosa consumidos por DemoCRM sin acoplamiento directo.",
-    groupId: "plataforma",
-    groupLabel: "Plataforma",
-    groupOrder: 2,
-    hash: "plataforma",
-    icon: <Link2 aria-hidden="true" />,
-    id: "plataforma",
-    itemOrder: 1,
-    label: "Servicios",
-    title: "Servicios plataforma"
-  },
-  {
-    description: "Identidad visual y assets propios de DemoCRM.",
-    groupId: "plataforma",
-    groupLabel: "Plataforma",
-    groupOrder: 2,
-    hash: "marca",
-    icon: <ImageIcon aria-hidden="true" />,
-    id: "marca",
-    itemOrder: 2,
-    label: "Marca",
-    title: "Marca CRM"
-  },
-  {
-    description: "Sesion delegada, runtime y limites de plataforma.",
-    groupId: "plataforma",
-    groupLabel: "Plataforma",
-    groupOrder: 2,
-    hash: "runtime",
-    icon: <Activity aria-hidden="true" />,
-    id: "runtime",
-    itemOrder: 3,
-    label: "Runtime",
-    title: "Runtime"
-  }
-];
-
-const routeById = Object.fromEntries(routeDefinitions.map((route) => [route.id, route])) as Record<CrmRouteId, RouteDefinition>;
-const routeIdByHash = new Map<string, CrmRouteId>([
-  ["inicio", "dashboard"],
-  ["modulos", "dashboard"],
-  ...routeDefinitions.map((route) => [route.hash, route.id] as const)
-]);
 
 const modules: ModuleCard[] = [
   {
@@ -784,8 +638,7 @@ function activeRouteFromLocation(): CrmRouteId {
   if (typeof window === "undefined") {
     return "dashboard";
   }
-  const hash = window.location.hash.replace(/^#/, "");
-  return routeIdByHash.get(hash) ?? "dashboard";
+  return resolveCrmRouteId(window.location.hash);
 }
 
 function App() {
@@ -796,6 +649,8 @@ function App() {
   const [actionPreview, setActionPreview] = React.useState<ActionPreview | null>(null);
   const [brandLogoReady, setBrandLogoReady] = React.useState(true);
   const [activeRoute, setActiveRoute] = React.useState<CrmRouteId>(activeRouteFromLocation);
+  const [openDrawer, setOpenDrawer] = React.useState<OpenDrawer>(null);
+  const [themeMode, setThemeMode] = React.useState<PyrosaThemeMode>(readStoredThemeMode);
 
   React.useEffect(() => {
     let active = true;
@@ -828,6 +683,33 @@ function App() {
   }, []);
 
   React.useEffect(() => {
+    if (typeof document === "undefined") {
+      return;
+    }
+    document.documentElement.dataset.themeMode = themeMode;
+    document.documentElement.dataset.themeResolved = themeMode;
+    writeStoredThemeMode(themeMode);
+  }, [themeMode]);
+
+  React.useEffect(() => {
+    if (!openDrawer || typeof document === "undefined") {
+      return undefined;
+    }
+
+    function closeDrawerOnEscape(event: KeyboardEvent) {
+      if (event.key !== "Escape" || event.defaultPrevented) {
+        return;
+      }
+      event.preventDefault();
+      event.stopPropagation();
+      setOpenDrawer(null);
+    }
+
+    document.addEventListener("keydown", closeDrawerOnEscape, true);
+    return () => document.removeEventListener("keydown", closeDrawerOnEscape, true);
+  }, [openDrawer]);
+
+  React.useEffect(() => {
     if (typeof window === "undefined") {
       return undefined;
     }
@@ -848,8 +730,11 @@ function App() {
   const moduleCards = moduleCardsWithIcons(contracts?.modules ?? modules);
   const platformData = platformServicesWithIcons(contracts?.platformServices ?? platformServices);
   const workbenchData = mergeWorkbenchContracts(contracts);
-  const bootstrapModules = bootstrap?.modules?.length ? bootstrap.modules : moduleCards;
   const activeRouteDefinition = routeById[activeRoute];
+  const themeCss = React.useMemo(
+    () => createThemeCssVariables(pyrosaBaseThemeManifest, themeMode),
+    [themeMode]
+  );
   const mfaLabel = session?.user?.security?.activeMfaMethods
     ? `${session.user.security.activeMfaMethods} MFA`
     : session?.user?.security?.mfaRequired
@@ -858,14 +743,11 @@ function App() {
 
   function navigateToRoute(routeId: CrmRouteId) {
     const route = routeById[routeId];
+    setOpenDrawer(null);
     setActiveRoute(routeId);
     if (typeof window !== "undefined" && window.location.hash !== `#${route.hash}`) {
       window.location.hash = route.hash;
     }
-  }
-
-  function handleLogout() {
-    window.location.assign("/logout");
   }
 
   async function handleActionPreview(scope: string, recordId: string, actionId: string) {
@@ -893,131 +775,185 @@ function App() {
     });
   }
 
-  const navItems = routeDefinitions.map((route) => ({
-    active: activeRoute === route.id,
-    groupId: route.groupId,
-    groupLabel: route.groupLabel,
-    groupOrder: route.groupOrder,
-    href: `#${route.hash}`,
-    icon: route.icon,
-    id: route.id,
-    itemOrder: route.itemOrder,
-    label: route.label,
-    onSelect: () => navigateToRoute(route.id),
-    status: <StatusBadge tone="info">{routeRecordCount(route.id, platformData, workbenchData)}</StatusBadge>
-  }));
+  const statusByRoute = Object.fromEntries(
+    routeDefinitions.map((route) => [
+      route.id,
+      <StatusBadge tone="info">{routeRecordCount(route.id, platformData, workbenchData)}</StatusBadge>
+    ])
+  ) as Record<CrmRouteId, React.ReactNode>;
+  const navItems = createCrmSidebarItems({
+    activeRoute,
+    onSelect: navigateToRoute,
+    statusByRoute
+  });
+  const alertCount = Number(Boolean(contractsError)) + Number(Boolean(actionPreview));
 
   return (
-    <AppShell
-      className="crm-shell"
-      contentClassName="crm-shell__content"
-      contentScrollPersistKey="democrm-shell-v1"
-      sidebar={
-        <Sidebar
-          ariaLabel="CRM"
-          brand={
-            <div className="crm-brand">
-              <div className="crm-brand__mark">
-                {brandLogoReady ? (
-                  <img alt="" src={brandLogoUrl} onError={() => setBrandLogoReady(false)} />
-                ) : (
-                  "PC"
-                )}
-              </div>
-              <div>
-                <div className="crm-brand__title">PYROSA CRM</div>
-                <div className="crm-brand__subtitle">{version} demo</div>
-              </div>
-            </div>
-          }
-          footer={
-            <div className="crm-session-summary">
-              <UserRound aria-hidden="true" />
-              <span>
-                <strong>{displayName}</strong>
-                <small>{displayEmail}</small>
-              </span>
-              <Button icon={<LogOut aria-hidden="true" />} onClick={handleLogout} variant="ghost">
-                Salir
-              </Button>
-            </div>
-          }
-          items={navItems}
-          meta={
-            <>
-              <ShellMetaBadge tone="env">demo</ShellMetaBadge>
-              <ShellMetaBadge tone="version">{branch}</ShellMetaBadge>
-            </>
-          }
-          persistKey="democrm-main-v1"
-          searchable
-          showGroupCounts
-        />
-      }
-      topbar={
-        <Topbar
-          actions={
-            <Button icon={<LogOut aria-hidden="true" />} onClick={handleLogout} variant="secondary">
-              Salir
-            </Button>
-          }
-          description={activeRouteDefinition.description}
-          eyebrow="democrm.pyrosa.com.do"
-          meta={
-            <>
-              <ShellMetaBadge tone="success">Auth delegada</ShellMetaBadge>
-              <ShellMetaBadge tone="info">PostgreSQL demo</ShellMetaBadge>
-            </>
-          }
-          title={activeRouteDefinition.title}
-        />
-      }
-    >
-      <WorkspaceLayout className="crm-workspace">
-        <StatusStrip
-          items={[
-            { icon: <Gauge aria-hidden="true" />, key: "view", label: "Vista", tone: "info", value: activeRouteDefinition.label },
-            { icon: <Database aria-hidden="true" />, key: "records", label: "Registros", tone: "success", value: routeRecordCount(activeRoute, platformData, workbenchData) },
-            { icon: <ShieldCheck aria-hidden="true" />, key: "security", label: "Seguridad", tone: "info", value: mfaLabel },
-            { icon: <CheckCircle2 aria-hidden="true" />, key: "runtime", label: "Runtime", tone: "success", value: "v2606" }
+    <>
+      <style>{themeCss}</style>
+      <BusinessOpsShellTemplate<CrmShellRoute>
+        alertsCount={alertCount}
+        alertsExpanded={openDrawer === "alerts"}
+        alertsLabel="Notificaciones"
+        branch={branch}
+        brandLogoAlt=""
+        brandLogoSrc={brandLogoUrl}
+        brandTitle="PYROSA CRM"
+        contentScrollPersistKey={`democrm-${activeRoute}`}
+        description={activeRouteDefinition.description}
+        environment="demo"
+        leadingAction={activeRoute === "dashboard" ? false : undefined}
+        navigation={navItems}
+        navigationBack={
+          activeRoute === "dashboard"
+            ? undefined
+            : {
+                activeView: activeRoute,
+                onNavigate: (destination) => {
+                  if (destination) {
+                    navigateToRoute(destination.view);
+                  }
+                },
+                overviewView: "dashboard",
+                route: { view: activeRoute }
+              }
+        }
+        onAlertsClick={() => setOpenDrawer((current) => current === "alerts" ? null : "alerts")}
+        onThemeToggle={() => setThemeMode((current) => current === "light" ? "dark" : "light")}
+        onUserClick={() => setOpenDrawer((current) => current === "user" ? null : "user")}
+        sidebarPersistKey="pyrosa-democrm"
+        themeMode={themeMode}
+        title={activeRouteDefinition.title}
+        userExpanded={openDrawer === "user"}
+        userLabel="Cuenta"
+        version={version}
+      >
+        <UserDrawer
+          links={[
+            {
+              description: "Datos personales y correos en Accounts",
+              href: "https://accounts.pyrosa.com.do/ui#profile",
+              icon: <UserRound size={15} />,
+              label: "Perfil",
+              onClick: () => setOpenDrawer(null)
+            },
+            {
+              description: "Idioma, tema y experiencia de autoservicio",
+              href: "https://accounts.pyrosa.com.do/ui#preferences",
+              icon: <Settings size={15} />,
+              label: "Preferencias",
+              onClick: () => setOpenDrawer(null)
+            },
+            {
+              description: "Factores MFA administrados por IAM y Accounts",
+              href: "https://accounts.pyrosa.com.do/ui#mfa",
+              icon: <ShieldCheck size={15} />,
+              label: "MFA",
+              onClick: () => setOpenDrawer(null)
+            },
+            {
+              description: "Accesos y dispositivos activos",
+              href: "https://accounts.pyrosa.com.do/ui#sessions",
+              icon: <MonitorSmartphone size={15} />,
+              label: "Sesiones",
+              onClick: () => setOpenDrawer(null)
+            }
           ]}
+          logoutHref="/logout"
+          logoutIcon={<LogOut size={15} />}
+          logoutLabel="Cerrar sesion"
+          onClose={() => setOpenDrawer(null)}
+          open={openDrawer === "user"}
+          sections={[
+            {
+              description: "La identidad y la seguridad son autoridad de IAM; DemoCRM solo presenta la sesion delegada.",
+              details: [
+                { label: "Estado", value: session?.user?.status ?? "delegada" },
+                { label: "Origen", value: "pyrosa-iam" }
+              ],
+              title: "Cuenta"
+            },
+            {
+              description: "La preferencia de tema es presentacional y permanece en este navegador.",
+              details: [{ label: "Tema", value: themeMode === "dark" ? "Oscuro" : "Claro" }],
+              title: "Preferencias UI"
+            },
+            {
+              description: "Las vistas operativas permanecen read-only hasta que cada mutacion tenga contrato y auditoria.",
+              details: [{ label: "Perfil", value: "business-ops" }],
+              title: "Alcance DemoCRM"
+            },
+            {
+              description: "La promocion a pyrosa-crm requiere checklist y autorizacion independiente.",
+              details: [{ label: "Entorno", value: "demo" }],
+              title: "Promocion productiva"
+            }
+          ]}
+          user={{
+            avatarLabel: displayName.slice(0, 1).toUpperCase(),
+            badges: <StatusBadge tone="warning">DemoCRM</StatusBadge>,
+            email: displayEmail,
+            name: displayName,
+            role: session?.user?.role ?? "Sesion IAM delegada"
+          }}
         />
 
-        {contractsError ? (
-          <ViewNotice
-            action={{ label: "Cerrar", onClick: () => setContractsError(null) }}
-            message={contractsError}
-            title="Contrato local"
-            tone="warning"
-          />
-        ) : null}
+        <DetailDrawer
+          closeLabel="Cerrar notificaciones"
+          eyebrow="CRM"
+          onClose={() => setOpenDrawer(null)}
+          open={openDrawer === "alerts"}
+          title="Notificaciones"
+        >
+          <div className="crm-notification-stack">
+            {alertCount === 0 ? <EmptyState>No hay notificaciones pendientes.</EmptyState> : null}
+            {contractsError ? (
+              <ViewNotice
+                action={{ label: "Descartar", onClick: () => setContractsError(null) }}
+                message={contractsError}
+                title="Contrato local"
+                tone="warning"
+              />
+            ) : null}
+            {actionPreview ? (
+              <ViewNotice
+                action={{ label: "Descartar", onClick: () => setActionPreview(null) }}
+                message={`${actionPreview.recordTitle}: ${actionPreview.description}`}
+                title={`Preview ${actionPreview.action}`}
+                tone="info"
+              />
+            ) : null}
+          </div>
+        </DetailDrawer>
 
-        {actionPreview ? (
-          <ViewNotice
-            action={{ label: "Cerrar", onClick: () => setActionPreview(null) }}
-            message={`${actionPreview.recordTitle}: ${actionPreview.description}`}
-            title={`Preview ${actionPreview.action}`}
-            tone="info"
+        <WorkspaceLayout className="crm-workspace">
+          <StatusStrip
+            items={[
+              { icon: <Gauge aria-hidden="true" />, key: "view", label: "Vista", tone: "info", value: activeRouteDefinition.label },
+              { icon: <Database aria-hidden="true" />, key: "records", label: "Registros", tone: "success", value: routeRecordCount(activeRoute, platformData, workbenchData) },
+              { icon: <ShieldCheck aria-hidden="true" />, key: "security", label: "Seguridad", tone: "info", value: mfaLabel },
+              { icon: <CheckCircle2 aria-hidden="true" />, key: "runtime", label: "Runtime", tone: "success", value: version }
+            ]}
           />
-        ) : null}
 
-        {renderRoute({
-          actionPreview,
-          activeRoute,
-          bootstrap,
-          brandLogoReady,
-          brandLogoUrl,
-          displayEmail,
-          displayName,
-          moduleCards,
-          onActionPreview: handleActionPreview,
-          platformData,
-          setBrandLogoReady,
-          setRoute: navigateToRoute,
-          workbenchData
-        })}
-      </WorkspaceLayout>
-    </AppShell>
+          {renderRoute({
+            actionPreview,
+            activeRoute,
+            bootstrap,
+            brandLogoReady,
+            brandLogoUrl,
+            displayEmail,
+            displayName,
+            moduleCards,
+            onActionPreview: handleActionPreview,
+            platformData,
+            setBrandLogoReady,
+            setRoute: navigateToRoute,
+            workbenchData
+          })}
+        </WorkspaceLayout>
+      </BusinessOpsShellTemplate>
+    </>
   );
 }
 
@@ -1091,34 +1027,92 @@ function DashboardRoute({
   workbenchData: Record<WorkbenchRouteId, CrmRouteConfig>;
 }) {
   const bootstrapModules = bootstrap?.modules?.length ? bootstrap.modules : moduleCards;
-  const totalRecords = Object.values(workbenchData).reduce((sum, route) => sum + route.rows.length, 0);
+  const domainReadings: Array<{
+    description: string;
+    icon: React.ReactNode;
+    label: string;
+    metric: string | number;
+    routeId: CrmRouteId;
+    status: string;
+  }> = [
+    {
+      description: "Cuentas y contactos disponibles en contratos read-only.",
+      icon: <UsersRound aria-hidden="true" />,
+      label: "Relacion comercial",
+      metric: workbenchData.cuentas.rows.length + workbenchData.contactos.rows.length,
+      routeId: "cuentas",
+      status: "lectura"
+    },
+    {
+      description: "Oportunidades por etapa, monto y probabilidad comercial.",
+      icon: <Target aria-hidden="true" />,
+      label: "Pipeline",
+      metric: workbenchData.oportunidades.rows.length,
+      routeId: "oportunidades",
+      status: "contract-first"
+    },
+    {
+      description: "Seguimientos y proximas acciones sin mutaciones locales.",
+      icon: <CalendarClock aria-hidden="true" />,
+      label: "Actividad",
+      metric: workbenchData.actividades.rows.length,
+      routeId: "actividades",
+      status: "read-only"
+    },
+    {
+      description: "Snapshots analiticos preparados para consultas auditables.",
+      icon: <FileText aria-hidden="true" />,
+      label: "Reportes",
+      metric: workbenchData.reportes.rows.length,
+      routeId: "reportes",
+      status: "planeado"
+    },
+    {
+      description: "Configuracion y fronteras con Platform, IAM y Accounts.",
+      icon: <ShieldCheck aria-hidden="true" />,
+      label: "Gobierno",
+      metric: bootstrapModules.length,
+      routeId: "configuracion",
+      status: "delegado"
+    }
+  ];
+
   return (
-    <>
-      <MetricGrid columns={4} density="comfortable">
-        <MetricCard detail="rutas shell" icon={<LayoutDashboard />} label="Vistas" value={routeDefinitions.length} />
-        <MetricCard detail="filas contract-first" icon={<Building2 />} label="Registros" tone="green" value={totalRecords} />
-        <MetricCard detail="pipeline contract-first" icon={<DollarSign />} label="Forecast" value="121K" />
-        <MetricCard detail="desde bootstrap" icon={<CheckCircle2 />} label="Modulos" tone="amber" value={bootstrapModules.length} />
+    <section className="crm-dashboard" data-dashboard-kind="analytic">
+      <MetricGrid aria-label="Score ejecutivo CRM" columns={3} density="comfortable">
+        <MetricCard detail="operacion sin escrituras" icon={<CheckCircle2 />} label="Readiness demo" tone="green" value="Read-only" />
+        <MetricCard detail="organizaciones visibles" icon={<Building2 />} label="Cuentas" value={workbenchData.cuentas.rows.length} />
+        <MetricCard detail="personas relacionadas" icon={<UsersRound />} label="Contactos" value={workbenchData.contactos.rows.length} />
+        <MetricCard detail="pipeline contract-first" icon={<DollarSign />} label="Oportunidades" tone="amber" value={workbenchData.oportunidades.rows.length} />
+        <MetricCard detail="seguimientos visibles" icon={<CalendarClock />} label="Actividades" value={workbenchData.actividades.rows.length} />
+        <MetricCard detail="sesion IAM + PostgreSQL" icon={<Gauge />} label="Runtime" tone="green" value="Activo" />
       </MetricGrid>
 
       <ViewGrid className="crm-overview-grid" variant="wide-main">
-        <Panel className="crm-overview-panel" eyebrow="CRM" title="Superficie demo">
+        <Panel
+          className="crm-overview-panel"
+          description="Cada dominio conduce a su inventario operativo; el overview conserva solo lectura ejecutiva."
+          eyebrow="Analitica CRM"
+          title="Dominios de lectura"
+        >
           <div className="crm-route-grid">
-            {routeDefinitions
-              .filter((route) => route.groupId === "crm" && route.id !== "dashboard")
-              .map((route) => (
-                <button className="crm-route-tile" key={route.id} onClick={() => setRoute(route.id)} type="button">
-                  {route.icon}
+            {domainReadings.map((domain) => (
+                <button className="crm-route-tile" key={domain.label} onClick={() => setRoute(domain.routeId)} type="button">
+                  {domain.icon}
                   <span>
-                    <strong>{route.label}</strong>
-                    <small>{route.description}</small>
+                    <strong>{domain.label}</strong>
+                    <small>{domain.description}</small>
+                  </span>
+                  <span className="crm-route-tile__metric">
+                    <strong>{domain.metric}</strong>
+                    <small>{domain.status}</small>
                   </span>
                 </button>
               ))}
           </div>
         </Panel>
 
-        <Panel eyebrow="Modulos" title="Contratos iniciales">
+        <Panel eyebrow="Gobierno" title="Frontera de dominio">
           <div className="crm-module-stack">
             {moduleCards.map((module) => (
               <div className="crm-module-row" key={module.key}>
@@ -1127,13 +1121,13 @@ function DashboardRoute({
                   <strong>{module.label}</strong>
                   <small>{module.detail}</small>
                 </span>
-                <StatusBadge tone="warning">{module.status}</StatusBadge>
+                <StatusBadge tone={statusTone(module.status)}>{module.status}</StatusBadge>
               </div>
             ))}
           </div>
         </Panel>
       </ViewGrid>
-    </>
+    </section>
   );
 }
 
@@ -1581,6 +1575,22 @@ function statusTone(status: string): "neutral" | "success" | "warning" | "info" 
     return "info";
   }
   return "neutral";
+}
+
+const themeModeStorageKey = "pyrosa-democrm.themeMode.v1";
+
+function readStoredThemeMode(): PyrosaThemeMode {
+  if (typeof window === "undefined") {
+    return "light";
+  }
+  return window.localStorage.getItem(themeModeStorageKey) === "dark" ? "dark" : "light";
+}
+
+function writeStoredThemeMode(themeMode: PyrosaThemeMode): void {
+  if (typeof window === "undefined") {
+    return;
+  }
+  window.localStorage.setItem(themeModeStorageKey, themeMode);
 }
 
 createRoot(document.getElementById("root") as HTMLElement).render(

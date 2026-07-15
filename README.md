@@ -158,5 +158,7 @@ requerir variables equivalentes al entorno demo.
 - convergencia de schema: `docs/ops/app-schema-convergence.md`
 - roadmap: `docs/plans/plan-roadmap-v2606.md`
 - contrato de marca: `docs/design/brand-assets.md`
-- adopcion visual: `docs/plans/plan-pyrosa-ui-adoption.md`
+- adopcion visual completada: `docs/plans-completed/plan-pyrosa-ui-adoption.md`
+- convergencia SharedShell completada:
+  `docs/plans-completed/plan-democrm-shared-shell-visual-convergence.md`
 - decisiones de arquitectura: `docs/adr/`

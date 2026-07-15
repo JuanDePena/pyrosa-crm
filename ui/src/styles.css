@@ -1,17 +1,8 @@
-:root {
-  color-scheme: light;
-  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-}
-
-* {
-  box-sizing: border-box;
-}
-
 body {
   margin: 0;
   min-height: 100vh;
-  background: #edf2f7;
-  color: #10243a;
+  background: var(--py-color-bg, #edf2f7);
+  color: var(--py-color-text, #10243a);
 }
 
 a {
@@ -31,125 +22,13 @@ dl {
   min-height: 100vh;
 }
 
-.crm-shell .py-sidebar {
-  background: #10243a;
-  color: #dce9f3;
-}
-
-.crm-shell .py-sidebar__filter input {
-  background: rgba(255, 255, 255, 0.07);
-  border-color: rgba(220, 233, 243, 0.16);
-  color: #f8fbff;
-}
-
-.crm-shell .py-sidebar__filter input::placeholder {
-  color: #91a9bb;
-}
-
-.crm-shell .py-sidebar__group-toggle,
-.crm-shell .py-sidebar__item {
-  color: #dce9f3;
-}
-
-.crm-shell .py-sidebar__group-count,
-.crm-shell .py-sidebar__item-badge {
-  background: rgba(0, 128, 96, 0.22);
-  color: #b7fff0;
-}
-
-.crm-shell .py-sidebar__item.is-active {
-  background: rgba(0, 128, 96, 0.24);
-  border-color: rgba(94, 234, 212, 0.32);
-  color: #f2fffb;
-}
-
-.crm-shell__content {
-  background: #edf2f7;
-}
-
-.crm-brand {
-  display: grid;
-  grid-template-columns: 44px minmax(0, 1fr);
-  gap: 12px;
-  align-items: center;
-}
-
-.crm-brand__mark {
-  width: 44px;
-  height: 44px;
-  border-radius: 8px;
-  display: grid;
-  place-items: center;
-  background: #ffffff;
-  color: #005cc8;
-  font-weight: 800;
-  overflow: hidden;
-}
-
-.crm-brand__mark img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-}
-
-.crm-brand__title {
-  font-size: 15px;
-  font-weight: 750;
-  line-height: 1.15;
-}
-
-.crm-brand__subtitle {
-  color: #a9bfd0;
-  font-size: 12px;
-  margin-top: 3px;
-}
-
-.crm-session-summary {
-  display: grid;
-  grid-template-columns: 30px minmax(0, 1fr);
-  gap: 10px;
-  align-items: center;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 8px;
-  padding: 10px;
-  background: rgba(255, 255, 255, 0.05);
-}
-
-.crm-session-summary svg {
-  width: 20px;
-  height: 20px;
-}
-
-.crm-session-summary span {
-  min-width: 0;
-}
-
-.crm-session-summary strong,
-.crm-session-summary small {
-  display: block;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.crm-session-summary strong {
-  font-size: 13px;
-}
-
-.crm-session-summary small {
-  color: #a9bfd0;
-  font-size: 12px;
-  margin-top: 2px;
-}
-
-.crm-session-summary .py-button {
-  grid-column: 1 / -1;
-  justify-content: center;
-  width: 100%;
-  color: #dce9f3;
-}
-
 .crm-workspace {
+  gap: 18px;
+}
+
+.crm-dashboard,
+.crm-notification-stack {
+  display: grid;
   gap: 18px;
 }
 
@@ -172,7 +51,7 @@ dl {
   cursor: pointer;
   display: grid;
   gap: 10px;
-  grid-template-columns: 34px minmax(0, 1fr);
+  grid-template-columns: 34px minmax(0, 1fr) auto;
   min-height: 74px;
   padding: 12px;
   text-align: left;
@@ -211,6 +90,19 @@ dl {
   font-size: 12px;
   line-height: 1.35;
   margin-top: 3px;
+}
+
+.crm-route-tile__metric {
+  text-align: right;
+}
+
+.crm-route-tile__metric strong {
+  color: var(--py-color-brand, #005cc8);
+  font-size: 18px;
+}
+
+.crm-route-tile__metric small {
+  white-space: nowrap;
 }
 
 .crm-field {
@@ -474,6 +366,15 @@ dl {
   .crm-route-grid,
   .crm-brand-manager {
     grid-template-columns: 1fr;
+  }
+
+  .crm-route-tile {
+    grid-template-columns: 30px minmax(0, 1fr);
+  }
+
+  .crm-route-tile__metric {
+    grid-column: 2;
+    text-align: left;
   }
 
   .crm-service-row,

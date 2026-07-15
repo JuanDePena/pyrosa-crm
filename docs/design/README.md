@@ -14,6 +14,8 @@ Este directorio concentra documentos de analisis, arquitectura y diseno de
 
 ## Documentos Reubicados
 
+- [Inventario visual y de SharedShell](analysis-shared-shell-visual-inventory.md)
+- [Diseño de convergencia visual SharedShell](design-shared-shell-visual-convergence.md)
 - [Architecture overview](architecture/overview.md)
 - [Pyrosa ecosystem map](ecosystem/pyrosa-app-map.md)
 - [Architecture decision records](adr/)

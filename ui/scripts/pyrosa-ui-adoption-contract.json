@@ -1,0 +1,103 @@
+{
+  "schemaVersion": 1,
+  "application": "pyrosa-democrm",
+  "profile": "business-ops",
+  "theme": "pyrosa-base@1.0.0",
+  "status": "pilot",
+  "sources": {
+    "app": "src/main.tsx",
+    "routes": "src/routeRegistry.tsx",
+    "styles": "src/styles.css",
+    "visualQa": "scripts/qa-visual-smoke.mjs"
+  },
+  "sharedDependencies": [
+    "@pyrosa/ui",
+    "@pyrosa/ui-icons",
+    "@pyrosa/ui-layouts",
+    "@pyrosa/ui-templates",
+    "@pyrosa/ui-theme",
+    "@pyrosa/ui-tokens"
+  ],
+  "routes": [
+    { "id": "dashboard", "hash": "dashboard", "groupId": "gestion", "groupLabel": "Gestion", "groupOrder": 1, "itemOrder": 1 },
+    { "id": "cuentas", "hash": "cuentas", "groupId": "relacion", "groupLabel": "Relacion", "groupOrder": 2, "itemOrder": 1 },
+    { "id": "contactos", "hash": "contactos", "groupId": "relacion", "groupLabel": "Relacion", "groupOrder": 2, "itemOrder": 2 },
+    { "id": "oportunidades", "hash": "oportunidades", "groupId": "relacion", "groupLabel": "Relacion", "groupOrder": 2, "itemOrder": 3 },
+    { "id": "actividades", "hash": "actividades", "groupId": "operacion", "groupLabel": "Operacion", "groupOrder": 3, "itemOrder": 1 },
+    { "id": "reportes", "hash": "reportes", "groupId": "operacion", "groupLabel": "Operacion", "groupOrder": 3, "itemOrder": 2 },
+    { "id": "configuracion", "hash": "configuracion", "groupId": "gobierno", "groupLabel": "Gobierno", "groupOrder": 4, "itemOrder": 1 },
+    { "id": "plataforma", "hash": "plataforma", "groupId": "gobierno", "groupLabel": "Gobierno", "groupOrder": 4, "itemOrder": 2 },
+    { "id": "marca", "hash": "marca", "groupId": "gobierno", "groupLabel": "Gobierno", "groupOrder": 4, "itemOrder": 3 },
+    { "id": "runtime", "hash": "runtime", "groupId": "runtime", "groupLabel": "Runtime", "groupOrder": 5, "itemOrder": 1 }
+  ],
+  "routeRequiredFields": [
+    "id",
+    "label",
+    "title",
+    "description",
+    "hash",
+    "icon",
+    "groupId",
+    "groupLabel",
+    "groupOrder",
+    "itemOrder",
+    "badge",
+    "keywords"
+  ],
+  "dashboard": {
+    "component": "DashboardRoute",
+    "requiredMarker": "data-dashboard-kind=\"analytic\"",
+    "forbiddenFragments": ["<DataTable", "<DataTableInline", "<table"]
+  },
+  "shell": {
+    "component": "BusinessOpsShellTemplate",
+    "brandTitle": "PYROSA CRM",
+    "environment": "demo",
+    "overviewBackAction": "hidden",
+    "sidebarPersistKey": "pyrosa-democrm",
+    "contentScrollPersistKeyPrefix": "democrm-",
+    "userLabel": "Cuenta"
+  },
+  "userDrawer": {
+    "component": "UserDrawer",
+    "requiredSections": ["Cuenta", "Preferencias UI", "Alcance DemoCRM", "Promocion productiva"],
+    "forbiddenLocalComponents": ["AccountDrawer", "CrmUserDrawer", "LocalUserDrawer"],
+    "forbiddenAuthorityFragments": ["mfaSecret", "passwordHash", "iamClaims", "persistClaims"]
+  },
+  "css": {
+    "classification": {
+      "keep": ["crm-dashboard", "crm-overview", "crm-route", "crm-detail", "crm-module", "crm-service", "crm-domain", "crm-facts", "crm-brand", "crm-user", "crm-mono"],
+      "shim": ["crm-workspace", "crm-inventory", "crm-table", "crm-field", "crm-search", "crm-tabs", "crm-readonly", "crm-notification"],
+      "cleanup": [],
+      "blocker": []
+    },
+    "forbiddenSharedShellOverrides": [
+      ".crm-shell .py-sidebar",
+      ".crm-shell .py-topbar",
+      ".crm-shell .py-app-shell"
+    ]
+  },
+  "visualQa": {
+    "outputDirectory": "tmp/qa-visual",
+    "manifest": "manifest.json",
+    "requiredCases": [
+      "desktop-dashboard",
+      "desktop-cuentas",
+      "desktop-user-drawer",
+      "narrow-dashboard",
+      "narrow-cuentas",
+      "narrow-user-drawer"
+    ],
+    "sanitizedEvidence": true
+  },
+  "rollback": {
+    "strategy": "source-revert",
+    "steps": [
+      "Revertir el commit de convergencia de SharedShell sin alterar contratos CRM.",
+      "Restaurar AppShell local solo desde el commit anterior versionado.",
+      "Conservar las rutas hash y el ownership de datos de DemoCRM.",
+      "Ejecutar check:pyrosa-ui, typecheck, build y qa:visual antes de reabrir el runtime."
+    ],
+    "validation": ["check:pyrosa-ui", "typecheck", "build", "qa:visual"]
+  }
+}

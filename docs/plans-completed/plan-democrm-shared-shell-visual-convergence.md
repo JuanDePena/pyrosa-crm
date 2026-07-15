@@ -1,7 +1,8 @@
 # Plan DemoCRM SharedShell Visual Convergence
 
 Fecha: `2026-07-08`
-Estado: `definido`
+Fecha de cierre: `2026-07-15`
+Estado: `completado`
 Cortes estimados: `6`
 Tareas estimadas: `40`
 
@@ -21,7 +22,7 @@ El plan toma como plantilla reusable el cierre de Directory:
 - [`plan-pyrosa-ui-adoption.md`](plan-pyrosa-ui-adoption.md)
 - [`pyrosa-ui-visual-inventory-2026-07-07.md`](../plans-completed/pyrosa-ui-visual-inventory-2026-07-07.md)
 - [`../ops/shared-shell-scaffold.md`](../ops/shared-shell-scaffold.md)
-- [`plan-roadmap-v2606.md`](plan-roadmap-v2606.md)
+- [`plan-roadmap-v2606.md`](../plans/plan-roadmap-v2606.md)
 - `pyrosa-directory`: plantilla cerrada de SharedShell visual convergence
 - `pyrosa-platform`: referencia de Overview analitico, sidebar, header y
   `UserDrawer`
@@ -82,12 +83,12 @@ Cada corte debe cerrar con:
 
 | Corte | Estado | Evidencia | Notas |
 | --- | --- | --- | --- |
-| 1. Inventario ejecutable y contrato de reuso | pendiente | - | Baseline real de shell, Dashboard, rutas, CSS y QA visual. |
-| 2. Metadata de rutas y navegacion | pendiente | - | Rutas CRM normalizadas para sidebar/header compartidos. |
-| 3. Dashboard analitico sin tablas | pendiente | - | Dashboard orientado a lectura ejecutiva y estado de dominio CRM. |
-| 4. Convergencia del shell principal | pendiente | - | Alinear AppShell/BusinessOpsShellTemplate con Platform/Directory. |
-| 5. UserDrawer, preferencias y contexto CRM | pendiente | - | Cuenta compartida sin duplicar auth ni preferencias. |
-| 6. QA visual, promocion y handoff | pendiente | - | Screenshots, CSS clasificado, bloqueadores `ready` y receta reusable. |
+| 1. Inventario ejecutable y contrato de reuso | completado | [Inventario](../design/analysis-shared-shell-visual-inventory.md) | Baseline, componentes compartidos, CSS y rollback clasificados. |
+| 2. Metadata de rutas y navegacion | completado | [`routeRegistry.tsx`](../../ui/src/routeRegistry.tsx) | Diez rutas y cinco grupos gobernados mediante `SidebarItem[]`. |
+| 3. Dashboard analitico sin tablas | completado | [Evidencia](../evidence/shared-shell-visual-convergence-2026-07-15.md) | Score ejecutivo y cinco dominios de lectura; cero tablas. |
+| 4. Convergencia del shell principal | completado | [Diseno](../design/design-shared-shell-visual-convergence.md) | `BusinessOpsShellTemplate` reemplaza la composicion local del shell. |
+| 5. UserDrawer, preferencias y contexto CRM | completado | [Evidencia](../evidence/shared-shell-visual-convergence-2026-07-15.md) | Identidad delegada y fachadas Accounts sin autoridad IAM local. |
+| 6. QA visual, promocion y handoff | completado | [Evidencia](../evidence/shared-shell-visual-convergence-2026-07-15.md) | Seis capturas desktop/estrechas; estado final `pilot`. |
 
 ## Corte 1: Inventario Ejecutable Y Contrato De Reuso
 
@@ -278,4 +279,18 @@ El plan queda cerrado cuando:
 - `UserDrawer` compartido esta activo o hay excepcion documentada;
 - `typecheck`, `build` y `qa:visual` pasan;
 - la documentacion queda actualizada;
-- el repo queda limpio tras commit y push.
+- el alcance versionado queda limpio tras commit y push; artefactos de trabajo
+  preexistentes y ajenos al corte no se incorporan implicitamente.
+
+## Cierre 2026-07-15
+
+Los seis cortes se ejecutaron como un cierre integrado autorizado. Pasaron el
+guard de adopcion, `typecheck`, pruebas OAuth API, `build`, health del runtime y
+QA visual autenticado con seis escenarios sin fallos. La evidencia consolidada
+vive en
+[`shared-shell-visual-convergence-2026-07-15.md`](../evidence/shared-shell-visual-convergence-2026-07-15.md).
+
+La adopcion permanece en `pilot` exclusivamente porque los paquetes
+`@pyrosa/ui*` se consumen mediante dependencias `file:`. El siguiente corte de
+diccionarios, persistencia y endpoints CRM-owned se transfiere al
+[roadmap v2606](../plans/plan-roadmap-v2606.md) y no bloquea este cierre visual.
