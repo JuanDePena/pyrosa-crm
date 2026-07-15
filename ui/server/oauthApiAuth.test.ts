@@ -1,7 +1,10 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import type { IncomingMessage } from "node:http";
+import type { AddressInfo } from "node:net";
+import type { CrmSession } from "./auth.js";
 import { loadConfig } from "./config.js";
+import { createCrmServer, publicSession } from "./index.js";
 import { authenticateCrmApiBearer, hasApiAuthorization } from "./oauthApiAuth.js";
 
 const request = { headers: { authorization: "Bearer opaque-crm-token" } } as IncomingMessage;
@@ -92,3 +95,58 @@ test("CRM never sends its Basic secret to a hostile introspection URL", async ()
     assert.equal(fetched, false);
   } finally { globalThis.fetch = originalFetch; }
 });
+
+test("CRM v1 auth failures emitted before the handler use the nested v1 error envelope", async () => {
+  await withServer({ ...config(), accessLog: false, oauthApiEnabled: false }, async (baseUrl) => {
+    const requestId = "request-auth-envelope-001";
+    const response = await fetch(`${baseUrl}/api/crm/v1/dashboard-summary`, {
+      headers: {
+        authorization: "Bearer opaque-crm-token",
+        "x-correlation-id": "correlation-auth-envelope-001",
+        "x-request-id": requestId
+      }
+    });
+    const payload = await response.json() as { error?: Record<string, unknown>; ok?: unknown };
+    assert.equal(response.status, 503);
+    assert.equal(response.headers.get("x-request-id"), requestId);
+    assert.equal(response.headers.get("x-correlation-id"), "correlation-auth-envelope-001");
+    assert.equal(payload.ok, undefined);
+    assert.equal(payload.error?.code, "oauth_api_disabled");
+    assert.equal(payload.error?.requestId, requestId);
+
+    const anonymous = await fetch(`${baseUrl}/api/crm/v1`);
+    const anonymousPayload = await anonymous.json() as { error?: Record<string, unknown> };
+    assert.equal(anonymous.status, 401);
+    assert.equal(anonymousPayload.error?.code, "auth_required");
+    assert.equal(anonymousPayload.error?.requestId, anonymous.headers.get("x-request-id"));
+  });
+});
+
+test("publicSession exposes only the configured single-tenant bootstrap id when present", () => {
+  const session = {
+    sid: "session-synthetic",
+    expiresAt: "2026-07-16T00:00:00.000Z",
+    uiAuthSessionId: "ui-auth-synthetic",
+    uiAuthAuthenticatedAt: "2026-07-15T00:00:00.000Z",
+    user: { id: 1, displayName: "Synthetic" }
+  } as unknown as CrmSession;
+  assert.deepEqual(publicSession(session, { id: "tenant-single-canary" }).tenant, { id: "tenant-single-canary" });
+  assert.equal("tenant" in publicSession(session), false);
+});
+
+async function withServer(
+  configured: ReturnType<typeof config>,
+  run: (baseUrl: string) => Promise<void>
+): Promise<void> {
+  const server = createCrmServer(configured);
+  await new Promise<void>((resolve, reject) => {
+    server.once("error", reject);
+    server.listen(0, "127.0.0.1", resolve);
+  });
+  const address = server.address() as AddressInfo;
+  try {
+    await run(`http://127.0.0.1:${address.port}`);
+  } finally {
+    await new Promise<void>((resolve, reject) => server.close((error) => error ? reject(error) : resolve()));
+  }
+}

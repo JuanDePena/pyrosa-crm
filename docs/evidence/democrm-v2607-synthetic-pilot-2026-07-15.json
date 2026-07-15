@@ -1,0 +1,165 @@
+{
+  "schemaVersion": "pyrosa-democrm-v2607-synthetic-pilot-v1",
+  "status": "passed",
+  "classification": "isolated-synthetic",
+  "generatedAt": "2026-07-15T20:31:28.845Z",
+  "input": {
+    "seedPath": "database/seeds/v2607-synthetic.json",
+    "seedSchemaVersion": "pyrosa-democrm-synthetic-seed-v1",
+    "seedSha256": "601211ca015fdfe925577d2e3eff2e11cc68fe0885dc916daa78cdc395cf574b",
+    "privacy": "synthetic-only",
+    "workbookRead": false
+  },
+  "execution": {
+    "adapter": "MemoryCrmV1Store",
+    "networkAccess": false,
+    "databaseAccess": false,
+    "runtimeDeployment": false,
+    "liveTenantMutation": false,
+    "tenantCount": 2
+  },
+  "aggregateCounts": {
+    "primaryTenant": {
+      "accounts": 1,
+      "contacts": 1,
+      "cases": 1,
+      "activities": 1,
+      "appointments": 1,
+      "opportunities": 1
+    },
+    "controlTenant": {
+      "accounts": 0,
+      "contacts": 0,
+      "cases": 0,
+      "activities": 0,
+      "appointments": 0,
+      "opportunities": 0
+    },
+    "reportsAvailable": 6,
+    "acceptedAuditEvents": 17,
+    "rejectedAuditEvents": 1,
+    "outboxEvents": 17,
+    "import": {
+      "duplicateRecords": 2,
+      "quarantinedRecords": 2,
+      "committedRecords": 1,
+      "rolledBackBatches": 1
+    }
+  },
+  "assertions": [
+    {
+      "key": "input.synthetic_seed",
+      "status": "pass",
+      "detail": "El runner acepto exclusivamente el seed JSON sintetico v1."
+    },
+    {
+      "key": "idempotency.replay",
+      "status": "pass",
+      "detail": "Un retry con igual llave y checksum devolvio el mismo agregado."
+    },
+    {
+      "key": "idempotency.payload_conflict",
+      "status": "pass",
+      "detail": "La misma llave con un payload diferente fue rechazada."
+    },
+    {
+      "key": "privacy.masking",
+      "status": "pass",
+      "detail": "La proyeccion ordinaria omitio sensitive y la capability separada habilito la lectura controlada."
+    },
+    {
+      "key": "cases.lifecycle",
+      "status": "pass",
+      "detail": "El caso avanzo new -> triaged -> in_progress con version optimista."
+    },
+    {
+      "key": "concurrency.optimistic",
+      "status": "pass",
+      "detail": "Un update con version stale fue rechazado sin alterar la version vigente."
+    },
+    {
+      "key": "cases.invalid_transition_audited",
+      "status": "pass",
+      "detail": "Una transicion no permitida fue rechazada y quedo en auditoria."
+    },
+    {
+      "key": "activities.linked",
+      "status": "pass",
+      "detail": "La actividad sintetica quedo ligada al caso, cuenta y contacto del mismo tenant."
+    },
+    {
+      "key": "appointments.lifecycle",
+      "status": "pass",
+      "detail": "La cita avanzo requested -> scheduled con rango y timezone sinteticos."
+    },
+    {
+      "key": "opportunities.pipeline",
+      "status": "pass",
+      "detail": "La oportunidad avanzo lead -> qualified en el pipeline default."
+    },
+    {
+      "key": "dashboard.versioned",
+      "status": "pass",
+      "detail": "Dashboard summary reporto contrato, metric set, perfil y agregados versionados."
+    },
+    {
+      "key": "reports.catalog_and_job",
+      "status": "pass",
+      "detail": "El catalogo expuso reportes operativos/comerciales y acepto un report-run sintetico."
+    },
+    {
+      "key": "imports.duplicate_quarantine",
+      "status": "pass",
+      "detail": "El preflight detecto duplicados, dry-run valido el lote y commit fallo cerrado por quarantine."
+    },
+    {
+      "key": "imports.commit_and_rollback",
+      "status": "pass",
+      "detail": "Un lote limpio paso staged -> validated -> committed -> rolled_back."
+    },
+    {
+      "key": "tenant.isolation",
+      "status": "pass",
+      "detail": "El tenant control no pudo listar ni resolver recursos del tenant primario."
+    },
+    {
+      "key": "audit.accepted_and_rejected",
+      "status": "pass",
+      "detail": "La evidencia operacional contiene resultados aceptados y rechazados."
+    },
+    {
+      "key": "outbox.minimal_payload",
+      "status": "pass",
+      "detail": "Los eventos internos del outbox no contienen campos sensibles del contacto."
+    },
+    {
+      "key": "aggregate.counts",
+      "status": "pass",
+      "detail": "Los seis dominios CRM quedaron representados una vez en el tenant sintetico."
+    }
+  ],
+  "privacy": {
+    "aggregateEvidenceOnly": true,
+    "sensitiveValuesPersistedInEvidence": false,
+    "defaultProjectionMasked": true,
+    "privilegedProjectionChecked": true,
+    "outboxPayloadsSensitiveDataFree": true
+  },
+  "rollbackAndCleanup": {
+    "importRollback": "passed",
+    "persistence": "none",
+    "cleanup": "in-memory store discarded when the process exits",
+    "externalSideEffects": "none"
+  },
+  "canary": {
+    "state": "synthetic_passed",
+    "scope": "source-only",
+    "livePromotion": false,
+    "productionReadinessClaimed": false
+  },
+  "gaps": [
+    "El piloto no sustituye pruebas PostgreSQL, load tests ni canary de runtime.",
+    "Los conflictos de version e idempotencia se rechazan, pero esta capa in-memory no registra esos rechazos en audit; la transicion invalida si queda auditada.",
+    "No se ejercitaron dependencias IAM, Directory, Store o Platform live ni feature flags productivos."
+  ]
+}

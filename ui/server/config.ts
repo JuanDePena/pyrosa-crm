@@ -37,6 +37,25 @@ export type CrmServerConfig = {
   oauthApiTimeoutMs: number;
   accountsBaseUrl: string;
   accountsInternalBaseUrl: string;
+  directoryInternalBaseUrl: string;
+  storeInternalBaseUrl: string;
+  directoryOauthTokenUrl: string;
+  directoryOauthClientId: string;
+  directoryOauthClientSecret: string | null;
+  directoryOauthAudience: string;
+  directoryOauthScope: string;
+  storeOauthTokenUrl: string;
+  storeOauthClientId: string;
+  storeOauthClientSecret: string | null;
+  storeOauthAudience: string;
+  storeOauthScope: string;
+  platformOauthTokenUrl: string;
+  platformOauthClientId: string;
+  platformOauthClientSecret: string | null;
+  platformOauthAudience: string;
+  platformOauthScope: string;
+  accessTimeoutMs: number;
+  defaultTenantId: string | null;
 };
 
 export const mimeTypes: Record<string, string> = {
@@ -64,13 +83,15 @@ export function loadConfig(): CrmServerConfig {
   const distDir = resolve(process.env.PYROSA_CRM_UI_DIST_DIR || join(appRoot, "dist"));
   const dsn = normalizeOptionalString(process.env.PYROSA_CRM_DB_DSN);
   const discreteDb = dsn ? parsePostgresDsn(dsn) : null;
+  const iamBaseUrl = normalizeOptionalString(process.env.PYROSA_CRM_IAM_BASE_URL) ?? "https://iam.pyrosa.com.do";
+  const oauthTokenUrl = new URL("/oauth/token", iamBaseUrl).toString();
 
   return {
     appRoot,
     distDir,
     host: process.env.PYROSA_CRM_UI_HOST || "127.0.0.1",
     port: parsePositiveInteger(process.env.PYROSA_CRM_UI_PORT, 10166),
-    version: normalizeOptionalString(process.env.PYROSA_CRM_VERSION) ?? "v2606",
+    version: normalizeOptionalString(process.env.PYROSA_CRM_VERSION) ?? "v2607",
     branch: normalizeOptionalString(process.env.PYROSA_CRM_BRANCH) ?? "main",
     healthPath: process.env.PYROSA_CRM_UI_HEALTH_PATH || "/__pyrosa_crm_health",
     healthDetails: parseBoolean(process.env.PYROSA_CRM_UI_HEALTH_DETAILS, false),
@@ -89,9 +110,7 @@ export function loadConfig(): CrmServerConfig {
     platformInternalBaseUrl:
       normalizeOptionalString(process.env.PYROSA_CRM_PLATFORM_INTERNAL_BASE_URL) ??
       "https://platform.pyrosa.com.do",
-    iamBaseUrl:
-      normalizeOptionalString(process.env.PYROSA_CRM_IAM_BASE_URL) ??
-      "https://iam.pyrosa.com.do",
+    iamBaseUrl,
     iamInternalBaseUrl:
       normalizeOptionalString(process.env.PYROSA_CRM_IAM_INTERNAL_BASE_URL) ??
       "https://iam.pyrosa.com.do",
@@ -117,7 +136,48 @@ export function loadConfig(): CrmServerConfig {
       "https://accounts.pyrosa.com.do",
     accountsInternalBaseUrl:
       normalizeOptionalString(process.env.PYROSA_CRM_ACCOUNTS_INTERNAL_BASE_URL) ??
-      "https://accounts.pyrosa.com.do"
+      "https://accounts.pyrosa.com.do",
+    directoryInternalBaseUrl:
+      normalizeOptionalString(process.env.PYROSA_CRM_DIRECTORY_INTERNAL_BASE_URL) ??
+      "https://directory.pyrosa.com.do",
+    storeInternalBaseUrl:
+      normalizeOptionalString(process.env.PYROSA_CRM_STORE_INTERNAL_BASE_URL) ??
+      "https://store.pyrosa.com.do",
+    directoryOauthTokenUrl: normalizeOptionalString(process.env.PYROSA_CRM_DIRECTORY_OAUTH_TOKEN_URL) ?? oauthTokenUrl,
+    directoryOauthClientId:
+      normalizeOptionalString(process.env.PYROSA_CRM_DIRECTORY_OAUTH_CLIENT_ID) ??
+      "client-pyrosa-democrm",
+    directoryOauthClientSecret: normalizeOptionalString(process.env.PYROSA_CRM_DIRECTORY_OAUTH_CLIENT_SECRET),
+    directoryOauthAudience:
+      normalizeOptionalString(process.env.PYROSA_CRM_DIRECTORY_OAUTH_AUDIENCE) ??
+      "pyrosa-directory",
+    directoryOauthScope:
+      normalizeOptionalString(process.env.PYROSA_CRM_DIRECTORY_OAUTH_SCOPE) ??
+      "directory:crm-access:decide",
+    storeOauthTokenUrl: normalizeOptionalString(process.env.PYROSA_CRM_STORE_OAUTH_TOKEN_URL) ?? oauthTokenUrl,
+    storeOauthClientId:
+      normalizeOptionalString(process.env.PYROSA_CRM_STORE_OAUTH_CLIENT_ID) ??
+      "client-pyrosa-democrm-store-entitlements",
+    storeOauthClientSecret: normalizeOptionalString(process.env.PYROSA_CRM_STORE_OAUTH_CLIENT_SECRET),
+    storeOauthAudience:
+      normalizeOptionalString(process.env.PYROSA_CRM_STORE_OAUTH_AUDIENCE) ??
+      "pyrosa-store",
+    storeOauthScope:
+      normalizeOptionalString(process.env.PYROSA_CRM_STORE_OAUTH_SCOPE) ??
+      "store.entitlement.decide",
+    platformOauthTokenUrl: normalizeOptionalString(process.env.PYROSA_CRM_PLATFORM_OAUTH_TOKEN_URL) ?? oauthTokenUrl,
+    platformOauthClientId:
+      normalizeOptionalString(process.env.PYROSA_CRM_PLATFORM_OAUTH_CLIENT_ID) ??
+      "client-pyrosa-crm",
+    platformOauthClientSecret: normalizeOptionalString(process.env.PYROSA_CRM_PLATFORM_OAUTH_CLIENT_SECRET),
+    platformOauthAudience:
+      normalizeOptionalString(process.env.PYROSA_CRM_PLATFORM_OAUTH_AUDIENCE) ??
+      "pyrosa-platform",
+    platformOauthScope:
+      normalizeOptionalString(process.env.PYROSA_CRM_PLATFORM_OAUTH_SCOPE) ??
+      "platform.provisioning.readiness.consume",
+    accessTimeoutMs: parsePositiveInteger(process.env.PYROSA_CRM_ACCESS_TIMEOUT_MS, 4000),
+    defaultTenantId: normalizeOptionalString(process.env.PYROSA_CRM_DEFAULT_TENANT_ID)
   };
 }
 

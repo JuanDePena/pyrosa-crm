@@ -1,0 +1,25 @@
+{
+  "schemaVersion": "pyrosa-democrm-synthetic-seed-v1",
+  "privacy": "synthetic-only",
+  "tenantProfile": "healthcare-call-center@1",
+  "records": {
+    "accounts": [
+      { "id": "account_synthetic_clinic", "name": "Clinica Horizonte Sintetica", "type": "organization", "status": "active", "ownerId": "team_synthetic", "tags": ["synthetic"] }
+    ],
+    "contacts": [
+      { "id": "contact_synthetic_patient", "accountId": "account_synthetic_clinic", "displayName": "Paciente Sintetico 001", "role": "patient", "status": "active", "preferredChannel": "phone", "consentStatus": "recorded" }
+    ],
+    "cases": [
+      { "id": "case_synthetic_001", "accountId": "account_synthetic_clinic", "contactId": "contact_synthetic_patient", "caseType": "appointment-coordination", "status": "in_progress", "priority": "normal", "queueId": "queue_synthetic", "ownerId": "agent_synthetic", "subject": "Seguimiento sintetico de coordinacion" }
+    ],
+    "activities": [
+      { "id": "activity_synthetic_001", "caseId": "case_synthetic_001", "type": "call", "status": "open", "ownerId": "agent_synthetic", "subject": "Llamada sintetica de seguimiento" }
+    ],
+    "appointments": [
+      { "id": "appointment_synthetic_001", "caseId": "case_synthetic_001", "status": "requested", "timezone": "America/Santo_Domingo" }
+    ],
+    "opportunities": [
+      { "id": "opportunity_synthetic_001", "accountId": "account_synthetic_clinic", "name": "Expansion B2B sintetica", "status": "open", "pipelineId": "default", "stageId": "qualified", "amountMinor": 1250000, "currency": "USD", "probability": 40, "ownerId": "seller_synthetic" }
+    ]
+  }
+}

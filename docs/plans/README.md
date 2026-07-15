@@ -4,9 +4,9 @@ Indice central de planes del repositorio. Los nuevos planes deben vivir en `docs
 
 Estados permitidos: `definido`, `en proceso`, `completado`.
 
-| Plan | Documento | Estado | Cortes estimados | Tareas estimadas | Alcance |
-| --- | --- | --- | ---: | ---: | --- |
-| Roadmap v2606 | [plan-roadmap-v2606.md](plan-roadmap-v2606.md) | en proceso | 6 | 24 | Evolucion funcional y operativa del corte CRM v2606. |
+No hay planes de implementacion activos. El release candidate DemoCRM v2607
+se cerro mediante una excepcion formal que conserva como gates separados la
+promocion runtime y el piloto real de VOIX.
 
 Los planes cerrados y sus evidencias se consultan en el
 [indice de planes completados](../plans-completed/README.md).

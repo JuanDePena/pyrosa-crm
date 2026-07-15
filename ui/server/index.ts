@@ -1,3 +1,4 @@
+import { randomUUID } from "node:crypto";
 import { createServer, type IncomingMessage, type ServerResponse } from "node:http";
 import {
   CrmAuthError,
@@ -24,6 +25,8 @@ import {
 } from "./http.js";
 import { buildActionPreview, buildCrmContracts } from "./contracts.js";
 import { authenticateCrmApiBearer, hasApiAuthorization, type CrmApiPrincipal } from "./oauthApiAuth.js";
+import { handleCrmV1, resolveBootstrapContext, sendCrmV1Error } from "./crmV1Http.js";
+import { CrmV1Error } from "./crmV1Domain.js";
 
 export function createCrmServer(config: CrmServerConfig = loadConfig()) {
   const server = createServer((req, res) => {
@@ -33,6 +36,17 @@ export function createCrmServer(config: CrmServerConfig = loadConfig()) {
         return;
       }
       if (error instanceof CrmAuthError) {
+        if (isCrmV1Request(req)) {
+          sendCrmV1Error(
+            res,
+            {
+              headOnly: String(req.method ?? "GET").toUpperCase() === "HEAD",
+              requestId: runtimeRequestId(res)
+            },
+            new CrmV1Error(error.status, error.code, error.message, error.status >= 500)
+          );
+          return;
+        }
         sendJson(res, error.status, {
           ok: false,
           error: error.code,
@@ -40,11 +54,29 @@ export function createCrmServer(config: CrmServerConfig = loadConfig()) {
         });
         return;
       }
+      const requestId = runtimeRequestId(res);
+      if (error instanceof CrmV1Error) {
+        sendJson(res, error.status, {
+          error: {
+            code: error.code,
+            message: error.message,
+            occurredAt: new Date().toISOString(),
+            requestId,
+            retryable: error.retryable,
+            fields: error.fields
+          }
+        });
+        return;
+      }
+      console.error(`[crm_runtime_error] request_id=${requestId}`, error);
       sendJson(res, 500, {
-        ok: false,
-        error: "crm_runtime_error",
-        message: "PYROSA CRM no pudo completar la solicitud.",
-        detail: error instanceof Error ? error.message : String(error)
+        error: {
+          code: "crm.internal.error",
+          message: "PYROSA CRM no pudo completar la solicitud.",
+          occurredAt: new Date().toISOString(),
+          requestId,
+          retryable: true
+        }
       });
     });
   });
@@ -54,6 +86,11 @@ export function createCrmServer(config: CrmServerConfig = loadConfig()) {
   server.keepAliveTimeout = 5000;
 
   return server;
+}
+
+function runtimeRequestId(res: ServerResponse): string {
+  const value = String(res.getHeader("x-request-id") ?? "").trim();
+  return /^[A-Za-z0-9][A-Za-z0-9._:@/+~-]{2,127}$/u.test(value) ? value : randomUUID();
 }
 
 export function startServer(config: CrmServerConfig = loadConfig()): ReturnType<typeof createCrmServer> {
@@ -87,7 +124,7 @@ async function handleRequest(
   config: CrmServerConfig
 ): Promise<void> {
   const context = createRequestContext(req);
-  applyCommonHeaders(res, context.requestId);
+  applyCommonHeaders(res, context.requestId, context.correlationId);
   logAccess(req, res, context, config);
 
   if (context.url.pathname === config.healthPath) {
@@ -168,7 +205,18 @@ async function handleRequest(
     if (!session) {
       return;
     }
-    sendJson(res, 200, { ok: true, session: publicSession(session) }, context.headOnly);
+    sendJson(
+      res,
+      200,
+      {
+        ok: true,
+        session: publicSession(
+          session,
+          config.defaultTenantId ? { id: config.defaultTenantId } : null
+        )
+      },
+      context.headOnly
+    );
     return;
   }
 
@@ -181,6 +229,7 @@ async function handleRequest(
     if (!session) {
       return;
     }
+    const crmContext = await resolveBootstrapContext(req, context, config, session);
     sendJson(
       res,
       200,
@@ -193,17 +242,41 @@ async function handleRequest(
         platform: buildPlatformContracts(config),
         auth: {
           mode: "delegated-ui-auth",
-          session: publicSession(session)
+          session: publicSession(session, {
+            id: crmContext.tenantId,
+            label: crmContext.displayName
+          })
+        },
+        context: {
+          activeTenantId: crmContext.tenantId,
+          tenantKey: crmContext.tenantKey,
+          displayName: crmContext.displayName,
+          profileKey: crmContext.profileKey,
+          profileVersion: crmContext.profileVersion,
+          timezone: crmContext.timezone,
+          locale: crmContext.locale,
+          dictionaryVersion: crmContext.dictionaryVersion,
+          capabilities: crmContext.capabilities
         },
         modules: [
-          { key: "accounts", label: "Cuentas", status: "planned" },
-          { key: "contacts", label: "Contactos", status: "planned" },
-          { key: "opportunities", label: "Oportunidades", status: "planned" },
-          { key: "activities", label: "Actividades", status: "planned" }
+          { key: "accounts", label: "Cuentas", status: "canary" },
+          { key: "contacts", label: "Contactos", status: "canary" },
+          { key: "cases", label: "Casos", status: "canary" },
+          { key: "activities", label: "Actividades", status: "canary" },
+          { key: "appointments", label: "Agenda", status: "canary" },
+          { key: "opportunities", label: "Oportunidades", status: "canary" },
+          { key: "reports", label: "Reportes", status: "canary" }
         ]
       },
       context.headOnly
     );
+    return;
+  }
+
+  if (context.url.pathname === "/api/crm/v1" || context.url.pathname.startsWith("/api/crm/v1/")) {
+    const principal = await requireCrmV1Identity(req, res, config, context);
+    if (!principal) return;
+    await handleCrmV1(req, res, config, context, principal);
     return;
   }
 
@@ -337,6 +410,25 @@ async function requireCrmApiIdentity(
   return requireCrmSession(req, res, config, headOnly);
 }
 
+async function requireCrmV1Identity(
+  req: IncomingMessage,
+  res: ServerResponse,
+  config: CrmServerConfig,
+  context: ReturnType<typeof createRequestContext>
+): Promise<CrmSession | CrmApiPrincipal | null> {
+  if (hasApiAuthorization(req)) return authenticateCrmApiBearer(req, config);
+  const session = await loadCrmSession(req, res, config);
+  if (!session) {
+    sendCrmV1Error(
+      res,
+      context,
+      new CrmV1Error(401, "auth_required", "Autenticacion requerida.")
+    );
+    return null;
+  }
+  return session;
+}
+
 function sendRedirect(res: ServerResponse, status: number, location: string, headOnly = false): void {
   const body = `Redirecting to ${location}\n`;
   res.statusCode = status;
@@ -351,16 +443,26 @@ function isLoginPath(pathname: string): boolean {
   return pathname === "/login" || pathname === "/auth/login";
 }
 
+function isCrmV1Request(req: IncomingMessage): boolean {
+  const pathname = String(req.url ?? "").split("?", 1)[0];
+  return pathname === "/api/crm/v1" || pathname.startsWith("/api/crm/v1/");
+}
+
 function withQuery(url: URL): string {
   return `${url.pathname}${url.search}`;
 }
 
-function publicSession(session: CrmSession) {
+export function publicSession(
+  session: CrmSession,
+  tenant: { id: string; label?: string } | null = null
+) {
   return {
+    csrfToken: session.csrf,
     sid: session.sid,
     expiresAt: session.expiresAt,
     uiAuthSessionId: session.uiAuthSessionId,
     uiAuthAuthenticatedAt: session.uiAuthAuthenticatedAt,
+    ...(tenant ? { tenant } : {}),
     user: session.user
   };
 }

@@ -1,0 +1,74 @@
+{
+  "schemaVersion": "pyrosa-platform-dictionary-definition-v1",
+  "dictionarySlug": "pyrosa-democrm-global",
+  "dictionaryVersion": "2.0.0",
+  "ownerAppSlug": "pyrosa-democrm",
+  "scope": "global",
+  "target": { "databaseRef": "pyrosa-postgres-primary", "schemaSlug": "pyrosa_democrm" },
+  "bootstrapPolicy": {
+    "executor": "pyrosa-platform",
+    "operation": "migration.execute",
+    "runtimeRoleMayApplyDdl": false,
+    "applicationMayApplyDdl": false
+  },
+  "supersedes": {
+    "physicalBaseline": "database/migrations/0001_crm_core.sql",
+    "notes": "The historical accounts_organization_id column is not authoritative in v2607."
+  },
+  "tables": [
+    {
+      "name": "crm_industry_profiles",
+      "primaryKey": ["profile_key", "profile_version"],
+      "columns": {
+        "profile_key": "text:not-null",
+        "profile_version": "text:not-null",
+        "label": "text:not-null",
+        "contract_json": "jsonb:not-null",
+        "content_checksum": "char(64):not-null",
+        "status": "text:not-null",
+        "published_at": "timestamptz:not-null",
+        "created_at": "timestamptz:not-null"
+      },
+      "unique": [["content_checksum"]],
+      "checks": ["status:draft|published|retired", "contract_json:profile-schema-v1"]
+    },
+    {
+      "name": "crm_metric_sets",
+      "primaryKey": ["metric_set_key", "metric_set_version"],
+      "columns": {
+        "metric_set_key": "text:not-null",
+        "metric_set_version": "text:not-null",
+        "profile_key": "text:not-null",
+        "formula_json": "jsonb:not-null",
+        "content_checksum": "char(64):not-null",
+        "status": "text:not-null",
+        "published_at": "timestamptz:not-null"
+      },
+      "checks": ["status:draft|published|retired", "formula_json:metric-set-schema-v1"]
+    },
+    {
+      "name": "crm_report_catalog",
+      "primaryKey": ["report_key", "report_version"],
+      "columns": {
+        "report_key": "text:not-null",
+        "report_version": "text:not-null",
+        "profile_keys": "text-array:not-null",
+        "required_capability": "text:not-null",
+        "definition_json": "jsonb:not-null",
+        "content_checksum": "char(64):not-null",
+        "status": "text:not-null",
+        "published_at": "timestamptz:not-null"
+      },
+      "checks": ["status:draft|published|retired", "definition_json:report-schema-v1"]
+    }
+  ],
+  "seedCatalog": {
+    "profiles": ["core@1", "healthcare-call-center@1"],
+    "metricSets": ["core@1", "healthcare-call-center@1"],
+    "containsCustomerData": false
+  },
+  "requiredGrants": {
+    "runtimeRole": ["USAGE schema", "SELECT published profile metric and report catalogs"],
+    "ddl": []
+  }
+}

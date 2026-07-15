@@ -20,6 +20,28 @@ export async function queryPostgres<T extends pg.QueryResultRow = pg.QueryResult
   return getPool(config).query<T>(text, values);
 }
 
+export async function withPostgresTransaction<T>(
+  config: CrmServerConfig,
+  work: (client: pg.PoolClient) => Promise<T>
+): Promise<T> {
+  const client = await getPool(config).connect();
+  try {
+    await client.query("BEGIN");
+    const result = await work(client);
+    await client.query("COMMIT");
+    return result;
+  } catch (error) {
+    try {
+      await client.query("ROLLBACK");
+    } catch {
+      // Preserve the domain/database error that caused the rollback.
+    }
+    throw error;
+  } finally {
+    client.release();
+  }
+}
+
 export async function closePostgres(): Promise<void> {
   if (!pool) {
     return;
@@ -38,11 +60,11 @@ export async function loadDatabaseStatus(config: CrmServerConfig): Promise<Recor
       database: row?.database_name ?? config.dbDatabase,
       user: row?.database_user ?? config.dbUser
     };
-  } catch (error) {
+  } catch {
     return {
       ok: false,
       database: config.dbDatabase,
-      error: error instanceof Error ? error.message : String(error)
+      error: "crm.database.unavailable"
     };
   }
 }

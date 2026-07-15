@@ -5,6 +5,7 @@ import { extname, join, relative, resolve } from "node:path";
 import { mimeTypes, type CrmServerConfig } from "./config.js";
 
 export type RequestContext = {
+  correlationId: string;
   requestId: string;
   startedAt: bigint;
   url: URL;
@@ -12,20 +13,23 @@ export type RequestContext = {
 };
 
 export function createRequestContext(req: IncomingMessage): RequestContext {
+  const requestId = getRequestId(req);
   return {
-    requestId: getRequestId(req),
+    correlationId: getCorrelationId(req, requestId),
+    requestId,
     startedAt: process.hrtime.bigint(),
     url: new URL(req.url || "/", `http://${req.headers.host || "127.0.0.1"}`),
     headOnly: (req.method || "GET").toUpperCase() === "HEAD"
   };
 }
 
-export function applyCommonHeaders(res: ServerResponse, requestId: string): void {
+export function applyCommonHeaders(res: ServerResponse, requestId: string, correlationId = requestId): void {
   res.setHeader("X-Content-Type-Options", "nosniff");
   res.setHeader("X-Frame-Options", "SAMEORIGIN");
   res.setHeader("Referrer-Policy", "strict-origin-when-cross-origin");
   res.setHeader("X-Pyrosa-Crm-Service", "node");
   res.setHeader("X-Request-Id", requestId);
+  res.setHeader("X-Correlation-Id", correlationId);
 }
 
 export function logAccess(
@@ -163,6 +167,12 @@ function getRequestId(req: IncomingMessage): string {
     return header;
   }
   return randomUUID();
+}
+
+function getCorrelationId(req: IncomingMessage, requestId: string): string {
+  const raw = req.headers["x-correlation-id"];
+  const header = String(Array.isArray(raw) ? raw[0] ?? "" : raw ?? "").trim();
+  return /^[a-zA-Z0-9][a-zA-Z0-9_.:@/+~-]{7,127}$/.test(header) ? header : requestId;
 }
 
 function safeResolve(root: string, pathname: string): string | null {

@@ -1,0 +1,24 @@
+{
+  "extends": "./tsconfig.server.json",
+  "compilerOptions": {
+    "outDir": "build/crm-v1-test"
+  },
+  "include": [
+    "server/auth.ts",
+    "server/config.ts",
+    "server/db.ts",
+    "server/crmV1Access.ts",
+    "server/crmV1Domain.ts",
+    "server/crmV1Store.ts",
+    "server/crmV1Postgres.ts",
+    "server/crmV1Postgres.test.ts",
+    "server/crmV1SyntheticPilot.ts",
+    "server/crmV1SyntheticPilot.test.ts",
+    "server/crmV1Types.ts",
+    "server/crmV1Domain.test.ts",
+    "server/crmV1Access.test.ts",
+    "server/crmV1Dictionary.test.ts",
+    "server/oauthApiAuth.ts"
+  ],
+  "exclude": []
+}

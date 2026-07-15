@@ -2,6 +2,8 @@
 
 Date: `2026-06-13`
 
+Status: `historical baseline; superseded by` [Modules v2607](modules-v2607.md)
+
 This is an initial map, not a frozen backlog. It defines the areas that should
 shape the first technical design conversations.
 

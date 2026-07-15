@@ -26,11 +26,23 @@ CRM consume servicios compartidos mediante contratos explicitos:
   operacional;
 - `pyrosa-iam`: autenticacion, MFA, sesiones, OAuth/OIDC y `ui-auth`;
 - `pyrosa-accounts`: Account Center, perfil, preferencias y autoservicio de
-  cuenta.
+  cuenta;
+- `pyrosa-directory`: tenant, organizaciones, membresias, aplicaciones,
+  asientos, conexiones y entrega de notificaciones;
+- `pyrosa-store`: customer comercial, suscripcion, cantidad, vigencia y
+  entitlement;
+- `pyrosa-ui`: shell, templates, componentes, tokens y accesibilidad;
+- `pyrosa-newsync` o el provider engine declarado: integraciones y
+  sincronizacion externa.
 
-CRM conserva ownership de cuentas comerciales, contactos, oportunidades,
-pipeline, actividades y autorizacion funcional. No persiste como autoridad los
-datos que pertenecen a Platform, IAM o Accounts.
+CRM conserva ownership de cuentas CRM, contactos, casos, actividades, citas,
+oportunidades, pipeline, reportes y autorizacion funcional. Una cuenta CRM no
+es un perfil Accounts, una organizacion Directory ni un customer Store. CRM no
+persiste como autoridad los datos que pertenecen a otra aplicacion.
+
+CRM decide la necesidad funcional de una notificacion; Directory gobierna
+template, canal, secreto, request y delivery. Directory gobierna la conexion
+tenant-owned; el engine ejecuta el provider y Platform puede operar el worker.
 
 El acceso directo a tablas de otra app requiere una excepcion ADR documentada;
 la integracion normal usa APIs, eventos, jobs o contratos publicados.

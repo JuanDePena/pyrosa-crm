@@ -16,6 +16,9 @@ Este directorio concentra documentos de analisis, arquitectura y diseno de
 
 - [Inventario visual y de SharedShell](analysis-shared-shell-visual-inventory.md)
 - [Diseño de convergencia visual SharedShell](design-shared-shell-visual-convergence.md)
+- [Diseno funcional y tecnico v2607](design-democrm-v2607.md)
+- [Perfil VOIX Healthcare Call Center](design-voix-call-center-profile-v2607.md)
+- [Analisis seguro del seguimiento VOIX](analysis-voix-case-follow-up-2026.md)
 - [Architecture overview](architecture/overview.md)
 - [Pyrosa ecosystem map](ecosystem/pyrosa-app-map.md)
 - [Architecture decision records](adr/)

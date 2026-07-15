@@ -1,0 +1,671 @@
+{
+  "schemaVersion": "pyrosa-dictionary-physical-baseline-snapshot-v1",
+  "capturedAt": "2026-07-15T18:04:22.045Z",
+  "readBusinessData": false,
+  "structuralFingerprintSha256": "sha256:69a97b2435eecdd6cfbe6ddf2b255165416aa25ddf5cf25dffe2488bcb643604",
+  "target": {
+    "database": "app_pyrosa_democrm",
+    "schema": "pyrosa_democrm"
+  },
+  "objectCount": 53,
+  "schemaDumpSha256": "sha256:415b16d83e802cd130db018b130ccd3541eccaa400d7a8858ca1afa7badb796b",
+  "objects": [
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": false,
+        "ordinalPosition": 4,
+        "default": "'pyrosa-iam'::text"
+      },
+      "objectName": "crm_audit_events.actor_source",
+      "objectType": "column",
+      "parentObjectName": "crm_audit_events"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": true,
+        "ordinalPosition": 3
+      },
+      "objectName": "crm_audit_events.actor_subject",
+      "objectType": "column",
+      "parentObjectName": "crm_audit_events"
+    },
+    {
+      "definition": {
+        "dataType": "bigint",
+        "nullable": false,
+        "ordinalPosition": 1,
+        "default": "nextval('crm_audit_events_audit_event_id_seq')",
+        "precision": 64,
+        "scale": 0
+      },
+      "objectName": "crm_audit_events.audit_event_id",
+      "objectType": "column",
+      "parentObjectName": "crm_audit_events"
+    },
+    {
+      "definition": {
+        "dataType": "bigint",
+        "nullable": true,
+        "ordinalPosition": 2,
+        "precision": 64,
+        "scale": 0
+      },
+      "objectName": "crm_audit_events.context_id",
+      "objectType": "column",
+      "parentObjectName": "crm_audit_events"
+    },
+    {
+      "definition": {
+        "dataType": "timestamptz",
+        "nullable": false,
+        "ordinalPosition": 9,
+        "default": "now()"
+      },
+      "objectName": "crm_audit_events.created_at",
+      "objectType": "column",
+      "parentObjectName": "crm_audit_events"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": true,
+        "ordinalPosition": 7
+      },
+      "objectName": "crm_audit_events.entity_id",
+      "objectType": "column",
+      "parentObjectName": "crm_audit_events"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": false,
+        "ordinalPosition": 6
+      },
+      "objectName": "crm_audit_events.entity_type",
+      "objectType": "column",
+      "parentObjectName": "crm_audit_events"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": false,
+        "ordinalPosition": 5
+      },
+      "objectName": "crm_audit_events.event_type",
+      "objectType": "column",
+      "parentObjectName": "crm_audit_events"
+    },
+    {
+      "definition": {
+        "dataType": "jsonb",
+        "nullable": false,
+        "ordinalPosition": 8,
+        "default": "'{}'::jsonb"
+      },
+      "objectName": "crm_audit_events.payload",
+      "objectType": "column",
+      "parentObjectName": "crm_audit_events"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": false,
+        "ordinalPosition": 3
+      },
+      "objectName": "crm_operating_contexts.accounts_organization_id",
+      "objectType": "column",
+      "parentObjectName": "crm_operating_contexts"
+    },
+    {
+      "definition": {
+        "dataType": "bigint",
+        "nullable": false,
+        "ordinalPosition": 1,
+        "default": "nextval('crm_operating_contexts_context_id_seq')",
+        "precision": 64,
+        "scale": 0
+      },
+      "objectName": "crm_operating_contexts.context_id",
+      "objectType": "column",
+      "parentObjectName": "crm_operating_contexts"
+    },
+    {
+      "definition": {
+        "dataType": "timestamptz",
+        "nullable": false,
+        "ordinalPosition": 6,
+        "default": "now()"
+      },
+      "objectName": "crm_operating_contexts.created_at",
+      "objectType": "column",
+      "parentObjectName": "crm_operating_contexts"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": false,
+        "ordinalPosition": 4
+      },
+      "objectName": "crm_operating_contexts.display_name",
+      "objectType": "column",
+      "parentObjectName": "crm_operating_contexts"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": false,
+        "ordinalPosition": 2
+      },
+      "objectName": "crm_operating_contexts.platform_tenant_id",
+      "objectType": "column",
+      "parentObjectName": "crm_operating_contexts"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": false,
+        "ordinalPosition": 5,
+        "default": "'active'::text"
+      },
+      "objectName": "crm_operating_contexts.status",
+      "objectType": "column",
+      "parentObjectName": "crm_operating_contexts"
+    },
+    {
+      "definition": {
+        "dataType": "timestamptz",
+        "nullable": false,
+        "ordinalPosition": 7,
+        "default": "now()"
+      },
+      "objectName": "crm_operating_contexts.updated_at",
+      "objectType": "column",
+      "parentObjectName": "crm_operating_contexts"
+    },
+    {
+      "definition": {
+        "dataType": "bigint",
+        "nullable": true,
+        "ordinalPosition": 2,
+        "precision": 64,
+        "scale": 0
+      },
+      "objectName": "crm_platform_links.context_id",
+      "objectType": "column",
+      "parentObjectName": "crm_platform_links"
+    },
+    {
+      "definition": {
+        "dataType": "timestamptz",
+        "nullable": false,
+        "ordinalPosition": 7,
+        "default": "now()"
+      },
+      "objectName": "crm_platform_links.created_at",
+      "objectType": "column",
+      "parentObjectName": "crm_platform_links"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": false,
+        "ordinalPosition": 4
+      },
+      "objectName": "crm_platform_links.external_ref",
+      "objectType": "column",
+      "parentObjectName": "crm_platform_links"
+    },
+    {
+      "definition": {
+        "dataType": "bigint",
+        "nullable": false,
+        "ordinalPosition": 1,
+        "default": "nextval('crm_platform_links_link_id_seq')",
+        "precision": 64,
+        "scale": 0
+      },
+      "objectName": "crm_platform_links.link_id",
+      "objectType": "column",
+      "parentObjectName": "crm_platform_links"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": false,
+        "ordinalPosition": 5
+      },
+      "objectName": "crm_platform_links.purpose",
+      "objectType": "column",
+      "parentObjectName": "crm_platform_links"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": false,
+        "ordinalPosition": 3
+      },
+      "objectName": "crm_platform_links.service_slug",
+      "objectType": "column",
+      "parentObjectName": "crm_platform_links"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": false,
+        "ordinalPosition": 6,
+        "default": "'active'::text"
+      },
+      "objectName": "crm_platform_links.status",
+      "objectType": "column",
+      "parentObjectName": "crm_platform_links"
+    },
+    {
+      "definition": {
+        "dataType": "timestamptz",
+        "nullable": false,
+        "ordinalPosition": 8,
+        "default": "now()"
+      },
+      "objectName": "crm_platform_links.updated_at",
+      "objectType": "column",
+      "parentObjectName": "crm_platform_links"
+    },
+    {
+      "definition": {
+        "dataType": "timestamptz",
+        "nullable": false,
+        "ordinalPosition": 2,
+        "default": "now()"
+      },
+      "objectName": "crm_schema_migrations.applied_at",
+      "objectType": "column",
+      "parentObjectName": "crm_schema_migrations"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": false,
+        "ordinalPosition": 1
+      },
+      "objectName": "crm_schema_migrations.version",
+      "objectType": "column",
+      "parentObjectName": "crm_schema_migrations"
+    },
+    {
+      "definition": {
+        "columns": [
+          "context_id"
+        ],
+        "constraintType": "foreign key",
+        "definitionHash": "sha256:4b62bce2f19f17c77b50abd55a0ec8d89533727bf5a823ae7eff704721876aed"
+      },
+      "objectName": "crm_audit_events.crm_audit_events_context_id_fkey",
+      "objectType": "constraint",
+      "parentObjectName": "crm_audit_events"
+    },
+    {
+      "definition": {
+        "columns": [
+          "audit_event_id"
+        ],
+        "constraintType": "primary key",
+        "definitionHash": "sha256:aaa567dd422c6e4f6b977f428cfc25009adaf28ac75def80a3191f36787006ee"
+      },
+      "objectName": "crm_audit_events.crm_audit_events_pkey",
+      "objectType": "constraint",
+      "parentObjectName": "crm_audit_events"
+    },
+    {
+      "definition": {
+        "columns": [
+          "context_id"
+        ],
+        "constraintType": "primary key",
+        "definitionHash": "sha256:b6a69dced32b2c38c9f42d83527714a2356e53a2dec78e36fcd76c940a27040d"
+      },
+      "objectName": "crm_operating_contexts.crm_operating_contexts_pkey",
+      "objectType": "constraint",
+      "parentObjectName": "crm_operating_contexts"
+    },
+    {
+      "definition": {
+        "columns": [
+          "platform_tenant_id",
+          "accounts_organization_id"
+        ],
+        "constraintType": "unique",
+        "definitionHash": "sha256:d9981efd7baf393de0602d5e1471677efb7d41421acb5dd0607eb93ebb1aa1ca"
+      },
+      "objectName": "crm_operating_contexts.crm_operating_contexts_platform_tenant_id_accounts_organiza_key",
+      "objectType": "constraint",
+      "parentObjectName": "crm_operating_contexts"
+    },
+    {
+      "definition": {
+        "columns": [
+          "status"
+        ],
+        "constraintType": "check",
+        "definitionHash": "sha256:ce9b13430e71c71d5d04b5fa25a4d276690918d76cf724ae19da13114934d5d7"
+      },
+      "objectName": "crm_operating_contexts.crm_operating_contexts_status_check",
+      "objectType": "constraint",
+      "parentObjectName": "crm_operating_contexts"
+    },
+    {
+      "definition": {
+        "columns": [
+          "context_id"
+        ],
+        "constraintType": "foreign key",
+        "definitionHash": "sha256:7f357abb2f02f7c7c363c2a66e43a0deb057f0e44521fced4e9a952ea29f3306"
+      },
+      "objectName": "crm_platform_links.crm_platform_links_context_id_fkey",
+      "objectType": "constraint",
+      "parentObjectName": "crm_platform_links"
+    },
+    {
+      "definition": {
+        "columns": [
+          "link_id"
+        ],
+        "constraintType": "primary key",
+        "definitionHash": "sha256:6b8d8fac78572f87335c2f417394c1da7823768333b18b09e7f345bc6de32386"
+      },
+      "objectName": "crm_platform_links.crm_platform_links_pkey",
+      "objectType": "constraint",
+      "parentObjectName": "crm_platform_links"
+    },
+    {
+      "definition": {
+        "columns": [
+          "service_slug"
+        ],
+        "constraintType": "check",
+        "definitionHash": "sha256:7ee9d891248ceb4a6eac03658b6390dbce9bb90a36601d1cfc677fe4e47756ef"
+      },
+      "objectName": "crm_platform_links.crm_platform_links_service_slug_check",
+      "objectType": "constraint",
+      "parentObjectName": "crm_platform_links"
+    },
+    {
+      "definition": {
+        "columns": [
+          "service_slug",
+          "external_ref",
+          "purpose"
+        ],
+        "constraintType": "unique",
+        "definitionHash": "sha256:7ebcfcb2e8abfe8722271e48da5138b9c8a16609296d85aff18458026bbd5a2e"
+      },
+      "objectName": "crm_platform_links.crm_platform_links_service_slug_external_ref_purpose_key",
+      "objectType": "constraint",
+      "parentObjectName": "crm_platform_links"
+    },
+    {
+      "definition": {
+        "columns": [
+          "status"
+        ],
+        "constraintType": "check",
+        "definitionHash": "sha256:ce9b13430e71c71d5d04b5fa25a4d276690918d76cf724ae19da13114934d5d7"
+      },
+      "objectName": "crm_platform_links.crm_platform_links_status_check",
+      "objectType": "constraint",
+      "parentObjectName": "crm_platform_links"
+    },
+    {
+      "definition": {
+        "columns": [
+          "version"
+        ],
+        "constraintType": "primary key",
+        "definitionHash": "sha256:9061249dc001a76c74399bc523a7415326bae13182cf3c84e7a2a0e877aae9c6"
+      },
+      "objectName": "crm_schema_migrations.crm_schema_migrations_pkey",
+      "objectType": "constraint",
+      "parentObjectName": "crm_schema_migrations"
+    },
+    {
+      "definition": {
+        "columns": [
+          "context_id",
+          "created_at"
+        ],
+        "definitionHash": "sha256:84db791d60c8cb39a3d196fc3132084502119a6b2019d4a42c95db2f18372cbb",
+        "expression": false,
+        "primary": false,
+        "unique": false
+      },
+      "objectName": "crm_audit_events.crm_audit_events_context_created_idx",
+      "objectType": "index",
+      "parentObjectName": "crm_audit_events"
+    },
+    {
+      "definition": {
+        "columns": [
+          "entity_type",
+          "entity_id"
+        ],
+        "definitionHash": "sha256:61998b8667df6907725e3533acb6ec7763c4152f670b2a1f6af5a8a65548752f",
+        "expression": false,
+        "primary": false,
+        "unique": false
+      },
+      "objectName": "crm_audit_events.crm_audit_events_entity_idx",
+      "objectType": "index",
+      "parentObjectName": "crm_audit_events"
+    },
+    {
+      "definition": {
+        "columns": [
+          "audit_event_id"
+        ],
+        "definitionHash": "sha256:6b597a8cd936ca0ca9af4b543be22f5298e33b15bd346763c21e022136009a05",
+        "expression": false,
+        "primary": true,
+        "unique": true
+      },
+      "objectName": "crm_audit_events.crm_audit_events_pkey",
+      "objectType": "index",
+      "parentObjectName": "crm_audit_events"
+    },
+    {
+      "definition": {
+        "columns": [
+          "context_id"
+        ],
+        "definitionHash": "sha256:8bbc1533a40247beeb731a67dfd389728440f40a356d081f3b7e2517f0624ca2",
+        "expression": false,
+        "primary": true,
+        "unique": true
+      },
+      "objectName": "crm_operating_contexts.crm_operating_contexts_pkey",
+      "objectType": "index",
+      "parentObjectName": "crm_operating_contexts"
+    },
+    {
+      "definition": {
+        "columns": [
+          "platform_tenant_id",
+          "accounts_organization_id"
+        ],
+        "definitionHash": "sha256:a7741951adb30f5cf64d6a51321f756be8e3254fe70863e1a91558d07fb8de50",
+        "expression": false,
+        "primary": false,
+        "unique": true
+      },
+      "objectName": "crm_operating_contexts.crm_operating_contexts_platform_tenant_id_accounts_organiza_key",
+      "objectType": "index",
+      "parentObjectName": "crm_operating_contexts"
+    },
+    {
+      "definition": {
+        "columns": [
+          "link_id"
+        ],
+        "definitionHash": "sha256:eb6f3dd70ee0b5b2c55a65a4f2b2a800d9e538c728cd45355b7bc19abda643c7",
+        "expression": false,
+        "primary": true,
+        "unique": true
+      },
+      "objectName": "crm_platform_links.crm_platform_links_pkey",
+      "objectType": "index",
+      "parentObjectName": "crm_platform_links"
+    },
+    {
+      "definition": {
+        "columns": [
+          "service_slug",
+          "external_ref",
+          "purpose"
+        ],
+        "definitionHash": "sha256:d878dc0d05e9278e00d54a532279b586608241f9921b913122229f2580215b26",
+        "expression": false,
+        "primary": false,
+        "unique": true
+      },
+      "objectName": "crm_platform_links.crm_platform_links_service_slug_external_ref_purpose_key",
+      "objectType": "index",
+      "parentObjectName": "crm_platform_links"
+    },
+    {
+      "definition": {
+        "columns": [
+          "version"
+        ],
+        "definitionHash": "sha256:9486f2fc7df5020aa7a143ba1e4bfcef71173d557d0eed8cb45a0358ec5ccc52",
+        "expression": false,
+        "primary": true,
+        "unique": true
+      },
+      "objectName": "crm_schema_migrations.crm_schema_migrations_pkey",
+      "objectType": "index",
+      "parentObjectName": "crm_schema_migrations"
+    },
+    {
+      "definition": {
+        "owner": "app_pyrosa_democrm",
+        "schemaDumpSha256": "sha256:415b16d83e802cd130db018b130ccd3541eccaa400d7a8858ca1afa7badb796b"
+      },
+      "objectName": "pyrosa_democrm",
+      "objectType": "schema",
+      "parentObjectName": null
+    },
+    {
+      "definition": {
+        "cycle": false,
+        "dataType": "bigint",
+        "increment": 1,
+        "maximum": 9223372036854776000,
+        "minimum": 1,
+        "start": 1
+      },
+      "objectName": "crm_audit_events_audit_event_id_seq",
+      "objectType": "sequence",
+      "parentObjectName": null
+    },
+    {
+      "definition": {
+        "cycle": false,
+        "dataType": "bigint",
+        "increment": 1,
+        "maximum": 9223372036854776000,
+        "minimum": 1,
+        "start": 1
+      },
+      "objectName": "crm_operating_contexts_context_id_seq",
+      "objectType": "sequence",
+      "parentObjectName": null
+    },
+    {
+      "definition": {
+        "cycle": false,
+        "dataType": "bigint",
+        "increment": 1,
+        "maximum": 9223372036854776000,
+        "minimum": 1,
+        "start": 1
+      },
+      "objectName": "crm_platform_links_link_id_seq",
+      "objectType": "sequence",
+      "parentObjectName": null
+    },
+    {
+      "definition": {
+        "columns": [
+          "audit_event_id",
+          "context_id",
+          "actor_subject",
+          "actor_source",
+          "event_type",
+          "entity_type",
+          "entity_id",
+          "payload",
+          "created_at"
+        ],
+        "primaryKey": [
+          "audit_event_id"
+        ]
+      },
+      "objectName": "crm_audit_events",
+      "objectType": "table",
+      "parentObjectName": null
+    },
+    {
+      "definition": {
+        "columns": [
+          "context_id",
+          "platform_tenant_id",
+          "accounts_organization_id",
+          "display_name",
+          "status",
+          "created_at",
+          "updated_at"
+        ],
+        "primaryKey": [
+          "context_id"
+        ]
+      },
+      "objectName": "crm_operating_contexts",
+      "objectType": "table",
+      "parentObjectName": null
+    },
+    {
+      "definition": {
+        "columns": [
+          "link_id",
+          "context_id",
+          "service_slug",
+          "external_ref",
+          "purpose",
+          "status",
+          "created_at",
+          "updated_at"
+        ],
+        "primaryKey": [
+          "link_id"
+        ]
+      },
+      "objectName": "crm_platform_links",
+      "objectType": "table",
+      "parentObjectName": null
+    },
+    {
+      "definition": {
+        "columns": [
+          "version",
+          "applied_at"
+        ],
+        "primaryKey": [
+          "version"
+        ]
+      },
+      "objectName": "crm_schema_migrations",
+      "objectType": "table",
+      "parentObjectName": null
+    }
+  ]
+}

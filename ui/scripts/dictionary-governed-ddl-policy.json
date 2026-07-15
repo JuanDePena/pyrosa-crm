@@ -26,17 +26,6 @@
     },
     {
       "repo": "pyrosa-democrm",
-      "path": "ui/scripts/apply-migration.mjs",
-      "gitBlob": "13f74c5462de2e633af8c0834eb2346f5041afd1",
-      "owner": "pyrosa-democrm",
-      "classification": "legacy-runner",
-      "disposition": "legacy-exception",
-      "justification": "Runner app-local historico que crea crm_schema_migrations y aplica SQL directo; debe migrarse al carril gobernado.",
-      "reviewBy": "2026-08-14",
-      "expiresOn": "2026-10-31"
-    },
-    {
-      "repo": "pyrosa-democrm",
       "path": "ui/scripts/check-dictionary-governed-ddl.mjs",
       "gitBlob": "569993cb7d2f5d542f7369aa99ca18fd563af3ab",
       "owner": "pyrosa-platform",

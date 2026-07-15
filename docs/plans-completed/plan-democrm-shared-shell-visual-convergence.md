@@ -22,7 +22,7 @@ El plan toma como plantilla reusable el cierre de Directory:
 - [`plan-pyrosa-ui-adoption.md`](plan-pyrosa-ui-adoption.md)
 - [`pyrosa-ui-visual-inventory-2026-07-07.md`](../plans-completed/pyrosa-ui-visual-inventory-2026-07-07.md)
 - [`../ops/shared-shell-scaffold.md`](../ops/shared-shell-scaffold.md)
-- [`plan-roadmap-v2606.md`](../plans/plan-roadmap-v2606.md)
+- [`plan-democrm-v2607.md`](plan-democrm-v2607.md)
 - `pyrosa-directory`: plantilla cerrada de SharedShell visual convergence
 - `pyrosa-platform`: referencia de Overview analitico, sidebar, header y
   `UserDrawer`
@@ -293,4 +293,4 @@ vive en
 La adopcion permanece en `pilot` exclusivamente porque los paquetes
 `@pyrosa/ui*` se consumen mediante dependencias `file:`. El siguiente corte de
 diccionarios, persistencia y endpoints CRM-owned se transfiere al
-[roadmap v2606](../plans/plan-roadmap-v2606.md) y no bloquea este cierre visual.
+[plan DemoCRM v2607](plan-democrm-v2607.md) y no bloquea este cierre visual.

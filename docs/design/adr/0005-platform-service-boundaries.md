@@ -10,7 +10,8 @@ This ADR remains the CRM-local record of concrete service relationships.
 
 ## Status
 
-Accepted for v2606 planning.
+Historical v2606 baseline. Expanded for v2607 by
+[ADR 0006](0006-multiindustry-core-and-industry-profiles.md).
 
 ## Decision
 

@@ -3,6 +3,11 @@
 Fecha de evidencia: `2026-07-06`
 Estado: `completado`
 
+Esta evidencia conserva un canary historico. Para v2607, las migraciones
+app-locales no se aplican desde el runtime: el flujo vigente es diccionario,
+plan Platform, apply gobernado, fingerprint y drift conforme al
+[diseno v2607](../design/design-democrm-v2607.md).
+
 ## Gobierno Transversal
 
 Este runbook conserva el resultado y rollback propios del canary CRM. La regla
@@ -10,7 +15,23 @@ comun vive en el
 [gobierno transversal de schemas de aplicacion](https://github.com/JuanDePena/pyrosa-docs/blob/main/design/app-schema-governance.md)
 (`/srv/docs/design/app-schema-governance.md`).
 
-## Estado Actual
+## Estado Gobernado v2607
+
+El `2026-07-15`, Platform aplico y verifico los tres targets fisicos del
+release candidate:
+
+- `app_pyrosa_democrm/pyrosa_democrm` con
+  `pyrosa-democrm-global@2.0.0` (`7/7` tablas);
+- `app_pyrosa_democrm/pyrosa_democrm_8ef427da9f0e` con
+  `pyrosa-democrm-tenant-product@2.0.1` (`25/25` tablas);
+- `app_pyrosa_crm/pyrosa_crm_8ef427da9f0e` con
+  `pyrosa-crm-tenant-product@2.0.1` (`25/25` tablas).
+
+Los tres quedaron `ready`, sin blockers, con backup/restore, fingerprint live,
+guard v2 y DDL/`TRUNCATE` revocados al runtime. La evidencia vigente es
+[rollout de diccionarios DemoCRM v2607](../evidence/democrm-v2607-dictionary-rollout-2026-07-15.md).
+
+## Estado Del Canary Historico
 
 | Campo | Valor |
 | --- | --- |
@@ -66,8 +87,9 @@ mover otra vez manualmente en la transaccion forward.
 - `rolconfig`: `search_path=pyrosa_democrm, public`.
 - `public`: 0 objetos app-owned.
 - `pyrosa_democrm`: 4 tablas, 3 secuencias y 8 indices.
-- `node ui/scripts/apply-migration.mjs`: migracion `0001_crm_core.sql` ya
-  aplicada.
+- Evidencia historica: el runner app-local confirmo en su momento que
+  `0001_crm_core.sql` ya estaba aplicada. Ese runner fue retirado en v2607 y
+  `npm run db:migrate` ahora rechaza el DDL local.
 - `app-pyrosa-democrm.service`: `active/running` despues del restart.
 - `http://127.0.0.1:10166/__pyrosa_crm_health`: `ok: true`.
 

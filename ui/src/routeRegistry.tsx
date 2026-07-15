@@ -1,15 +1,13 @@
 import React from "react";
 import {
   Activity,
-  Bell,
   Building2,
-  Database,
-  FileText,
-  Image as ImageIcon,
+  CalendarDays,
+  FileBarChart,
   LayoutDashboard,
-  Link2,
   Settings,
   Target,
+  Tickets,
   UsersRound
 } from "lucide-react";
 import type { SidebarItem } from "@pyrosa/ui";
@@ -18,19 +16,17 @@ export type CrmRouteId =
   | "dashboard"
   | "cuentas"
   | "contactos"
-  | "oportunidades"
+  | "casos"
   | "actividades"
+  | "agenda"
+  | "oportunidades"
   | "reportes"
-  | "configuracion"
-  | "plataforma"
-  | "marca"
-  | "runtime";
+  | "configuracion";
 
 export type CrmRouteDefinition = {
-  badge: string;
   description: string;
-  groupId: "gestion" | "relacion" | "operacion" | "gobierno" | "runtime";
-  groupLabel: "Gestion" | "Relacion" | "Operacion" | "Gobierno" | "Runtime";
+  groupId: "gestion" | "relacion" | "operacion" | "analitica" | "gobierno";
+  groupLabel: "Gestion" | "Relacion" | "Operacion" | "Analitica" | "Gobierno";
   groupOrder: number;
   hash: string;
   icon: React.ReactNode;
@@ -43,8 +39,7 @@ export type CrmRouteDefinition = {
 
 export const routeDefinitions: CrmRouteDefinition[] = [
   {
-    badge: "Overview",
-    description: "Lectura ejecutiva de relacion, pipeline, actividad, reportes y gobierno CRM.",
+    description: "Lectura ejecutiva de la operacion, relacion, pipeline, SLA y agenda CRM.",
     groupId: "gestion",
     groupLabel: "Gestion",
     groupOrder: 1,
@@ -52,13 +47,12 @@ export const routeDefinitions: CrmRouteDefinition[] = [
     icon: <LayoutDashboard aria-hidden="true" />,
     id: "dashboard",
     itemOrder: 1,
-    keywords: ["inicio", "overview", "resumen", "indicadores"],
+    keywords: ["inicio", "overview", "resumen", "metricas", "indicadores"],
     label: "Dashboard",
     title: "Overview CRM"
   },
   {
-    badge: "RO",
-    description: "Cuentas y organizaciones comerciales disponibles en lectura contract-first.",
+    description: "Organizaciones y relaciones comerciales administradas por CRM.",
     groupId: "relacion",
     groupLabel: "Relacion",
     groupOrder: 2,
@@ -66,13 +60,12 @@ export const routeDefinitions: CrmRouteDefinition[] = [
     icon: <Building2 aria-hidden="true" />,
     id: "cuentas",
     itemOrder: 1,
-    keywords: ["cuentas", "organizaciones", "clientes", "empresas"],
+    keywords: ["cuentas", "organizaciones", "clientes", "clinicas", "empresas"],
     label: "Cuentas",
     title: "Cuentas"
   },
   {
-    badge: "RO",
-    description: "Contactos, roles y preferencias comerciales en modo de consulta.",
+    description: "Personas, roles, canales, preferencias y consentimientos de relacion.",
     groupId: "relacion",
     groupLabel: "Relacion",
     groupOrder: 2,
@@ -80,13 +73,51 @@ export const routeDefinitions: CrmRouteDefinition[] = [
     icon: <UsersRound aria-hidden="true" />,
     id: "contactos",
     itemOrder: 2,
-    keywords: ["contactos", "personas", "roles", "preferencias"],
+    keywords: ["contactos", "personas", "roles", "medicos", "pacientes"],
     label: "Contactos",
     title: "Contactos"
   },
   {
-    badge: "RO",
-    description: "Pipeline, etapas, propuestas y probabilidad comercial en lectura.",
+    description: "Solicitudes de servicio, colas, asignacion, SLA y resolucion.",
+    groupId: "operacion",
+    groupLabel: "Operacion",
+    groupOrder: 3,
+    hash: "casos",
+    icon: <Tickets aria-hidden="true" />,
+    id: "casos",
+    itemOrder: 1,
+    keywords: ["casos", "seguimientos", "colas", "sla", "elegibilidad", "autorizacion"],
+    label: "Casos",
+    title: "Casos"
+  },
+  {
+    description: "Llamadas, tareas, notas y seguimientos auditables.",
+    groupId: "operacion",
+    groupLabel: "Operacion",
+    groupOrder: 3,
+    hash: "actividades",
+    icon: <Activity aria-hidden="true" />,
+    id: "actividades",
+    itemOrder: 2,
+    keywords: ["actividades", "llamadas", "tareas", "notas", "seguimientos"],
+    label: "Actividades",
+    title: "Actividades"
+  },
+  {
+    description: "Coordinacion de citas, participantes, recursos y excepciones de agenda.",
+    groupId: "operacion",
+    groupLabel: "Operacion",
+    groupOrder: 3,
+    hash: "agenda",
+    icon: <CalendarDays aria-hidden="true" />,
+    id: "agenda",
+    itemOrder: 3,
+    keywords: ["agenda", "citas", "calendario", "recursos", "confirmacion"],
+    label: "Agenda",
+    title: "Agenda"
+  },
+  {
+    description: "Pipeline comercial, etapas, forecast y proximas acciones.",
     groupId: "relacion",
     groupLabel: "Relacion",
     groupOrder: 2,
@@ -94,93 +125,35 @@ export const routeDefinitions: CrmRouteDefinition[] = [
     icon: <Target aria-hidden="true" />,
     id: "oportunidades",
     itemOrder: 3,
-    keywords: ["oportunidades", "pipeline", "forecast", "etapas"],
+    keywords: ["oportunidades", "pipeline", "forecast", "etapas", "ventas"],
     label: "Oportunidades",
     title: "Oportunidades"
   },
   {
-    badge: "RO",
-    description: "Seguimientos, tareas y proximas acciones de la operacion comercial.",
-    groupId: "operacion",
-    groupLabel: "Operacion",
-    groupOrder: 3,
-    hash: "actividades",
-    icon: <Bell aria-hidden="true" />,
-    id: "actividades",
-    itemOrder: 1,
-    keywords: ["actividades", "agenda", "tareas", "seguimientos"],
-    label: "Actividades",
-    title: "Actividades"
-  },
-  {
-    badge: "RO",
-    description: "Lecturas comerciales y tableros conectables a contratos CRM.",
-    groupId: "operacion",
-    groupLabel: "Operacion",
-    groupOrder: 3,
+    description: "Catalogo de reportes, corridas auditadas y exportaciones autorizadas.",
+    groupId: "analitica",
+    groupLabel: "Analitica",
+    groupOrder: 4,
     hash: "reportes",
-    icon: <FileText aria-hidden="true" />,
+    icon: <FileBarChart aria-hidden="true" />,
     id: "reportes",
-    itemOrder: 2,
-    keywords: ["reportes", "analitica", "forecast", "tableros"],
+    itemOrder: 1,
+    keywords: ["reportes", "analitica", "exportaciones", "metricas", "vistas"],
     label: "Reportes",
     title: "Reportes"
   },
   {
-    badge: "Demo",
-    description: "Parametros, integraciones y preferencias del tenant sin autoridad IAM local.",
+    description: "Perfil efectivo, vocabulario, SLA, metricas e integraciones declarativas.",
     groupId: "gobierno",
     groupLabel: "Gobierno",
-    groupOrder: 4,
+    groupOrder: 5,
     hash: "configuracion",
     icon: <Settings aria-hidden="true" />,
     id: "configuracion",
     itemOrder: 1,
-    keywords: ["configuracion", "preferencias", "tenant", "integraciones"],
+    keywords: ["configuracion", "perfil", "tenant", "integraciones", "sla", "voix"],
     label: "Configuracion",
-    title: "Configuracion"
-  },
-  {
-    badge: "Externo",
-    description: "Servicios Pyrosa consumidos por DemoCRM y sus fronteras de ownership.",
-    groupId: "gobierno",
-    groupLabel: "Gobierno",
-    groupOrder: 4,
-    hash: "plataforma",
-    icon: <Link2 aria-hidden="true" />,
-    id: "plataforma",
-    itemOrder: 2,
-    keywords: ["platform", "iam", "accounts", "servicios", "ownership"],
-    label: "Plataforma",
-    title: "Servicios plataforma"
-  },
-  {
-    badge: "Demo",
-    description: "Identidad visual y assets propios de DemoCRM.",
-    groupId: "gobierno",
-    groupLabel: "Gobierno",
-    groupOrder: 4,
-    hash: "marca",
-    icon: <ImageIcon aria-hidden="true" />,
-    id: "marca",
-    itemOrder: 3,
-    keywords: ["marca", "logo", "identidad", "assets"],
-    label: "Marca",
-    title: "Marca CRM"
-  },
-  {
-    badge: "Live",
-    description: "Sesion delegada, runtime y limites tecnicos de la aplicacion.",
-    groupId: "runtime",
-    groupLabel: "Runtime",
-    groupOrder: 5,
-    hash: "runtime",
-    icon: <Activity aria-hidden="true" />,
-    id: "runtime",
-    itemOrder: 1,
-    keywords: ["runtime", "health", "sesion", "version", "base de datos"],
-    label: "Runtime",
-    title: "Runtime"
+    title: "Configuracion CRM"
   }
 ];
 
@@ -195,7 +168,8 @@ const routeIdByHash = new Map<string, CrmRouteId>([
 ]);
 
 export function resolveCrmRouteId(hash: string): CrmRouteId {
-  return routeIdByHash.get(hash.replace(/^#/, "")) ?? "dashboard";
+  const routeHash = hash.replace(/^#/, "").split(/[/?]/u, 1)[0] ?? "";
+  return routeIdByHash.get(routeHash) ?? "dashboard";
 }
 
 export function createCrmSidebarItems({
@@ -209,7 +183,6 @@ export function createCrmSidebarItems({
 }): SidebarItem[] {
   return routeDefinitions.map((route) => ({
     active: activeRoute === route.id,
-    badge: route.badge,
     groupId: route.groupId,
     groupLabel: route.groupLabel,
     groupOrder: route.groupOrder,

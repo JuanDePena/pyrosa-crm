@@ -4,8 +4,9 @@ This file orients future agents and engineers working in this repository.
 
 ## Product Boundary
 
-`pyrosa-crm` is the new Pyrosa CRM product. Its local demo checkout is the
-source for the first v2606 sandbox surface. The active development checkout is:
+`pyrosa-crm` is the Pyrosa CRM product. Its local demo checkout is the source
+for the v2607 design and implementation while the live runtime remains on its
+last promoted version. The active development checkout is:
 
 - `/srv/containers/apps/pyrosa-democrm/app`
 
@@ -31,14 +32,31 @@ This repo should target the SimpleHostMan app model:
 
 CRM must consume platform capabilities instead of reimplementing them:
 
-- `pyrosa-platform`: app catalog, visual governance, runtime contracts, and
-  operational status
-- `pyrosa-iam`: authentication, MFA, global sessions, authorization posture,
-  OAuth/OIDC, and `ui-auth`
-- `pyrosa-accounts`: account center, user profile, preferences, and
-  self-service account surfaces
+- `pyrosa-platform`: company/tenant catalog, schemas, dictionaries, governed
+  DDL, readiness and operational status;
+- `pyrosa-iam`: authentication, MFA, sessions, OAuth/OIDC, `ui-auth` and
+  tenant policy;
+- `pyrosa-accounts`: account center, user profile, preferences and self-service;
+- `pyrosa-directory`: organizations, memberships, app assignments, seats,
+  tenant context, connections and notification delivery;
+- `pyrosa-store`: commercial customer, subscription, quantity, validity and
+  entitlement;
+- `pyrosa-ui`: shell, components, layouts, themes and accessibility;
+- `pyrosa-newsync` or the declared provider engine: external integrations and
+  synchronization.
+
+CRM owns CRM accounts, contacts, cases, activities, appointments,
+opportunities, reports and functional authorization. A CRM account is not a
+user account, a Directory organization or a Store customer.
+
+Physical schema changes follow dictionary -> Platform plan -> governed apply ->
+drift evidence. The CRM runtime role must not run DDL; historical migration
+files are not a production deployment path.
 
 Direct cross-app database coupling requires a documented ADR exception.
+
+Customer workbooks and operational datasets must not be committed. Only
+synthetic fixtures that passed privacy review may enter the repository.
 
 ## Documentation Rules
 

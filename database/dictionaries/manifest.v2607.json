@@ -1,0 +1,65 @@
+{
+  "schemaVersion": "pyrosa-democrm-dictionary-manifest-v1",
+  "release": "v2607",
+  "generatedAt": "2026-07-15T00:00:00.000Z",
+  "ownerAppSlug": "pyrosa-democrm",
+  "runtimeDdlAllowed": false,
+  "lineage": {
+    "physicalBaselineLifecycle": "immutable-pre-apply-migration-base",
+    "postApplyVerification": {
+      "owner": "pyrosa-platform",
+      "path": "docs/evidence/democrm-v2607-dictionary-rollout-2026-07-15.json",
+      "evidenceSha256": "49ef97873a1c1b2a6bcc6ef7dc073d949767d05006b1d1209cc68c2e775c813d",
+      "ready": true,
+      "targetCount": 3
+    }
+  },
+  "artifacts": [
+    {
+      "path": "database/dictionaries/pyrosa-democrm-global.v2607.json",
+      "dictionarySlug": "pyrosa-democrm-global",
+      "dictionaryVersion": "2.0.0",
+      "scope": "global",
+      "sha256": "d8e7edf2a2e79f55cb12f2e2cf035b5b52b86c5683a816fb07b7c48e1382bc0f"
+    },
+    {
+      "path": "database/dictionaries/pyrosa-democrm-tenant.v2607.json",
+      "dictionarySlug": "pyrosa-democrm-tenant-product",
+      "dictionaryVersion": "2.0.1",
+      "scope": "tenant",
+      "sha256": "375cee48ba39738c90171537f0e63eb442d072d967fe037426fa7a9dd4f07921"
+    },
+    {
+      "path": "database/seeds/v2607-synthetic.json",
+      "kind": "synthetic-seed",
+      "privacy": "synthetic-only",
+      "sha256": "601211ca015fdfe925577d2e3eff2e11cc68fe0885dc916daa78cdc395cf574b"
+    },
+    {
+      "path": "database/dictionaries/physical-baselines/pyrosa-democrm-global-2026.07.15.json",
+      "kind": "physical-baseline",
+      "purpose": "immutable-pre-apply-migration-base",
+      "scope": "global",
+      "readBusinessData": false,
+      "sha256": "1671d0433cbd4b0f5cbc5278153adcba141755b712097cae78157f912399fef1"
+    },
+    {
+      "path": "database/dictionaries/physical-baselines/pyrosa-democrm-tenant-2026.07.15.json",
+      "kind": "physical-baseline",
+      "purpose": "immutable-pre-apply-migration-base",
+      "scope": "tenant",
+      "applicationSlug": "pyrosa-democrm",
+      "readBusinessData": false,
+      "sha256": "be9bdb51ef4fdcd3cc1a375bd0d20ad72a97717ad2f4689dc09a86d58babc5ba"
+    },
+    {
+      "path": "database/dictionaries/physical-baselines/pyrosa-crm-tenant-2026.07.15.json",
+      "kind": "physical-baseline",
+      "purpose": "immutable-pre-apply-migration-base",
+      "scope": "tenant",
+      "applicationSlug": "pyrosa-crm",
+      "readBusinessData": false,
+      "sha256": "652deaa984f431fe325cfa7b1155bf5a71fd769202d1fa8a7c3ca738cf804723"
+    }
+  ]
+}

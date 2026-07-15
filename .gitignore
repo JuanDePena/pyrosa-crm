@@ -17,6 +17,11 @@ ui/tmp/
 .vite/
 coverage/
 
+# Controlled customer source data. Only explicitly synthetic workbooks may be
+# versioned after privacy review.
+docs/examples/*.xlsx
+!docs/examples/*-synthetic.xlsx
+
 # Python
 .venv/
 __pycache__/

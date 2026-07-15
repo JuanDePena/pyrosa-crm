@@ -12,20 +12,32 @@ const visualCases = [
     id: "desktop-dashboard",
     hash: "dashboard",
     viewport: { width: 1440, height: 1000, mobile: false },
-    expect: ["PYROSA CRM", "Overview CRM", "Cuentas"],
+    expect: ["PYROSA CRM", "Overview CRM", "Estado ejecutivo del CRM"],
     forbidTables: true
   },
   {
     id: "desktop-cuentas",
     hash: "cuentas",
     viewport: { width: 1440, height: 1000, mobile: false },
-    expect: ["PYROSA CRM", "Cuentas", "Atlas Retail Group"]
+    expect: ["PYROSA CRM", "Cuentas"]
+  },
+  {
+    id: "desktop-casos",
+    hash: "casos",
+    viewport: { width: 1440, height: 1000, mobile: false },
+    expect: ["PYROSA CRM", "Casos"]
+  },
+  {
+    id: "desktop-agenda",
+    hash: "agenda",
+    viewport: { width: 1440, height: 1000, mobile: false },
+    expect: ["PYROSA CRM", "Agenda"]
   },
   {
     id: "desktop-user-drawer",
     hash: "dashboard",
     viewport: { width: 1440, height: 1000, mobile: false },
-    expect: ["PYROSA CRM", "Cuenta", "Preferencias UI", "Alcance DemoCRM", "Promocion productiva"],
+    expect: ["PYROSA CRM", "Cuenta", "Preferencias UI", "Alcance DemoCRM", "Configuracion efectiva"],
     interaction: "open-user-drawer",
     requiredSelector: ".py-user-drawer"
   },
@@ -33,28 +45,51 @@ const visualCases = [
     id: "narrow-dashboard",
     hash: "dashboard",
     viewport: { width: 390, height: 844, mobile: true },
-    expect: ["PYROSA CRM", "Overview CRM", "Cuentas"],
+    expect: ["PYROSA CRM", "Overview CRM", "Estado ejecutivo del CRM"],
     forbidTables: true
   },
   {
     id: "narrow-cuentas",
     hash: "cuentas",
     viewport: { width: 390, height: 844, mobile: true },
-    expect: ["PYROSA CRM", "Cuentas", "Atlas Retail Group"]
+    expect: ["PYROSA CRM", "Cuentas"]
+  },
+  {
+    id: "narrow-casos",
+    hash: "casos",
+    viewport: { width: 390, height: 844, mobile: true },
+    expect: ["PYROSA CRM", "Casos"]
+  },
+  {
+    id: "narrow-agenda",
+    hash: "agenda",
+    viewport: { width: 390, height: 844, mobile: true },
+    expect: ["PYROSA CRM", "Agenda"]
   },
   {
     id: "narrow-user-drawer",
     hash: "dashboard",
     viewport: { width: 390, height: 844, mobile: true },
-    expect: ["PYROSA CRM", "Cuenta", "Preferencias UI", "Alcance DemoCRM", "Promocion productiva"],
+    expect: ["PYROSA CRM", "Cuenta", "Preferencias UI", "Alcance DemoCRM", "Configuracion efectiva"],
     interaction: "open-user-drawer",
     requiredSelector: ".py-user-drawer"
+  },
+  {
+    id: "desktop-fatal-error",
+    hash: "dashboard",
+    viewport: { width: 1440, height: 1000, mobile: false },
+    expect: ["PYROSA CRM", "DemoCRM no esta disponible", "Detalle tecnico"],
+    expectedFatal: true,
+    mockBootstrapError: true,
+    requiredSelector: "[data-crm-fatal-error='true']"
   }
 ];
 
 async function main() {
   const args = parseArgs(process.argv.slice(2));
-  const baseUrl = normalizeBaseUrl(args.baseUrl ?? process.env.PYROSA_CRM_QA_BASE_URL ?? "http://127.0.0.1:10166");
+  const requestedBaseUrl = args.baseUrl ?? process.env.PYROSA_CRM_QA_BASE_URL;
+  const previewPort = parseDebugPort(args.previewPort ?? process.env.PYROSA_CRM_QA_PREVIEW_PORT ?? randomPort());
+  const baseUrl = normalizeBaseUrl(requestedBaseUrl ?? `http://127.0.0.1:${previewPort}`);
   const outDir = resolve(process.cwd(), args.outDir ?? process.env.PYROSA_CRM_QA_OUT_DIR ?? "tmp/qa-visual");
   const chromiumBin = args.chromiumBin ?? process.env.CHROMIUM_BIN ?? findChromium();
   const debugPort = parseDebugPort(args.debugPort ?? process.env.PYROSA_CRM_QA_DEBUG_PORT ?? randomPort());
@@ -67,6 +102,25 @@ async function main() {
   await rm(outDir, { recursive: true, force: true });
   await mkdir(outDir, { recursive: true, mode: 0o750 });
   await chmod(outDir, 0o750);
+
+  let preview = null;
+  if (!requestedBaseUrl) {
+    const viteBin = resolve(process.cwd(), "node_modules/vite/bin/vite.js");
+    if (!existsSync(resolve(process.cwd(), "dist/index.html")) || !existsSync(viteBin)) {
+      throw new Error("QA visual requiere un build local y Vite instalado. Ejecuta npm run build primero.");
+    }
+    preview = spawn(
+      process.execPath,
+      [viteBin, "preview", "--host", "127.0.0.1", "--port", String(previewPort), "--strictPort"],
+      { cwd: process.cwd(), stdio: ["ignore", "ignore", "ignore"] }
+    );
+    try {
+      await waitForPreview(baseUrl, preview);
+    } catch (error) {
+      await terminateProcess(preview);
+      throw error;
+    }
+  }
 
   const userDataDir = await mkdtemp(join(tmpdir(), "democrm-visual-qa-"));
   const chromium = spawn(
@@ -160,8 +214,14 @@ async function main() {
     for (const visualCase of visualCases) {
       const screenshotPath = join(outDir, `${visualCase.id}.png`);
       const routeUrl = new URL(`/ui#${visualCase.hash}`, baseUrl);
+      routeUrl.searchParams.set("qa-case", visualCase.id);
       const diagnosticStart = diagnostics.length;
       await ensureUserDrawerClosed(browser, sessionId);
+      const mockScriptId = await installCrmApiMock(
+        browser,
+        sessionId,
+        visualCase.mockBootstrapError === true
+      );
       await browser.send(
         "Emulation.setDeviceMetricsOverride",
         {
@@ -202,6 +262,9 @@ async function main() {
         ...inspection,
         failures: [...inspection.failures, ...diagnosticFailures]
       });
+      if (mockScriptId) {
+        await browser.send("Page.removeScriptToEvaluateOnNewDocument", { identifier: mockScriptId }, sessionId);
+      }
     }
 
     const failures = results.flatMap((result) => result.failures.map((failure) => `${result.id}: ${failure}`));
@@ -210,6 +273,7 @@ async function main() {
       ok: failures.length === 0,
       generatedAt: new Date().toISOString(),
       application: "pyrosa-democrm",
+      qaDataMode: "synthetic-contract",
       baseOrigin: baseUrl.origin,
       chromium: basename(chromiumBin),
       captures: results.length,
@@ -229,11 +293,29 @@ async function main() {
   } finally {
     browser?.close();
     await terminateProcess(chromium);
+    if (preview) await terminateProcess(preview);
     await rm(userDataDir, { recursive: true, force: true });
     if ((failed || process.exitCode) && chromiumStderr) {
       console.error(sanitizeDiagnostic({ source: "chromium", message: chromiumStderr }).message);
     }
   }
+}
+
+async function waitForPreview(baseUrl, process) {
+  const deadline = Date.now() + 10_000;
+  while (Date.now() < deadline) {
+    if (process.exitCode !== null) {
+      throw new Error(`El preview local termino antes de iniciar (exit ${process.exitCode}).`);
+    }
+    try {
+      const response = await fetch(baseUrl, { redirect: "manual" });
+      if (response.ok) return;
+    } catch {
+      // Vite is still booting.
+    }
+    await delay(100);
+  }
+  throw new Error("El preview local de QA no respondio dentro del timeout.");
 }
 
 function parseArgs(argv) {
@@ -367,24 +449,41 @@ async function navigateAndSettle(client, sessionId, url, expectedText) {
 
 async function waitForPageContent(client, sessionId, expectedPath, expectedText, timeoutMs) {
   const deadline = Date.now() + timeoutMs;
+  let lastState = null;
   while (Date.now() < deadline) {
     const evaluation = await client.send(
       "Runtime.evaluate",
       {
         expression: `(() => {
           const text = document.body?.innerText ?? "";
-          return document.readyState !== "loading" &&
-            location.pathname + location.hash === ${JSON.stringify(expectedPath)} &&
-            ${JSON.stringify(expectedText)}.every((item) => text.includes(item));
+          const expected = ${JSON.stringify(expectedText)};
+          return {
+            ready: document.readyState,
+            path: location.pathname + location.hash,
+            title: document.title,
+            text: text.slice(0, 240),
+            missing: expected.filter((item) => !text.includes(item))
+          };
         })()`,
         returnByValue: true
       },
       sessionId
     );
-    if (evaluation.result?.value === true) return;
+    lastState = evaluation.result?.value ?? null;
+    if (
+      lastState?.ready !== "loading" &&
+      lastState?.path === expectedPath &&
+      Array.isArray(lastState?.missing) &&
+      lastState.missing.length === 0
+    ) {
+      return;
+    }
     await delay(200);
   }
-  throw new Error(`La vista ${expectedPath} no alcanzo contenido estable dentro del timeout de QA.`);
+  const diagnostic = sanitizeDiagnostic({ message: JSON.stringify(lastState ?? {}) }).message;
+  throw new Error(
+    `La vista ${expectedPath} no alcanzo contenido estable dentro del timeout de QA. Estado final: ${diagnostic}`
+  );
 }
 
 async function openUserDrawer(client, sessionId) {
@@ -453,6 +552,121 @@ async function ensureUserDrawerClosed(client, sessionId) {
   throw new Error("UserDrawer no cerro al aislar el siguiente escenario de QA.");
 }
 
+async function installCrmApiMock(client, sessionId, bootstrapFailure) {
+  const now = "2026-07-15T12:00:00.000Z";
+  const meta = { asOf: now, requestId: "qa-contract-request", tenantId: "tenant-qa-001" };
+  const resources = {
+    accounts: [{ id: "account-qa-001", name: "Cuenta sintetica QA", type: "organization", status: "active", ownerId: "team-qa", version: 1, updatedAt: now }],
+    contacts: [{ id: "contact-qa-001", displayName: "Contacto sintetico QA", role: "patient", status: "active", version: 1, updatedAt: now }],
+    cases: [{ id: "case-qa-001", subject: "Coordinacion sintetica QA", caseType: "appointment-coordination", priority: "normal", status: "in_progress", ownerId: "agent-qa", version: 1, updatedAt: now }],
+    activities: [{ id: "activity-qa-001", subject: "Seguimiento sintetico QA", type: "call", status: "open", ownerId: "agent-qa", version: 1, updatedAt: now }],
+    appointments: [{ id: "appointment-qa-001", status: "scheduled", resourceId: "resource-qa", startAt: "2026-07-16T14:00:00.000Z", endAt: "2026-07-16T15:00:00.000Z", timezone: "America/Santo_Domingo", version: 1, updatedAt: now }],
+    opportunities: [{ id: "opportunity-qa-001", name: "Oportunidad sintetica QA", status: "open", stageId: "qualified", amountMinor: 125000, currency: "USD", probability: 40, version: 1, updatedAt: now }],
+    reports: [{ id: "case-backlog", key: "case-backlog", label: "Seguimiento de casos", description: "Reporte sintetico de QA", status: "active", version: 1, updatedAt: now }]
+  };
+  const responses = {
+    session: {
+      ok: true,
+      session: {
+        csrfToken: "qa-browser-csrf-token",
+        expiresAt: "2026-07-15T13:00:00.000Z",
+        tenant: { id: "tenant-qa-001", label: "Tenant sintetico QA" },
+        user: {
+          displayName: "QA DemoCRM",
+          email: "qa-democrm@pyrosa.local",
+          locale: "es-DO",
+          role: "superadmin",
+          status: "active",
+          timezone: "America/Santo_Domingo",
+          primaryEmail: { email: "qa-democrm@pyrosa.local", isVerified: true },
+          security: { activeMfaMethods: 1, mfaRequired: false }
+        }
+      }
+    },
+    bootstrap: {
+      app: { branch: "main", name: "pyrosa-crm", version: "v2607" },
+      context: {
+        activeTenantId: "tenant-qa-001",
+        displayName: "Tenant sintetico QA",
+        profileKey: "healthcare-call-center",
+        profileVersion: "1",
+        tenantKey: "8ef427da9f0e",
+        timezone: "America/Santo_Domingo"
+      }
+    },
+    dashboard: {
+      data: {
+        contractVersion: "crm-dashboard-summary-v1",
+        metricSetVersion: "healthcare-call-center@1",
+        profileVersion: "healthcare-call-center@1",
+        period: { from: "2026-06-15T12:00:00.000Z", to: now },
+        timezone: "America/Santo_Domingo",
+        asOf: now,
+        freshness: { state: "live", generatedAt: now, ageSeconds: 0 },
+        score: { value: 92, formulaVersion: "crm-operational-score@1", dimensions: [] },
+        metrics: [
+          { key: "cases.open", label: "Casos abiertos", value: 8, unit: "casos", tone: "neutral" },
+          { key: "cases.overdue", label: "Casos vencidos", value: 1, unit: "casos", tone: "warning", target: 0 },
+          { key: "appointments.exceptions", label: "Excepciones de agenda", value: 0, unit: "citas", tone: "success", target: 0 }
+        ],
+        signals: [
+          { key: "profile", label: "Perfil", value: "healthcare-call-center@1", tone: "neutral" },
+          { key: "dictionary", label: "Diccionario", value: "2.0.1", tone: "success" }
+        ],
+        progress: [{ key: "sla", label: "Cumplimiento SLA", value: 96, target: 95, unit: "%" }],
+        risks: [{ key: "cases-overdue", label: "Casos vencidos", count: 1, route: "#casos?status=overdue", severity: "medium" }],
+        domains: [
+          { key: "accounts", label: "Cuentas", value: 4, route: "#cuentas", status: "live" },
+          { key: "contacts", label: "Contactos", value: 9, route: "#contactos", status: "live" },
+          { key: "cases", label: "Casos", value: 8, route: "#casos", status: "live" },
+          { key: "appointments", label: "Agenda", value: 3, route: "#agenda", status: "live" }
+        ],
+        insights: [{ key: "case-sla", title: "Priorizar caso vencido", detail: "Un caso sintetico requiere revision.", route: "#casos?status=overdue", tone: "warning" }]
+      },
+      meta
+    }
+  };
+  const source = `(() => {
+    const nativeFetch = window.fetch.bind(window);
+    window.fetch = (input, init) => {
+      const url = typeof input === "string" ? input : input instanceof Request ? input.url : String(input);
+      const path = new URL(url, window.location.href).pathname;
+      const json = (payload, status = 200, requestId = "qa-contract-request") => Promise.resolve(new Response(JSON.stringify(payload), {
+        status,
+        headers: { "content-type": "application/json", "x-request-id": requestId }
+      }));
+      if (path === "/api/crm/bootstrap" && ${JSON.stringify(bootstrapFailure)}) {
+        return Promise.resolve(new Response(JSON.stringify({
+          error: {
+            code: "crm.bootstrap.qa_failure",
+            message: "DemoCRM tiene un problema interno temporal.",
+            requestId: "qa-fatal-request",
+            occurredAt: "2026-07-15T00:00:00.000Z",
+            retryable: true,
+            fields: []
+          }
+        }), {
+          status: 503,
+          headers: { "content-type": "application/json", "x-request-id": "qa-fatal-request" }
+        }));
+      }
+      if (path === "/api/crm/session") return json(${JSON.stringify(responses.session)});
+      if (path === "/api/crm/bootstrap") return json(${JSON.stringify(responses.bootstrap)});
+      if (path === "/api/crm/v1/dashboard-summary") return json(${JSON.stringify(responses.dashboard)});
+      if (path.startsWith("/api/crm/v1/")) {
+        const resource = path.slice("/api/crm/v1/".length).split("/")[0];
+        const rows = ${JSON.stringify(resources)}[resource];
+        if (Array.isArray(rows)) {
+          return json({ data: rows, meta: ${JSON.stringify(meta)}, page: { limit: 25, nextCursor: null, total: rows.length } });
+        }
+      }
+      return nativeFetch(input, init);
+    };
+  })();`;
+  const result = await client.send("Page.addScriptToEvaluateOnNewDocument", { source }, sessionId);
+  return result.identifier;
+}
+
 async function inspectPage(client, sessionId, visualCase) {
   const expression = `(() => {
     const text = document.body?.innerText ?? "";
@@ -488,7 +702,11 @@ async function inspectPage(client, sessionId, visualCase) {
   if (value.hasLoginRedirect) failures.push("la sesion QA fue redirigida a login");
   if (value.hasContractFallback) failures.push("la UI mostro fallback por contratos no disponibles");
   if (value.hasRuntimeError) failures.push("la UI mostro error runtime");
-  if (!value.shellPresent || !value.sidebarPresent || !value.topbarPresent) failures.push("faltan superficies del SharedShell");
+  if (visualCase.expectedFatal) {
+    if (value.shellPresent || value.sidebarPresent || value.topbarPresent) failures.push("la landing fatal se renderizo dentro del SharedShell");
+  } else if (!value.shellPresent || !value.sidebarPresent || !value.topbarPresent) {
+    failures.push("faltan superficies del SharedShell");
+  }
   if (!value.requiredSelectorPresent) failures.push(`falta selector requerido ${visualCase.requiredSelector}`);
   if (!visualCase.interaction && value.drawerPresent) failures.push("UserDrawer quedo abierto fuera de su escenario");
   if (Array.isArray(value.missing) && value.missing.length > 0) failures.push(`faltan textos esperados: ${value.missing.join(", ")}`);

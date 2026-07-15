@@ -2,7 +2,7 @@
 
 Fecha: `2026-07-07`
 Fecha de cierre: `2026-07-15`
-Estado: `completado en piloto`
+Estado: `snapshot historico completado; superado por DemoCRM v2607`
 Plan transversal: [Adopcion Pyrosa UI](https://github.com/JuanDePena/pyrosa-docs/blob/main/plans/plan-pyrosa-ui-adoption.md)
 
 `pyrosa-democrm` / `pyrosa-crm` consume `pyrosa-ui` con perfil
@@ -12,7 +12,11 @@ Los contratos transversales viven en
 [SharedShell](https://github.com/JuanDePena/pyrosa-docs/blob/main/design/shared-shell.md)
 y
 [navegacion y teclado SharedShell](https://github.com/JuanDePena/pyrosa-docs/blob/main/design/shared-shell-navigation-keyboard.md).
-Este plan conserva la adopcion, prioridades y evidencia propias de CRM.
+Este plan conserva la adopcion, prioridades y evidencia propias de CRM en el
+snapshot inicial. El estado vigente está en el
+[plan DemoCRM v2607](plan-democrm-v2607.md) y en su
+[evidencia de convergencia](../evidence/shared-shell-visual-convergence-2026-07-15.md);
+no se debe interpretar el inventario siguiente como el source actual.
 
 ## Estado
 
@@ -20,12 +24,13 @@ Este plan conserva la adopcion, prioridades y evidencia propias de CRM.
 - tema objetivo: `pyrosa-base@1.0.0`
 - perfil: `business-ops`
 - autenticacion: delegada a `pyrosa-iam`
-- estado actual: `pilot` sobre `BusinessOpsShellTemplate`
+- estado capturado por este snapshot: `pilot` sobre `BusinessOpsShellTemplate`
+- estado sucesor: release candidate v2607 source-ready, con runtime sin promocionar
 
 CRM debe consumir la capa visual compartida sin mover leads, cuentas,
 contactos, oportunidades, pipeline ni actividades fuera del dominio CRM.
 
-## Entregado
+## Entregado En El Snapshot
 
 - `@pyrosa/ui*` consumido como dependencias locales declaradas.
 - Shell compartido mediante `BusinessOpsShellTemplate` y `WorkspaceLayout`,
@@ -52,11 +57,12 @@ Resultado:
 - siguientes targets: `contactos` y `oportunidades`;
 - no se habilitan mutaciones sin contrato, validacion y auditoria.
 
-## Proximo Corte De Dominio
+## Handoff Historico, Ya Superado
 
-Este trabajo es un handoff al
-[roadmap v2606](../plans/plan-roadmap-v2606.md); no es un pendiente de la
-adopcion visual cerrada.
+Este trabajo fue el handoff al
+[plan DemoCRM v2607](plan-democrm-v2607.md). La lista conserva el alcance que
+estaba pendiente al cerrar el snapshot; no describe pendientes actuales de la
+adopcion visual.
 
 1. Definir diccionarios y tablas CRM-owned para cuentas, contactos,
    oportunidades y actividades.
@@ -73,11 +79,13 @@ adopcion visual cerrada.
 
 ## Evidencia De Cierre
 
-La corrida del `2026-07-15` aprobo `check:pyrosa-ui`, `typecheck`, pruebas
-OAuth API, `build`, health y seis escenarios visuales desktop/estrechos. El
-resumen durable queda en
+La corrida original del `2026-07-15` aprobo `check:pyrosa-ui`, `typecheck`,
+pruebas OAuth API, `build`, health y seis escenarios visuales
+desktop/estrechos. El cierre sucesor v2607 amplió el contrato a nueve rutas,
+paquetes HTTP inmutables `0.2.1` y once escenarios visuales. El resumen durable
+vigente queda en
 [`shared-shell-visual-convergence-2026-07-15.md`](../evidence/shared-shell-visual-convergence-2026-07-15.md).
 
-El estado no se promueve a `ready` mientras los paquetes compartidos sigan
-declarados mediante `file:`. Esta restriccion de distribucion no deja tareas
-visuales abiertas en DemoCRM.
+La restriccion histórica de dependencias `file:` fue superada por paquetes
+HTTP inmutables `0.2.1` con provenance. Esto cierra el pendiente de distribución
+del snapshot, pero no equivale a despliegue ni promocion del runtime DemoCRM.

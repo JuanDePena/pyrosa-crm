@@ -23,6 +23,13 @@ flag `0` vuelve a UI-session-only.
 El secret Basic sólo se envía a un endpoint HTTPS sin userinfo, query ni
 fragment y del mismo origin que el issuer IAM.
 
-El scaffold aún no expone datos tenant-aware ni escrituras: no se inventa un
-claim tenant. Antes de abrir dominio productivo deberá resolver el contexto
-organizacional en Directory y añadir scopes por acción.
+La API CRM v1 ya expone dominio tenant-aware y escrituras en source. Antes de
+abrirlo en runtime debe resolver el contexto compuesto mediante Directory,
+Store y Platform con grants owner-specific y scopes por accion; no se inventa
+un claim tenant ni se habilita un fallback local.
+
+La evolucion concreta se define en el
+[contrato API CRM v1](../api/crm-v1.md) y el
+[plan v2607 cerrado](../plans-completed/plan-democrm-v2607.md) y el
+[runbook de promocion](../ops/democrm-v2607-promotion.md). Este documento
+conserva el resource server baseline y el compatibility scope `crm.read`.

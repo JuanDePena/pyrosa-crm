@@ -2,6 +2,8 @@
 
 Date: `2026-06-13`
 
+Status: `historical baseline; superseded by` [Vision v2607](vision-v2607.md)
+
 ## Summary
 
 Pyrosa CRM is the new transactional product surface for Pyrosa operations and

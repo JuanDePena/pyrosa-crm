@@ -1,0 +1,241 @@
+{
+  "schemaVersion": "pyrosa-platform-dictionary-definition-v1",
+  "dictionarySlug": "pyrosa-democrm-tenant-product",
+  "dictionaryVersion": "2.0.1",
+  "ownerAppSlug": "pyrosa-democrm",
+  "scope": "tenant",
+  "target": {
+    "databaseRef": "pyrosa-postgres-primary",
+    "schemaTemplate": "pyrosa_democrm_{tenant_key}",
+    "tenantKeyPattern": "^[a-z0-9][a-z0-9_]{2,47}$"
+  },
+  "bootstrapPolicy": {
+    "executor": "pyrosa-platform",
+    "operation": "migration.execute",
+    "runtimeRoleMayApplyDdl": false,
+    "applicationMayApplyDdl": false,
+    "requiresBackup": true,
+    "requiresCanary": true,
+    "requiresFingerprint": true
+  },
+  "invariants": [
+    "one physical schema per Platform tenant key",
+    "tenant schema is resolved by Platform and is never concatenated from browser input",
+    "histories audit and outbox are append-only",
+    "idempotency result and aggregate mutation share one transaction",
+    "record_json is aggregate-specific and validated against a fixed API/profile schema; it is not universal EAV",
+    "sensitive contact extensions are omitted unless crm.sensitive.read is authorized"
+  ],
+  "aggregateTableContract": {
+    "commonColumns": {
+      "id": "text:not-null",
+      "status": "text:not-null",
+      "owner_id": "text:null",
+      "search_text": "text:not-null:default-empty",
+      "record_json": "jsonb:not-null:default-empty-object",
+      "version": "bigint:not-null:default-1",
+      "created_at": "timestamptz:not-null",
+      "updated_at": "timestamptz:not-null",
+      "archived_at": "timestamptz:null"
+    },
+    "checks": ["version:positive", "record_json:resource-specific-schema", "search_text:contains-no-sensitive-fields"]
+  },
+  "existingTableChanges": [
+    {
+      "name": "crm_operating_contexts",
+      "columns": [
+        {
+          "name": "accounts_organization_id",
+          "dataType": "text",
+          "nullable": true,
+          "ensureNullable": true,
+          "deprecatedAuthority": "pyrosa-accounts",
+          "replacementAuthority": "pyrosa-directory/platform"
+        }
+      ]
+    },
+    {
+      "name": "crm_audit_events",
+      "columns": [
+        { "name": "id", "dataType": "text", "nullable": false },
+        { "name": "request_id", "dataType": "text", "nullable": false },
+        { "name": "authorization_decision_id", "dataType": "text", "nullable": false },
+        { "name": "action", "dataType": "text", "nullable": false },
+        { "name": "outcome", "dataType": "text", "nullable": false },
+        { "name": "reason_code", "dataType": "text", "nullable": true },
+        { "name": "occurred_at", "dataType": "timestamptz", "nullable": false }
+      ],
+      "checks": [
+        {
+          "name": "crm_audit_events_outcome_check",
+          "expression": "outcome IN ('accepted', 'rejected')"
+        }
+      ],
+      "indexes": [
+        { "name": "crm_audit_events_id_uq", "columns": ["id"], "unique": true },
+        { "name": "crm_audit_events_entity_occurred_idx", "columns": ["entity_type", "entity_id", "occurred_at"] },
+        { "name": "crm_audit_events_actor_occurred_idx", "columns": ["actor_subject", "occurred_at"] }
+      ]
+    }
+  ],
+  "tables": [
+    {
+      "name": "crm_accounts",
+      "primaryKey": ["id"],
+      "columns": { "common": "aggregateTableContract", "account_type": "text:not-null", "external_ref": "text:null" },
+      "unique": [["external_ref", "archived_at"]],
+      "checks": ["status:active|paused|archived", "record_json:account-v1"],
+      "indexes": [["status", "owner_id", "updated_at"], ["account_type", "status"]]
+    },
+    {
+      "name": "crm_contacts",
+      "primaryKey": ["id"],
+      "columns": { "common": "aggregateTableContract", "primary_account_id": "text:null", "contact_role": "text:not-null", "sensitive_json": "jsonb:not-null:encrypted-or-field-encrypted" },
+      "foreignKeys": [{ "columns": ["primary_account_id"], "references": "crm_accounts(id)", "onDelete": "restrict" }],
+      "checks": ["status:active|paused|archived", "record_json:contact-v1", "sensitive_json:contact-sensitive-v1"],
+      "indexes": [["primary_account_id", "status"], ["contact_role", "status"]]
+    },
+    {
+      "name": "crm_account_contact_links",
+      "primaryKey": ["id"],
+      "columns": { "id": "text:not-null", "account_id": "text:not-null", "contact_id": "text:not-null", "role_key": "text:not-null", "is_primary": "boolean:not-null", "version": "bigint:not-null", "created_at": "timestamptz:not-null", "archived_at": "timestamptz:null" },
+      "foreignKeys": [{ "columns": ["account_id"], "references": "crm_accounts(id)", "onDelete": "restrict" }, { "columns": ["contact_id"], "references": "crm_contacts(id)", "onDelete": "restrict" }],
+      "unique": [["account_id", "contact_id", "role_key", "archived_at"]]
+    },
+    {
+      "name": "crm_contact_preferences",
+      "primaryKey": ["contact_id", "channel_key"],
+      "columns": { "contact_id": "text:not-null", "channel_key": "text:not-null", "preference": "text:not-null", "consent_status": "text:not-null", "consent_source": "text:null", "version": "bigint:not-null", "updated_at": "timestamptz:not-null" },
+      "foreignKeys": [{ "columns": ["contact_id"], "references": "crm_contacts(id)", "onDelete": "cascade" }],
+      "checks": ["preference:preferred|allowed|blocked", "consent_status:unknown|recorded|revoked"]
+    },
+    {
+      "name": "crm_cases",
+      "primaryKey": ["id"],
+      "columns": { "common": "aggregateTableContract", "account_id": "text:null", "contact_id": "text:null", "case_type": "text:not-null", "priority": "text:not-null", "queue_id": "text:null", "sla_due_at": "timestamptz:null" },
+      "foreignKeys": [{ "columns": ["account_id"], "references": "crm_accounts(id)", "onDelete": "restrict" }, { "columns": ["contact_id"], "references": "crm_contacts(id)", "onDelete": "restrict" }],
+      "checks": ["status:new|triaged|in_progress|waiting_external|resolved|closed|reopened|cancelled", "priority:low|normal|high|urgent", "record_json:case-v1"],
+      "indexes": [["status", "priority", "sla_due_at"], ["queue_id", "owner_id", "status"]]
+    },
+    {
+      "name": "crm_case_parties",
+      "primaryKey": ["id"],
+      "columns": { "id": "text:not-null", "case_id": "text:not-null", "party_type": "text:not-null", "party_id": "text:not-null", "role_key": "text:not-null", "created_at": "timestamptz:not-null", "archived_at": "timestamptz:null" },
+      "foreignKeys": [{ "columns": ["case_id"], "references": "crm_cases(id)", "onDelete": "cascade" }],
+      "unique": [["case_id", "party_type", "party_id", "role_key", "archived_at"]]
+    },
+    {
+      "name": "crm_case_status_history",
+      "primaryKey": ["id"],
+      "columns": { "id": "text:not-null", "case_id": "text:not-null", "from_status": "text:null", "to_status": "text:not-null", "reason_code": "text:null", "actor_subject": "text:not-null", "aggregate_version": "bigint:not-null", "occurred_at": "timestamptz:not-null" },
+      "foreignKeys": [{ "columns": ["case_id"], "references": "crm_cases(id)", "onDelete": "restrict" }],
+      "unique": [["case_id", "aggregate_version"]],
+      "appendOnly": true
+    },
+    {
+      "name": "crm_activities",
+      "primaryKey": ["id"],
+      "columns": { "common": "aggregateTableContract", "case_id": "text:null", "account_id": "text:null", "contact_id": "text:null", "activity_type": "text:not-null", "due_at": "timestamptz:null", "completed_at": "timestamptz:null" },
+      "foreignKeys": [{ "columns": ["case_id"], "references": "crm_cases(id)", "onDelete": "restrict" }],
+      "checks": ["activity_type:call|task|follow_up|email|note", "status:open|in_progress|completed|cancelled", "record_json:activity-v1"],
+      "indexes": [["case_id", "created_at"], ["owner_id", "status", "due_at"]]
+    },
+    {
+      "name": "crm_appointments",
+      "primaryKey": ["id"],
+      "columns": { "common": "aggregateTableContract", "case_id": "text:not-null", "account_id": "text:null", "contact_id": "text:null", "resource_id": "text:null", "start_at": "timestamptz:null", "end_at": "timestamptz:null", "timezone": "text:not-null", "external_ref": "text:null" },
+      "foreignKeys": [{ "columns": ["case_id"], "references": "crm_cases(id)", "onDelete": "restrict" }],
+      "checks": ["status:requested|scheduled|confirmed|rescheduled|cancelled|completed|no_show|sync_failed", "end_at:null-or-after-start_at", "record_json:appointment-v1"],
+      "indexes": [["resource_id", "start_at", "end_at"], ["status", "start_at"]]
+    },
+    {
+      "name": "crm_appointment_participants",
+      "primaryKey": ["id"],
+      "columns": { "id": "text:not-null", "appointment_id": "text:not-null", "participant_type": "text:not-null", "participant_id": "text:not-null", "role_key": "text:not-null", "response_status": "text:not-null", "created_at": "timestamptz:not-null", "updated_at": "timestamptz:not-null" },
+      "foreignKeys": [{ "columns": ["appointment_id"], "references": "crm_appointments(id)", "onDelete": "cascade" }],
+      "unique": [["appointment_id", "participant_type", "participant_id", "role_key"]]
+    },
+    {
+      "name": "crm_appointment_status_history",
+      "primaryKey": ["id"],
+      "columns": { "id": "text:not-null", "appointment_id": "text:not-null", "from_status": "text:null", "to_status": "text:not-null", "reason_code": "text:null", "actor_subject": "text:not-null", "aggregate_version": "bigint:not-null", "occurred_at": "timestamptz:not-null" },
+      "foreignKeys": [{ "columns": ["appointment_id"], "references": "crm_appointments(id)", "onDelete": "restrict" }],
+      "unique": [["appointment_id", "aggregate_version"]],
+      "appendOnly": true
+    },
+    {
+      "name": "crm_pipelines",
+      "primaryKey": ["id"],
+      "columns": { "id": "text:not-null", "profile_key": "text:not-null", "name": "text:not-null", "status": "text:not-null", "version": "bigint:not-null", "created_at": "timestamptz:not-null", "updated_at": "timestamptz:not-null" },
+      "checks": ["status:active|retired", "version:positive"]
+    },
+    {
+      "name": "crm_pipeline_stages",
+      "primaryKey": ["id"],
+      "columns": { "id": "text:not-null", "pipeline_id": "text:not-null", "stage_key": "text:not-null", "label": "text:not-null", "position": "integer:not-null", "default_probability": "integer:not-null", "terminal_kind": "text:null", "version": "bigint:not-null" },
+      "foreignKeys": [{ "columns": ["pipeline_id"], "references": "crm_pipelines(id)", "onDelete": "restrict" }],
+      "unique": [["pipeline_id", "stage_key"], ["pipeline_id", "position"]],
+      "checks": ["default_probability:0..100", "terminal_kind:null|won|lost"]
+    },
+    {
+      "name": "crm_opportunities",
+      "primaryKey": ["id"],
+      "columns": { "common": "aggregateTableContract", "account_id": "text:not-null", "primary_contact_id": "text:null", "pipeline_id": "text:not-null", "stage_id": "text:not-null", "amount_minor": "bigint:not-null", "currency": "char(3):not-null", "probability": "integer:not-null", "close_reason": "text:null" },
+      "foreignKeys": [{ "columns": ["account_id"], "references": "crm_accounts(id)", "onDelete": "restrict" }, { "columns": ["pipeline_id"], "references": "crm_pipelines(id)", "onDelete": "restrict" }, { "columns": ["stage_id"], "references": "crm_pipeline_stages(id)", "onDelete": "restrict" }],
+      "checks": ["amount_minor:non-negative", "probability:0..100", "status:open|closed", "record_json:opportunity-v1"],
+      "indexes": [["pipeline_id", "stage_id", "status"], ["owner_id", "status", "updated_at"]]
+    },
+    {
+      "name": "crm_opportunity_stage_history",
+      "primaryKey": ["id"],
+      "columns": { "id": "text:not-null", "opportunity_id": "text:not-null", "from_stage_id": "text:null", "to_stage_id": "text:not-null", "probability": "integer:not-null", "reason_code": "text:null", "actor_subject": "text:not-null", "aggregate_version": "bigint:not-null", "occurred_at": "timestamptz:not-null" },
+      "foreignKeys": [{ "columns": ["opportunity_id"], "references": "crm_opportunities(id)", "onDelete": "restrict" }],
+      "unique": [["opportunity_id", "aggregate_version"]],
+      "appendOnly": true
+    },
+    {
+      "name": "crm_tenant_configuration",
+      "primaryKey": ["singleton_key"],
+      "columns": { "singleton_key": "text:not-null", "profile_key": "text:not-null", "profile_version": "text:not-null", "configuration_json": "jsonb:not-null", "version": "bigint:not-null", "updated_at": "timestamptz:not-null" },
+      "checks": ["singleton_key:effective", "configuration_json:tenant-config-v1", "version:positive"]
+    },
+    {
+      "name": "crm_jobs",
+      "primaryKey": ["id"],
+      "columns": { "id": "text:not-null", "kind": "text:not-null", "status": "text:not-null", "expires_at": "timestamptz:null", "record_json": "jsonb:not-null", "version": "bigint:not-null", "created_at": "timestamptz:not-null", "updated_at": "timestamptz:not-null" },
+      "checks": ["kind:report-run|export", "status:accepted|running|completed|failed|expired", "record_json:job-v1"]
+    },
+    {
+      "name": "crm_import_batches",
+      "primaryKey": ["id"],
+      "columns": { "id": "text:not-null", "status": "text:not-null", "source_fingerprint": "char(64):not-null", "source_record_count": "integer:not-null", "accepted_count": "integer:not-null", "duplicate_count": "integer:not-null", "quarantine_count": "integer:not-null", "quarantine_json": "jsonb:not-null", "version": "bigint:not-null", "created_at": "timestamptz:not-null", "updated_at": "timestamptz:not-null" },
+      "unique": [["source_fingerprint"]],
+      "checks": ["status:staged|validated|committed|rejected|rolled_back", "counts:non-negative", "quarantine_json:no-source-values"]
+    },
+    {
+      "name": "crm_import_records",
+      "primaryKey": ["batch_id", "source_row"],
+      "columns": { "batch_id": "text:not-null", "source_row": "integer:not-null", "normalized_json": "jsonb:not-null", "status": "text:not-null", "target_type": "text:null", "target_id": "text:null", "created_at": "timestamptz:not-null" },
+      "foreignKeys": [{ "columns": ["batch_id"], "references": "crm_import_batches(id)", "onDelete": "cascade" }],
+      "checks": ["status:accepted|duplicate|quarantined|committed|rolled_back", "normalized_json:voix-import-normalized-v1"]
+    },
+    {
+      "name": "crm_idempotency_results",
+      "primaryKey": ["idempotency_key"],
+      "columns": { "idempotency_key": "text:not-null", "request_checksum": "char(64):not-null", "response_json": "jsonb:not-null", "created_at": "timestamptz:not-null", "updated_at": "timestamptz:not-null" },
+      "checks": ["request_checksum:sha256", "response_json:sanitized-response-v1"]
+    },
+    {
+      "name": "crm_outbox_events",
+      "primaryKey": ["event_id"],
+      "columns": { "event_id": "text:not-null", "event_type": "text:not-null", "contract_version": "text:not-null", "correlation_id": "text:not-null", "causation_id": "text:not-null", "actor_subject": "text:not-null", "payload_json": "jsonb:not-null", "status": "text:not-null", "attempt_count": "integer:not-null:default-0", "available_at": "timestamptz:not-null:default-now", "occurred_at": "timestamptz:not-null", "delivered_at": "timestamptz:null", "last_error_code": "text:null" },
+      "unique": [["event_type", "causation_id"]],
+      "checks": ["contract_version:1", "status:pending|delivered|failed|quarantined", "payload_json:no-sensitive-fields"],
+      "indexes": [["status", "available_at"]]
+    }
+  ],
+  "requiredGrants": {
+    "runtimeRole": ["USAGE schema", "SELECT INSERT UPDATE on declared mutable tables", "SELECT INSERT on append-only tables"],
+    "ddl": []
+  }
+}

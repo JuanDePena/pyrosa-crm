@@ -27,15 +27,21 @@ nombre:
 
 - `PYROSA_CRM_DB_PASSWORD`;
 - `PYROSA_CRM_DB_DSN`;
-- `PYROSA_CRM_IAM_CLIENT_SECRET`.
+- `PYROSA_CRM_IAM_CLIENT_SECRET`;
+- `PYROSA_CRM_DIRECTORY_OAUTH_CLIENT_SECRET`;
+- `PYROSA_CRM_STORE_OAUTH_CLIENT_SECRET`;
+- `PYROSA_CRM_PLATFORM_OAUTH_CLIENT_SECRET`.
 
 La plantilla versionada
 `runtime/env/app-pyrosa-democrm.env.example` conserva placeholders. El archivo
 real se administra fuera de Git con permisos restrictivos; su contenido no se
 imprime en logs, pruebas, evidencia ni documentacion.
 
-Tambien permanecen fuera de la persistencia funcional los bearer tokens
-backend-to-backend, certificados TLS y material privado del host.
+Los tres secrets owner son independientes y no pueden reutilizarse entre
+Directory, Store y Platform. Sus access tokens OAuth2 se conservan solo en
+memoria hasta el refresh; no se persisten, imprimen ni comparten. Tambien
+permanecen fuera de la persistencia funcional los certificados TLS y material
+privado del host.
 
 ## AAD De CRM
 
@@ -51,14 +57,20 @@ server-side durante la operacion que consume la credencial.
 
 ## Limites Entre Apps
 
-- `pyrosa-platform` mantiene catalogo y contexto operativo;
+- `pyrosa-platform` mantiene catalogo, schemas, diccionarios y readiness;
 - `pyrosa-iam` administra autenticacion, sesiones compartidas y el cliente
   `crm`;
-- `pyrosa-accounts` mantiene cuentas y perfiles compartidos.
+- `pyrosa-accounts` mantiene perfil y autoservicio de la identidad;
+- `pyrosa-directory` mantiene tenant, organizaciones, membresias, asientos,
+  conexiones y secretos de provider;
+- `pyrosa-store` mantiene customer, suscripcion, cantidad, vigencia y
+  entitlement.
 
 CRM conserva solo referencias funcionales, como `platform_tenant_id`,
-`accounts_organization_id` y el actor o sujeto emitido por IAM. No copia
-credenciales privadas de esas apps.
+`directory_organization_id` y el actor o sujeto emitido por IAM. La columna
+historica `accounts_organization_id` se retira mediante diccionario/plan
+gobernado; no define ownership v2607. CRM no copia credenciales privadas de
+esas apps.
 
 ## UI, API Y Auditoria
 
@@ -91,7 +103,7 @@ Para un secreto bootstrap:
 1. crear el nuevo valor fuera de Git;
 2. actualizar el archivo real de entorno del host;
 3. reiniciar `app-pyrosa-democrm.service`;
-4. validar health, migraciones pendientes y flujo IAM.
+4. validar health, readiness/dictionary drift y flujo IAM.
 
 ## Backup Y Restore
 
@@ -107,6 +119,6 @@ Restaurar solo la DB puede dejar integraciones irrecuperables.
 - `config_json` no contiene secretos ni referencias runtime.
 - UI y API no devuelven plaintext, ciphertext, IV ni tags.
 - Logs, eventos y auditoria no contienen credenciales.
-- La rotacion bootstrap valida `app-pyrosa-democrm.service`, health, migraciones
-  y autenticacion IAM.
+- La rotacion bootstrap valida `app-pyrosa-democrm.service`, health, readiness,
+  dictionary drift y autenticacion IAM.
 - Cualquier plaintext persistido requiere excepcion CRM documentada y aprobada.

@@ -2,6 +2,12 @@
 
 Date: `2026-06-13`
 
+Current v2607 extension:
+[DemoCRM functional and technical design](../design-democrm-v2607.md).
+
+This file preserves the runtime scaffold baseline. Where its v2606 service
+list differs, the v2607 design and transversal Pyrosa contracts prevail.
+
 ## Transversal Baseline
 
 CRM adopts the
@@ -77,7 +83,7 @@ database views, events, or explicit worker contracts. Direct cross-app table
 coupling should be avoided unless the owning service documents it as a supported
 interface.
 
-For `v2606`, the explicit boundary is:
+The original v2606 explicit boundary was:
 
 - `pyrosa-platform` owns app catalog metadata, visual governance, runtime
   contracts, and operational status signals.
@@ -88,6 +94,11 @@ For `v2606`, the explicit boundary is:
 
 CRM may store local transactional references to Platform, IAM and Accounts
 records, but those references are not the system of record for platform data.
+
+v2607 also resolves Directory tenant/membership/seat context, Store
+entitlement, Platform schema readiness, published `pyrosa-ui` releases,
+Directory notifications/connections and provider engines through the owners
+defined in the current design.
 
 ## Authentication
 
