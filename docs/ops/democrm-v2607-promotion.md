@@ -1,15 +1,16 @@
 # Promocion Operativa DemoCRM v2607
 
-Fecha: `2026-07-15`
+Fecha: `2026-07-16`
 
-Estado: `pendiente de ejecucion autorizada`
+Estado: `canario owner tenant 1 E2E verde; expansion bloqueada por SLO Store`
 
 ## Proposito
 
-Promover de forma separada el release candidate v2607 hacia el runtime demo y,
-despues de un canary aceptado, hacia `pyrosa-crm`. Este runbook no registra una
-promocion ya realizada ni autoriza datos personales: fija el orden, la evidencia
-y los rollback necesarios para ejecutarla en una ventana aprobada.
+Completar de forma controlada el canario owner v2607 ya desplegado en el
+runtime demo y, solo despues de aceptar todos sus gates, decidir por separado
+una cohorte general y la futura promocion hacia `pyrosa-crm`. Este runbook
+registra el avance parcial observado; no autoriza datos personales ni convierte
+el canario interno en una promocion productiva.
 
 ## Baseline Confirmado
 
@@ -19,10 +20,29 @@ y los rollback necesarios para ejecutarla en una ventana aprobada.
   implementados en source.
 - Los tres targets fisicos de diccionario estan aplicados y verificados; ver
   [evidencia del rollout](../evidence/democrm-v2607-dictionary-rollout-2026-07-15.md).
+- Platform completo adopcion/readiness del tenant interno `1`, con diccionario
+  global `2.0.0` y tenant-aware `2.0.1` ready.
+- Store termino la saga de provisioning y proyecta entitlement efectivo;
+  Directory conserva un asiento activo de capacidad `1/1`; IAM mantiene
+  frescos los bindings `tenant_admin` y `billing_admin`.
+- Las tres decisiones owner OAuth estan habilitadas y el runtime demo sirve
+  v2607 con artefacto frontend/BFF coherente.
+- El fatal `crm.bootstrap.csrf_missing` tiene una correccion fail-closed:
+  identidad IAM privada real, subject opaco de `1..200`, rechazo de cookies
+  legacy y redaccion del payload publico.
+- El smoke con la identidad de la asignacion activa obtuvo Directory + Store +
+  Platform `3/3 allow`, schema `pyrosa_democrm_8ef427da9f0e`, diccionario
+  `2.0.1`, perfil `core` y capability `crm.cases.read`, sin exponer el subject.
 - El piloto ejecutado fue exclusivamente sintetico e in-memory; ver
   [evidencia del piloto sintetico](../evidence/democrm-v2607-synthetic-pilot-2026-07-15.md).
-- No se ha documentado como ejecutado el despliegue v2607, el workshop VOIX,
-  una importacion del XLSX real ni una cohorte humana.
+- No se ha documentado como ejecutado el workshop VOIX, una importacion del
+  XLSX real ni una cohorte humana.
+- El SLO movil de 24 horas de Store permanece `critical` y `/canaryz` responde
+  `503`; esta degradacion historica bloquea expansion, aunque la saga actual sea
+  terminal.
+
+La evidencia saneada del avance vive en
+[canario owner v2607](../evidence/democrm-v2607-owner-canary-2026-07-16.md).
 
 ## Gates De Promocion
 
@@ -51,6 +71,11 @@ wildcards:
 | Store | `client-pyrosa-democrm-store-entitlements` | `pyrosa-store` | `store.entitlement.decide` |
 | Platform | `client-pyrosa-crm` | `pyrosa-platform` | `platform.provisioning.readiness.consume` |
 
+Para el canario tenant `1`, los tres carriles owner estan habilitados con sus
+contratos exactos y el smoke E2E devolvio `3/3 allow`. El registro de clientes
+no se usa por si solo como evidencia: el resultado fue compuesto por CRM con la
+identidad de la asignacion activa.
+
 Tambien se valida el resource server CRM (`pyrosa-crm`, scope compatibility
 `crm.read`) solo si la cohorte abrira acceso bearer. Browser y bearer mantienen
 carriles separados; ningun fallo OAuth cae a cookie, bearer estatico o headers
@@ -72,6 +97,11 @@ Cada paso exige un allow canary y denials para issuer, client, audience, scope,
 tenant, app, capability, membresia, asiento, vigencia, entitlement y readiness.
 Un `401`, `403`, `409` o `503` nunca se transforma en allow.
 
+Los tres endpoints owner estan activos para el canario actual. Directory,
+Store y Platform devolvieron el allow compuesto para `crm.cases.read`; la
+promocion general conserva como unico gate transversal observado el SLO movil
+de Store, sin convertir `/canaryz=503` en warning.
+
 ### 4. Configuracion Del Consumidor CRM
 
 Inyectar mediante el env host-managed, sin imprimir valores:
@@ -86,6 +116,12 @@ Inyectar mediante el env host-managed, sin imprimir valores:
 `PYROSA_CRM_OAUTH_API_ENABLED` permanece `false` salvo que se promueva tambien
 el resource server bearer y se completen sus pruebas de revocacion. La ausencia
 de cualquiera de los tres secrets owner mantiene CRM fail-closed.
+
+La sesion browser conserva exactamente el issuer/subject canonicos que IAM
+entrega mediante ticket exchange o introspeccion. No fabrica el subject desde
+`user.id`. El subject opaco admite `1..200` caracteres del alfabeto cerrado
+`A-Za-z0-9._~-`; cookies anteriores sin esta identidad se descartan y
+session/bootstrap nunca la publican.
 
 Para un canary estrictamente single-tenant se puede fijar
 `PYROSA_CRM_DEFAULT_TENANT_ID`. El BFF lo presenta en `publicSession` como
@@ -119,6 +155,12 @@ Con un tenant sintetico/canary y sin PII:
    fatal;
 5. registrar solo ids opacos, conteos, estados y hashes saneados.
 
+El preflight owner terminal del tenant `1` ya completo los puntos `1` y `2`:
+`3/3 allow`, tenant key coherente con el schema
+`pyrosa_democrm_8ef427da9f0e`, diccionario `2.0.1`, perfil `core` y capability
+`crm.cases.read`. No se uso PII ni se registro la identidad. Los puntos
+funcionales restantes aplican antes de abrir una cohorte de trabajo.
+
 Antes de una cohorte real tambien deben cerrarse o aceptarse expresamente las
 capacidades diferidas del plan: merge asistido, reglas automaticas de
 asignacion/escalamiento, adapter de notificaciones Directory, provider de
@@ -134,6 +176,11 @@ custodia/rotacion de keys, purpose, retencion, masking y pruebas negativas; el
 piloto efimero no satisface ese gate.
 
 ### 6. Despliegue Runtime
+
+El primer artefacto coherente v2607 ya fue desplegado en `pyrosa-democrm`. Toda
+correccion posterior de sesion/identidad vuelve a recorrer esta secuencia como
+una unidad nueva; no se parchea el BFF en memoria ni se reutiliza el manifiesto
+anterior.
 
 1. publicar los commits por repo y fijar el commit/artefacto exacto;
 2. generar desde worktree limpio el manifiesto comun de cliente/BFF, verificar
@@ -196,7 +243,9 @@ bloquea y la promocion debe detenerse para diseñar una compensacion auditada.
 Detener la promocion ante drift, fingerprint distinto, secret ausente, scope
 adicional, schema/tenant incongruente, decision owner ambigua, PII en logs,
 quarantine sin resolver, rollback no ensayado, health degradado o necesidad de
-usar un fallback local. Ninguno de esos estados se acepta como warning.
+usar un fallback local. La expansion tambien se detiene mientras el SLO movil
+de Store permanezca `critical` o `/canaryz` responda `503`. Ninguno de esos
+estados se acepta como warning.
 
 ## Evidencia De Cierre Operativo
 
@@ -209,3 +258,8 @@ El gate se considera `ready` solo cuando existen:
 - aceptacion de la cohorte VOIX y metricas;
 - backup/restore y rollback tecnico/de datos ensayados;
 - decision separada para promover o no a `pyrosa-crm`.
+
+El subgate owner del tenant `1` ya tiene allow E2E `3/3` y queda verde. El
+estado completo de esta lista permanece abierto: el SLO historico de Store es
+el unico gate transversal observado para ampliar la cohorte, y los gates
+funcionales/privacidad de VOIX siguen sin ejecutarse.

@@ -140,10 +140,14 @@ export function identityFromPrincipal(
   if (!Number.isSafeInteger(session.user.id) || session.user.id <= 0) {
     throw responseError("crm.identity.invalid", "IAM no devolvio una identidad browser valida.");
   }
+  const issuer = normalizeHttpsIssuer(session.iamIdentity?.issuer);
+  if (issuer !== normalizeHttpsIssuer(config.iamBaseUrl)) {
+    throw responseError("crm.identity.invalid", "El issuer de la identidad no coincide con la autoridad IAM configurada.");
+  }
   return {
     kind: "browser",
-    issuer: normalizeHttpsIssuer(config.iamBaseUrl),
-    subject: `iam-user-${session.user.id}`,
+    issuer,
+    subject: browserIdentitySubject(session.iamIdentity?.subject),
     roles: [session.user.role],
     scopes: []
   };
@@ -563,9 +567,20 @@ function normalizeHttpsIssuer(value: unknown): string {
   return issuer.origin;
 }
 
+function browserIdentitySubject(value: unknown): string {
+  if (
+    typeof value !== "string" ||
+    value !== value.trim() ||
+    !/^[A-Za-z0-9._~-][A-Za-z0-9._~-]{0,199}$/u.test(value)
+  ) {
+    throw responseError("crm.identity.invalid", "El subject IAM no es un identificador opaco valido.");
+  }
+  return value;
+}
+
 function ownerIdentitySubject(value: string): string {
   const subject = value.startsWith("client:") ? value.slice("client:".length) : value;
-  if (subject.length < 3 || subject.length > 160 || !/^[A-Za-z0-9._~-]+$/u.test(subject)) {
+  if (!/^[A-Za-z0-9._~-][A-Za-z0-9._~-]{0,199}$/u.test(subject)) {
     throw responseError("crm.identity.invalid", "El subject IAM no es un identificador opaco valido.");
   }
   return subject;

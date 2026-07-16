@@ -1,8 +1,8 @@
 # Coherencia De Artefacto Frontend Y BFF
 
-Fecha: `2026-07-15`
+Fecha: `2026-07-16`
 
-Estado: `control implementado en source; promocion runtime pendiente`
+Estado: `control observado en runtime v2607 canary`
 
 ## Invariante
 
@@ -56,6 +56,29 @@ El health solo responde `200` cuando DB y artefacto estan sanos. El bootstrap
 autenticado publica `app.releaseId` y `app.commit` para que soporte pueda
 correlacionar la UI con el runtime sin exponer cookies ni secretos.
 
+## Evidencia Del Canario V2607
+
+El runtime `pyrosa-democrm` ya fue promovido a v2607 como unidad coherente y el
+health observo `artifact.ok=true`, source limpio y hashes de cliente/BFF
+consistentes. Esta evidencia habilita el canario owner; no constituye una
+promocion de `pyrosa-crm` ni de una cohorte general.
+
+La correccion posterior a `crm.bootstrap.csrf_missing` cambia el contrato de
+sesion: conserva la identidad IAM real en privado, rechaza cookies legacy y
+redacta issuer/subject de session/bootstrap. El smoke terminal con la identidad
+de la asignacion activa obtuvo Directory + Store + Platform `3/3 allow`, schema
+`pyrosa_democrm_8ef427da9f0e`, diccionario `2.0.1`, perfil `core` y capability
+`crm.cases.read`, sin registrar el subject.
+
+Para promocion browser, la correccion debe viajar siempre en un artefacto
+construido desde el commit limpio exacto y volver a pasar health antes de abrir
+trafico. El smoke owner verde no permite mezclar el BFF corregido con el
+cliente/manifiesto v2607 anterior.
+
+El SLO movil `critical` de Store y su `/canaryz=503` no indican incoherencia de
+artefacto CRM. Son un gate transversal independiente que impide ampliar la
+cohorte aunque el health local de CRM sea sano.
+
 ## Build Y Promocion
 
 ```bash
@@ -74,6 +97,8 @@ de hashes, pero ese artefacto no inicia en runtime. Para promocion:
 5. reiniciar el servicio para cargar el release;
 6. exigir health con el mismo `releaseId`, commit, version y
    `artifact.ok=true` antes de abrir trafico.
+7. para cambios de auth/sesion, renovar una cookie browser y comprobar el
+   acceso contra Directory, Store y Platform sin exponer identidad ni secrets.
 
 No se debe ejecutar `npm run build` dentro del checkout montado por un runtime
 abierto. El guard evita servir una mezcla, pero durante esa escritura la

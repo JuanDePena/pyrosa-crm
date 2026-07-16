@@ -5,6 +5,7 @@
   },
   "include": [
     "server/auth.ts",
+    "server/auth.test.ts",
     "server/config.ts",
     "server/oauthApiAuth.ts",
     "server/oauthApiAuth.test.ts"

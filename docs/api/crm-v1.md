@@ -1,8 +1,8 @@
 # Contrato API Pyrosa CRM v1
 
-Fecha: `2026-07-15`
+Fecha: `2026-07-16`
 
-Estado: `implementado en source; promocion live pendiente`
+Estado: `canario owner E2E 3/3 verde; promocion general bloqueada por SLO Store`
 
 Base path: `/api/crm/v1`
 
@@ -16,7 +16,9 @@ compatibilidad cliente/servidor es un gate explicito de promocion.
 
 ## Contexto Y Autorizacion
 
-- Browser: sesion local opaca derivada de IAM.
+- Browser: sesion local opaca derivada de IAM. Su parte privada conserva el
+  issuer y subject canonicos recibidos por ticket exchange/introspection; no
+  deriva el subject del id numerico del usuario.
 - Mutaciones browser: `Content-Type: application/json` y `X-CSRF-Token`
   emitido en la sesion same-origin; el BFF compara el token exacto.
 - API: bearer IAM con issuer, audience, tipo, expiracion y scope exactos.
@@ -79,9 +81,33 @@ HTTP. Los tres owners reciben exactamente esos mismos valores y deben
 devolverlos sin cambios; CRM no genera un segundo identificador durante la
 decision de acceso.
 
-Esta integracion queda source-ready y fail-closed. Activarla en runtime exige
-aprovisionar los tres clientes/secrets en IAM y habilitar las rutas owner; este
-documento no autoriza ni ejecuta esa promocion.
+La sesion acepta un subject IAM opaco de `1..200` caracteres con el alfabeto
+cerrado `A-Za-z0-9._~-`; rechaza vacio, whitespace, caracteres adicionales e
+issuer distinto al IAM configurado. Una cookie firmada anterior que no incluya
+la identidad canonica falla cerrada y debe reemplazarse mediante login. Los
+payloads publicos de session/bootstrap no exponen issuer ni subject.
+
+### Estado Del Canario Owner
+
+Al `2026-07-16`, el tenant interno `1` tiene el prerequisito transversal listo:
+
+- Platform completo la adopcion y reporta ready el diccionario global `2.0.0`
+  y el tenant-aware `2.0.1`;
+- Store termino la saga de provisioning y entrega entitlement `effective`;
+- Directory entrega membresia/asiento activo con capacidad `1/1`;
+- IAM conserva frescos los bindings `tenant_admin` y `billing_admin`;
+- las tres rutas owner y sus grants OAuth2 exactos estan habilitados.
+
+El runtime demo sirve v2607 con artefacto cliente/BFF coherente. La correccion
+del bootstrap que presentaba `crm.bootstrap.csrf_missing` y la identidad IAM
+privada se validaron con la asignacion activa: Directory, Store y Platform
+devolvieron `3/3 allow` para tenant `1`, schema
+`pyrosa_democrm_8ef427da9f0e`, diccionario `2.0.1`, perfil `core` y capability
+`crm.cases.read`. La evidencia no registra el subject.
+
+Este estado solo habilita la verificacion owner del tenant canary. El SLO movil
+de 24 horas de Store permanece `critical` y `/canaryz` responde `503`, por lo
+que no se promueve una cohorte general ni VOIX.
 
 ## Recursos
 
@@ -272,8 +298,10 @@ consumidores son gates de integracion; no se declaran publicados en v2607.
 
 Ya cubierto en source/tests: auth negativa, aislamiento tenant, paginacion,
 filtros/orden allowlisted, idempotencia funcional, concurrencia optimista,
-redaccion de errores, masking y audit/outbox transaccional.
+redaccion de errores, masking, audit/outbox transaccional, preservacion privada
+de la identidad IAM y rechazo de cookies legacy sin esa identidad.
 
-Pendiente antes de promocion live: artefactos OpenAPI/JSON Schema, contract
-tests HTTP cliente/BFF, carga y concurrencia PostgreSQL, workers reales de
-report/export, backward compatibility y observabilidad runtime.
+Pendiente antes de ampliar la promocion: SLO Store fuera de `critical`,
+artefactos OpenAPI/JSON Schema, contract tests HTTP
+cliente/BFF, carga y concurrencia PostgreSQL, workers reales de report/export,
+backward compatibility y observabilidad runtime.

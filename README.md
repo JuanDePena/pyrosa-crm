@@ -7,8 +7,9 @@
 `PYROSA CRM` es el producto CRM transaccional del ecosistema Pyrosa. La linea de
 diseno activa es `v2607`: un core multiindustria configurable para cuentas,
 contactos, casos, actividades, agenda, oportunidades y reportes. El runtime
-demo conserva su version promovida anterior hasta ejecutar los gates del nuevo
-plan.
+demo ya ejecuta el canario owner de `v2607` para el tenant interno `1`; la
+promocion de una cohorte general y la operacion VOIX permanecen separadas y
+bloqueadas por sus gates.
 
 Este repositorio es la fuente canonica del nuevo producto CRM. El desarrollo
 activo se realiza desde la superficie demo y la promocion a produccion debe
@@ -36,6 +37,8 @@ estan distribuidas en:
   [politica transversal](https://github.com/JuanDePena/pyrosa-docs/blob/main/ops/release-flow.md)
 - plan v2607 cerrado: `docs/plans-completed/plan-democrm-v2607.md`
 - promocion operativa pendiente: `docs/ops/democrm-v2607-promotion.md`
+- evidencia saneada del canario owner:
+  `docs/evidence/democrm-v2607-owner-canary-2026-07-16.md`
 
 ## Gobierno De Releases
 
@@ -104,33 +107,45 @@ entrega notificaciones mediante el contrato compartido; CRM decide cuando una
 notificacion corresponde.
 
 El runtime demo delega el login UI en `pyrosa-iam` mediante el cliente `crm`.
-CRM conserva solo una cookie local firmada para la sesion delegada de IAM y expone
-`/api/crm/session` para la shell de aplicacion.
+CRM conserva solo una cookie local firmada para la sesion delegada de IAM y
+expone `/api/crm/session` para la shell de aplicacion. La sesion privada guarda
+el issuer y subject canonicos recibidos desde IAM; no fabrica un subject desde
+el id numerico del usuario y no publica esa identidad en session/bootstrap.
 
 ## Estado actual
 
-El source contiene el release candidate v2607: shell y primitives ejecutivas
-`pyrosa-ui` `0.2.1`, BFF/API CRM v1 tenant-aware, seis recursos operativos,
-dashboard/reportes, perfiles `core@1` y `healthcare-call-center@1`, import
-staging, audit/outbox y landing fatal saneada. Platform aplico y verifico los
-tres targets fisicos de diccionario v2607.
+El runtime demo ejecuta `v2607` con un artefacto frontend/BFF coherente. Para el
+tenant canary `1`, Platform reporta ready los diccionarios global `2.0.0` y
+tenant `2.0.1`; Store termino la saga y proyecta entitlement efectivo;
+Directory conserva un asiento activo de capacidad `1/1`; IAM mantiene frescos
+los bindings `tenant_admin` y `billing_admin`; y estan habilitadas las tres
+decisiones owner OAuth de Directory, Store y Platform.
 
-Este estado no equivale a promocion: el runtime activo conserva su release
-anterior hasta desplegar el nuevo artefacto; los clientes/grants IAM y flags
-owner-specific no se declararon live; el piloto ejecutado fue solo sintetico y
-no uso el XLSX ni PII de VOIX.
+La correccion posterior al fatal `crm.bootstrap.csrf_missing` conserva en la
+sesion browser la identidad IAM canonica privada, acepta subjects opacos de
+`1..200` caracteres, rechaza cookies anteriores sin esa identidad y redacta el
+issuer/subject del payload publico. El smoke owner E2E con la identidad de la
+asignacion activa obtuvo Directory + Store + Platform `3/3 allow`, resolvio el
+schema tenant `pyrosa_democrm_8ef427da9f0e`, el diccionario `2.0.1`, el perfil
+`core` y la capability `crm.cases.read`, sin exponer el subject.
+
+Este canario no equivale a promocion general. El SLO historico de Store en su
+ventana de 24 horas permanece `critical` y `/canaryz` responde `503`; por ello
+no se abre una cohorte general ni VOIX. El piloto funcional anterior fue solo
+sintetico y no uso el XLSX ni PII de VOIX.
 
 ## Sistema visual
 
 `pyrosa-democrm` / `pyrosa-crm` consume `pyrosa-ui` con perfil `business-ops` y
 paquetes publicados/inmutables `0.2.1`. El contrato source esta `ready`, sin
 fallback productivo silencioso, y Dashboard/workareas consumen la API CRM v1.
-Su promocion runtime permanece separada.
+El runtime demo ya sirve el canario v2607; la promocion hacia
+`crm.pyrosa.com.do` permanece separada.
 
 Siguientes gates operativos:
 
-- aprovisionar IAM/OAuth y habilitar de forma canary los endpoints owner;
-- desplegar y validar v2607 primero en `pyrosa-democrm`;
+- esperar que el SLO movil de Store salga de `critical` y que `/canaryz`
+  recupere readiness antes de ampliar la cohorte;
 - completar workshop, autorizacion de PII, dry-run e import VOIX;
 - pilotar una cohorte aprobada de agentes/supervisores con rollback;
 - decidir separadamente la promocion hacia `crm.pyrosa.com.do`.
@@ -187,6 +202,8 @@ requerir variables equivalentes al entorno demo.
 - convergencia de schema: `docs/ops/app-schema-convergence.md`
 - plan v2607 cerrado: `docs/plans-completed/plan-democrm-v2607.md`
 - promocion operativa pendiente: `docs/ops/democrm-v2607-promotion.md`
+- evidencia saneada del canario owner:
+  `docs/evidence/democrm-v2607-owner-canary-2026-07-16.md`
 - contrato de marca: `docs/design/brand-assets.md`
 - adopcion visual completada: `docs/plans-completed/plan-pyrosa-ui-adoption.md`
 - convergencia SharedShell completada:

@@ -135,19 +135,49 @@ test("CRM v1 auth failures emitted before the handler use the nested v1 error en
   });
 });
 
-test("publicSession exposes only the configured single-tenant bootstrap id when present", () => {
+test("publicSession and bootstrap session payload redact the private IAM issuer and subject", () => {
   const session = {
     sid: "session-synthetic",
     csrf: "csrf-synthetic",
     expiresAt: "2026-07-16T00:00:00.000Z",
     uiAuthSessionId: "ui-auth-synthetic",
     uiAuthAuthenticatedAt: "2026-07-15T00:00:00.000Z",
-    user: { id: 1, displayName: "Synthetic" }
+    iamIdentity: {
+      issuer: "https://iam.private.invalid",
+      subject: "opaque-private-subject"
+    },
+    user: {
+      id: 1,
+      email: "synthetic@example.invalid",
+      displayName: "Synthetic",
+      role: "tenant_admin",
+      locale: "es",
+      timezone: "America/Santo_Domingo",
+      status: "active",
+      primaryEmail: {
+        email: "synthetic@example.invalid",
+        verifiedAt: null,
+        isVerified: false
+      },
+      security: { mfaRequired: false, activeMfaMethods: 0 },
+      issuer: "https://hostile-extra.invalid",
+      subject: "hostile-extra-subject",
+      iamIssuer: "https://hostile-alias.invalid",
+      iamSubject: "hostile-alias-subject"
+    }
   } as unknown as CrmSession;
   const exposed = publicSession(session, { id: "tenant-single-canary" });
   assert.deepEqual(exposed.tenant, { id: "tenant-single-canary" });
   assert.equal(exposed.csrfToken, "csrf-synthetic");
   assert.equal("tenant" in publicSession(session), false);
+  assert.equal("iamIdentity" in exposed, false);
+  assert.equal("issuer" in exposed.user, false);
+  assert.equal("subject" in exposed.user, false);
+  assert.equal("iamIssuer" in exposed.user, false);
+  assert.equal("iamSubject" in exposed.user, false);
+  const serialized = JSON.stringify(exposed);
+  assert.equal(serialized.includes("opaque-private-subject"), false);
+  assert.equal(serialized.includes("iam.private.invalid"), false);
 });
 
 test("runtime release identity fails closed on dirty source, version skew and changed manifest", () => {

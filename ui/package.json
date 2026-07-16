@@ -20,7 +20,7 @@
     "typecheck": "npm run typecheck:client && npm run typecheck:server",
     "test:run": "npm run check:pyrosa-ui && npm run test:release-manifest && npm run test:oauth-api && npm run test:crm-v1",
     "test:release-manifest": "node --test ./scripts/release-manifest.test.mjs",
-    "test:oauth-api": "rm -rf build/oauth-api-test && tsc -p tsconfig.oauth-api-test.json && node --test build/oauth-api-test/oauthApiAuth.test.js",
+    "test:oauth-api": "rm -rf build/oauth-api-test && tsc -p tsconfig.oauth-api-test.json && node --test build/oauth-api-test/auth.test.js build/oauth-api-test/oauthApiAuth.test.js",
     "test:crm-v1": "rm -rf build/crm-v1-test && tsc -p tsconfig.crm-v1-test.json && node --test build/crm-v1-test/crmV1Access.test.js build/crm-v1-test/crmV1Dictionary.test.js build/crm-v1-test/crmV1Domain.test.js build/crm-v1-test/crmV1Postgres.test.js build/crm-v1-test/crmV1SyntheticPilot.test.js",
     "pilot:synthetic": "rm -rf build/crm-v2607-pilot && tsc -p tsconfig.crm-v2607-pilot.json && node build/crm-v2607-pilot/crmV1SyntheticPilot.js",
     "test:pilot:synthetic": "rm -rf build/crm-v2607-pilot && tsc -p tsconfig.crm-v2607-pilot.json && node --test build/crm-v2607-pilot/crmV1SyntheticPilot.test.js",

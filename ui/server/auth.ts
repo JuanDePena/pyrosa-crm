@@ -25,9 +25,15 @@ export type CrmSecuritySignals = {
   activeMfaMethods: number;
 };
 
+export type CrmIamIdentity = {
+  issuer: string;
+  subject: string;
+};
+
 export type CrmSession = {
   sid: string;
   user: CrmSessionUser;
+  iamIdentity: CrmIamIdentity;
   csrf: string;
   uiAuthSessionId: string;
   uiAuthParentSessionId: string | null;
@@ -51,7 +57,15 @@ type UiAuthExchangeResult = {
     locale?: string;
     timezone?: string;
     status?: string;
+    issuer?: string | null;
+    subject?: string | null;
+    iamIssuer?: string | null;
+    iamSubject?: string | null;
   };
+  identity?: {
+    issuer?: string | null;
+    subject?: string | null;
+  } | null;
   primaryEmail?: {
     email?: string;
     verifiedAt?: string | null;
@@ -67,6 +81,7 @@ type UiAuthIntrospectionResult = {
   active?: boolean;
   session?: UiAuthExchangeResult["session"] | null;
   user?: UiAuthExchangeResult["user"] | null;
+  identity?: UiAuthExchangeResult["identity"] | null;
   primaryEmail?: UiAuthExchangeResult["primaryEmail"] | null;
   security?: UiAuthExchangeResult["security"] | null;
 };
@@ -107,7 +122,7 @@ export async function createSessionFromTicket(
   const exchange = await postUiAuthJson<UiAuthExchangeResult>(req, config, "/internal/ui-auth/exchange-ticket", {
     ticket: normalizeOpaqueToken(ticket, "ticket")
   });
-  return normalizeExchange(exchange);
+  return normalizeExchange(exchange, config);
 }
 
 export async function loadCrmSession(
@@ -118,6 +133,9 @@ export async function loadCrmSession(
   const rawCookie = parseCookies(req.headers.cookie)[sessionCookieName];
   const session = rawCookie ? verifySessionCookie(config, rawCookie) : null;
   if (!session) {
+    if (rawCookie && res) {
+      clearSessionCookie(req, res);
+    }
     return null;
   }
 
@@ -132,7 +150,7 @@ export async function loadCrmSession(
   if (
     Number.isFinite(lastCheckedAt) &&
     Date.now() - lastCheckedAt < config.iamSessionCheckMs &&
-    sessionHasStrictIdentitySignals(session)
+    sessionHasStrictIdentitySignals(session, config)
   ) {
     return session;
   }
@@ -158,9 +176,11 @@ export async function loadCrmSession(
       {
         session: introspection.session,
         user: introspection.user,
+        identity: introspection.identity,
         primaryEmail: introspection.primaryEmail ?? session.user.primaryEmail,
         security: introspection.security ?? session.user.security
       },
+      config,
       session
     );
     if (res) {
@@ -168,7 +188,7 @@ export async function loadCrmSession(
     }
     return refreshed;
   } catch (error) {
-    if (error instanceof CrmAuthError && error.status >= 400 && error.status < 500) {
+    if (error instanceof CrmAuthError) {
       if (res) {
         clearSessionCookie(req, res);
       }
@@ -247,7 +267,11 @@ export function absoluteUrl(req: IncomingMessage, path: string): string {
   return new URL(path, `${proto}://${host}`).toString();
 }
 
-function normalizeExchange(input: UiAuthExchangeResult, existingSession?: CrmSession): CrmSession {
+function normalizeExchange(
+  input: UiAuthExchangeResult,
+  config: CrmServerConfig,
+  existingSession?: CrmSession
+): CrmSession {
   const userId = Number(input.user?.id ?? 0);
   const sessionId = String(input.session?.sessionId ?? "").trim();
   if (!Number.isInteger(userId) || userId <= 0 || !sessionId) {
@@ -255,6 +279,14 @@ function normalizeExchange(input: UiAuthExchangeResult, existingSession?: CrmSes
   }
 
   const fallbackEmail = String(input.user?.email ?? "");
+  const iamIdentity = normalizeIamIdentity(input, config);
+  if (
+    existingSession &&
+    (existingSession.iamIdentity.issuer !== iamIdentity.issuer ||
+      existingSession.iamIdentity.subject !== iamIdentity.subject)
+  ) {
+    throw new CrmAuthError(401, "ui_auth_identity_changed", "La identidad IAM de la sesion cambio.");
+  }
   return {
     sid: existingSession?.sid ?? randomBytes(16).toString("hex"),
     user: {
@@ -268,6 +300,7 @@ function normalizeExchange(input: UiAuthExchangeResult, existingSession?: CrmSes
       primaryEmail: normalizePrimaryEmail(input.primaryEmail ?? existingSession?.user.primaryEmail, fallbackEmail),
       security: normalizeSecuritySignals(input.security ?? existingSession?.user.security)
     },
+    iamIdentity,
     csrf: existingSession?.csrf ?? randomBytes(16).toString("hex"),
     uiAuthSessionId: sessionId,
     uiAuthParentSessionId: input.session?.parentSessionId ?? null,
@@ -298,8 +331,80 @@ function normalizeSecuritySignals(input: UiAuthExchangeResult["security"] | unde
   };
 }
 
-function sessionHasStrictIdentitySignals(session: CrmSession): boolean {
-  return Boolean(session.user.primaryEmail && session.user.security);
+function sessionHasStrictIdentitySignals(session: CrmSession, config: CrmServerConfig): boolean {
+  if (!session.user.primaryEmail || !session.user.security) {
+    return false;
+  }
+  try {
+    const identity = normalizeIamIdentityValue(session.iamIdentity, config);
+    return identity.issuer === session.iamIdentity.issuer && identity.subject === session.iamIdentity.subject;
+  } catch {
+    return false;
+  }
+}
+
+function normalizeIamIdentity(input: UiAuthExchangeResult, config: CrmServerConfig): CrmIamIdentity {
+  const suppliedIdentity = input.identity === null || input.identity === undefined
+    ? {
+        issuer: input.user?.iamIssuer ?? input.user?.issuer,
+        subject: input.user?.iamSubject ?? input.user?.subject
+      }
+    : input.identity;
+  return normalizeIamIdentityValue(suppliedIdentity, config);
+}
+
+function normalizeIamIdentityValue(input: unknown, config: CrmServerConfig): CrmIamIdentity {
+  if (!isRecord(input)) {
+    throw invalidIamIdentity();
+  }
+  const issuer = normalizeIamIssuer(input.issuer);
+  const expectedIssuer = normalizeIamIssuer(config.iamBaseUrl, true);
+  if (issuer !== expectedIssuer) {
+    throw invalidIamIdentity();
+  }
+  const subject = normalizeIamSubject(input.subject);
+  return { issuer, subject };
+}
+
+function normalizeIamIssuer(value: unknown, configuration = false): string {
+  let issuer: URL;
+  try {
+    issuer = new URL(typeof value === "string" ? value : "");
+  } catch {
+    if (configuration) {
+      throw new CrmAuthError(503, "iam_base_invalid", "El issuer publico de Pyrosa IAM no es valido.");
+    }
+    throw invalidIamIdentity();
+  }
+  if (
+    issuer.protocol !== "https:" ||
+    issuer.username ||
+    issuer.password ||
+    issuer.search ||
+    issuer.hash ||
+    issuer.pathname !== "/"
+  ) {
+    if (configuration) {
+      throw new CrmAuthError(503, "iam_base_invalid", "El issuer publico de Pyrosa IAM debe ser un origin HTTPS.");
+    }
+    throw invalidIamIdentity();
+  }
+  return issuer.origin;
+}
+
+function normalizeIamSubject(value: unknown): string {
+  if (
+    typeof value !== "string" ||
+    value !== value.trim() ||
+    !/^[A-Za-z0-9._~-][A-Za-z0-9._~-]{0,199}$/u.test(value)
+  ) {
+    throw invalidIamIdentity();
+  }
+  return value;
+}
+
+function invalidIamIdentity(): CrmAuthError {
+  return new CrmAuthError(502, "ui_auth_identity_invalid", "Pyrosa IAM no devolvio una identidad canonica valida.");
 }
 
 function normalizeOptionalIso(value: unknown): string | null {
@@ -381,7 +486,13 @@ function verifySessionCookie(config: CrmServerConfig, value: string): CrmSession
   }
   try {
     const parsed = JSON.parse(Buffer.from(payload, "base64url").toString("utf8")) as CrmSession;
-    return parsed?.sid && parsed?.user && parsed?.uiAuthSessionId ? parsed : null;
+    if (!parsed?.sid || !parsed?.user || !parsed?.uiAuthSessionId || !sessionHasStrictIdentitySignals(parsed, config)) {
+      return null;
+    }
+    return {
+      ...parsed,
+      iamIdentity: normalizeIamIdentityValue(parsed.iamIdentity, config)
+    };
   } catch {
     return null;
   }

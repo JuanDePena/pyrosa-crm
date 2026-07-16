@@ -341,19 +341,52 @@ test("rejects invalid token responses and missing owner credentials without fall
 
 test("normalizes browser identity to the IAM HTTPS issuer and a stable opaque subject", () => {
   const session = {
-    user: { id: 42, role: "tenant_admin" }
+    user: { id: 42, role: "tenant_admin" },
+    iamIdentity: { issuer: "https://iam.pyrosa.test", subject: "1" }
   } as unknown as CrmSession;
   assert.deepEqual(identityFromPrincipal(session, config()), {
     kind: "browser",
     issuer: "https://iam.pyrosa.test",
-    subject: "iam-user-42",
+    subject: "1",
     roles: ["tenant_admin"],
     scopes: []
   });
   assert.throws(
+    () => identityFromPrincipal({ ...session, iamIdentity: undefined } as unknown as CrmSession, config()),
+    hasCode("crm.identity.invalid")
+  );
+  assert.throws(
+    () => identityFromPrincipal({
+      ...session,
+      iamIdentity: { issuer: "https://accounts.pyrosa.test", subject: "1" }
+    }, config()),
+    hasCode("crm.identity.invalid")
+  );
+  assert.throws(
     () => identityFromPrincipal(session, config({ iamBaseUrl: "http://iam.pyrosa.test" })),
     hasCode("crm.identity.invalid")
   );
+});
+
+test("owner decisions accept a one-character IAM subject and reject empty, whitespace or extra characters", async () => {
+  const observed: Array<Record<string, unknown>> = [];
+  globalThis.fetch = async (input, init) => {
+    const url = new URL(String(input));
+    if (url.pathname === "/oauth/token") return tokenResponse(ownerForClient(basicClientId(init)), 1);
+    const body = JSON.parse(String(init?.body)) as Record<string, unknown>;
+    observed.push(body);
+    return decisionResponse(ownerForHost(url.hostname), body);
+  };
+
+  await resolveAccess(request(), config(), { ...identity, subject: "1" }, "crm.cases.read");
+  assert.deepEqual(observed.map((body) => (body.identity as Record<string, unknown>).subject), ["1", "1", "1"]);
+
+  for (const subject of ["", " ", "subject:extra", "a".repeat(201)]) {
+    await assert.rejects(
+      resolveAccess(request(), config(), { ...identity, subject }, "crm.cases.read"),
+      hasCode("crm.identity.invalid")
+    );
+  }
 });
 
 type Owner = "directory" | "store" | "platform";

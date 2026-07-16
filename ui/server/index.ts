@@ -503,6 +503,7 @@ export function publicSession(
   session: CrmSession,
   tenant: { id: string; label?: string } | null = null
 ) {
+  const user = session.user;
   return {
     csrfToken: session.csrf,
     sid: session.sid,
@@ -510,6 +511,23 @@ export function publicSession(
     uiAuthSessionId: session.uiAuthSessionId,
     uiAuthAuthenticatedAt: session.uiAuthAuthenticatedAt,
     ...(tenant ? { tenant } : {}),
-    user: session.user
+    user: {
+      id: user.id,
+      email: user.email,
+      displayName: user.displayName,
+      role: user.role,
+      locale: user.locale,
+      timezone: user.timezone,
+      status: user.status,
+      primaryEmail: {
+        email: user.primaryEmail.email,
+        verifiedAt: user.primaryEmail.verifiedAt,
+        isVerified: user.primaryEmail.isVerified
+      },
+      security: {
+        mfaRequired: user.security.mfaRequired,
+        activeMfaMethods: user.security.activeMfaMethods
+      }
+    }
   };
 }

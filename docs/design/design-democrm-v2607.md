@@ -1,8 +1,8 @@
 # Diseno Funcional Y Tecnico De Pyrosa CRM v2607
 
-Fecha: `2026-07-15`
+Fecha: `2026-07-16`
 
-Estado: `implementado como release candidate; promocion live pendiente`
+Estado: `canario owner v2607 live; promocion general pendiente`
 
 ## Decision Central
 
@@ -35,6 +35,28 @@ locales, no resolvia tenant autorizado y reportaba version runtime v2606. La
 implementacion v2607 endurece esa base sin reconstruir una shell paralela. El
 estado final y sus limites quedan en el
 [plan cerrado](../plans-completed/plan-democrm-v2607.md).
+
+## Estado Del Canario Owner
+
+Al `2026-07-16`, el runtime demo sirve v2607 como una unidad frontend/BFF con
+artefacto coherente. El tenant interno `1` tiene diccionarios global `2.0.0` y
+tenant-aware `2.0.1` ready en Platform, entitlement Store efectivo, asiento
+Directory activo con capacidad `1/1`, bindings IAM `tenant_admin` y
+`billing_admin` frescos y las tres decisiones owner OAuth habilitadas.
+
+La correccion posterior al fatal `crm.bootstrap.csrf_missing` mantiene el CSRF
+same-origin y conserva la identidad IAM real en la parte privada de la sesion:
+issuer HTTPS canonico y subject opaco de `1..200` caracteres. No fabrica
+`iam-user-<id>`, rechaza cookies legacy que carecen de esa identidad y redacta
+issuer/subject del payload publico. El smoke con la identidad de la asignacion
+activa confirmo Directory + Store + Platform `3/3 allow`, schema
+`pyrosa_democrm_8ef427da9f0e`, diccionario `2.0.1`, perfil `core` y capability
+`crm.cases.read`, sin registrar el subject.
+
+El canario owner queda verde, pero no habilita una cohorte general. El SLO movil
+de 24 horas de Store permanece `critical` y `/canaryz` responde `503`;
+workshop, datos y usuarios VOIX continuan fuera de alcance hasta cerrar ese y
+los demas gates operativos.
 
 ## Terminologia Y Fronteras
 
@@ -87,6 +109,11 @@ AND CRM functional permission allows resource/action
 Si una dependencia aplicable no responde, la operacion falla cerrada. Cookie
 browser y bearer API son carriles distintos. Un bearer invalido no cae a cookie.
 
+Para browser, el ticket exchange o la introspeccion IAM debe entregar la
+identidad canonica. CRM la verifica contra el issuer configurado, la conserva
+solo en la cookie firmada privada y la usa sin transformacion en las decisiones
+owner. El id numerico y el perfil visible del usuario no sustituyen al subject.
+
 ## Modelo Tenant-Aware
 
 - Schema global demo: `pyrosa_democrm` para catalogos tecnicos globales,
@@ -96,6 +123,8 @@ browser y bearer API son carriles distintos. Un bearer invalido no cae a cookie.
   catalogue y provisione; no se infiere desde el sandbox.
 - Tenant key y schema se resuelven desde Platform despues de validar Directory
   y Store.
+- En el canario tenant `1`, Platform reporta los contratos activos global
+  `2.0.0` y tenant-aware `2.0.1` como ready.
 - CRM no duplica memberships, asientos, vigencias, perfiles o politicas.
 - Toda fila de negocio queda dentro del schema tenant correspondiente.
 
@@ -267,6 +296,11 @@ alternas por cliente.
 
 - Un error fatal de bootstrap/contrato muestra la landing transversal fuera de
   SharedShell.
+- La landing observada con `crm.bootstrap.csrf_missing` no habilita datos de
+  respaldo. La correccion exige una sesion IAM canonica y CSRF valido; cookies
+  anteriores sin identidad se descartan para forzar un login limpio.
+- El detalle tecnico puede exponer un codigo saneado, nunca issuer, subject,
+  cookie, token, stack ni URL interna.
 - El BFF nunca devuelve `error.message` crudo.
 - Un fallo regional usa feedback compartido y conserva solo datos confiables.
 - Fixtures y previews requieren un modo de prueba explicito y visible.
@@ -308,6 +342,9 @@ modelo aprobado
 
 El rol runtime no recibe DDL. `database/migrations/0001_crm_core.sql` queda como
 historia/compatibilidad y `npm run db:migrate` rechaza cualquier apply local.
+Para el canario actual, Platform completo adopcion y readiness de los targets
+global `2.0.0` y tenant-aware `2.0.1`; ello no autoriza cambios fisicos desde
+CRM ni la apertura de otra cohorte.
 
 ## Importacion VOIX
 

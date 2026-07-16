@@ -32,12 +32,13 @@ Recommended reading order:
 16. [Runbook de promocion v2607](ops/democrm-v2607-promotion.md)
 17. [Evidencia del rollout de diccionarios](evidence/democrm-v2607-dictionary-rollout-2026-07-15.md)
 18. [Evidencia del piloto sintetico](evidence/democrm-v2607-synthetic-pilot-2026-07-15.md)
-19. [Plans Index](plans/README.md)
-20. [Plans Completed](plans-completed/README.md)
-21. [Pyrosa UI Adoption — completed pilot](plans-completed/plan-pyrosa-ui-adoption.md)
-22. [SharedShell Visual Convergence — completed pilot](plans-completed/plan-democrm-shared-shell-visual-convergence.md)
-23. [Architecture Decision Records](design/adr/)
-24. [OAuth2 API consumer contract](design/oauth-api-consumer.md)
+19. [Evidencia del canario owner v2607](evidence/democrm-v2607-owner-canary-2026-07-16.md)
+20. [Plans Index](plans/README.md)
+21. [Plans Completed](plans-completed/README.md)
+22. [Pyrosa UI Adoption — completed pilot](plans-completed/plan-pyrosa-ui-adoption.md)
+23. [SharedShell Visual Convergence — completed pilot](plans-completed/plan-democrm-shared-shell-visual-convergence.md)
+24. [Architecture Decision Records](design/adr/)
+25. [OAuth2 API consumer contract](design/oauth-api-consumer.md)
 
 Baseline historica:
 
