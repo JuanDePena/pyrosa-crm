@@ -1,11 +1,24 @@
 import assert from "node:assert/strict";
+import { createHash } from "node:crypto";
+import { mkdtempSync, readFileSync, rmSync } from "node:fs";
 import test from "node:test";
 import type { IncomingMessage } from "node:http";
 import type { AddressInfo } from "node:net";
+import { tmpdir } from "node:os";
+import { basename, dirname, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 import type { CrmSession } from "./auth.js";
 import { loadConfig } from "./config.js";
+import { closePostgres } from "./db.js";
 import { createCrmServer, publicSession } from "./index.js";
 import { authenticateCrmApiBearer, hasApiAuthorization } from "./oauthApiAuth.js";
+import {
+  assertClientArtifactFile,
+  assertReleaseMatchesConfig,
+  inspectReleaseFreshness,
+  publicReleaseIdentity,
+  type CrmRuntimeRelease
+} from "./release.js";
 
 const request = { headers: { authorization: "Bearer opaque-crm-token" } } as IncomingMessage;
 const base = {
@@ -125,20 +138,124 @@ test("CRM v1 auth failures emitted before the handler use the nested v1 error en
 test("publicSession exposes only the configured single-tenant bootstrap id when present", () => {
   const session = {
     sid: "session-synthetic",
+    csrf: "csrf-synthetic",
     expiresAt: "2026-07-16T00:00:00.000Z",
     uiAuthSessionId: "ui-auth-synthetic",
     uiAuthAuthenticatedAt: "2026-07-15T00:00:00.000Z",
     user: { id: 1, displayName: "Synthetic" }
   } as unknown as CrmSession;
-  assert.deepEqual(publicSession(session, { id: "tenant-single-canary" }).tenant, { id: "tenant-single-canary" });
+  const exposed = publicSession(session, { id: "tenant-single-canary" });
+  assert.deepEqual(exposed.tenant, { id: "tenant-single-canary" });
+  assert.equal(exposed.csrfToken, "csrf-synthetic");
   assert.equal("tenant" in publicSession(session), false);
+});
+
+test("runtime release identity fails closed on dirty source, version skew and changed manifest", () => {
+  const configured = config();
+  const release = testRelease(configured);
+  assert.doesNotThrow(() => assertReleaseMatchesConfig(release, configured));
+  assert.throws(
+    () => assertReleaseMatchesConfig({ ...release, sourceDirty: true }, configured),
+    { code: "crm.artifact.source_dirty" }
+  );
+  assert.throws(
+    () => assertReleaseMatchesConfig({ ...release, version: "v9999" }, configured),
+    { code: "crm.artifact.version_mismatch" }
+  );
+  assert.throws(
+    () => assertReleaseMatchesConfig({ ...release, branch: "other" }, configured),
+    { code: "crm.artifact.branch_mismatch" }
+  );
+  assert.deepEqual(inspectReleaseFreshness({ ...release, manifestSha256: "0".repeat(64) }), {
+    ok: false,
+    code: "crm.artifact.manifest_changed"
+  });
+  assert.deepEqual(inspectReleaseFreshness(release, true), {
+    ok: false,
+    code: "crm.artifact.client_changed"
+  });
+  assert.deepEqual(publicReleaseIdentity(release), {
+    releaseId: release.releaseId,
+    version: configured.version,
+    commit: release.commit,
+    branch: configured.branch,
+    sourceDirty: false,
+    manifestSha256: release.manifestSha256,
+    clientSha256: release.client.sha256,
+    serverSha256: release.server.sha256
+  });
+});
+
+test("runtime release rejects a client file whose bytes differ from the loaded BFF release", () => {
+  const configured = config();
+  const release = testRelease(configured);
+  const filePath = fileURLToPath(import.meta.url);
+  const content = readFileSync(filePath);
+  const relativePath = basename(filePath);
+  const client = {
+    ...release.client,
+    rootPath: dirname(filePath),
+    fileCount: 1,
+    bytes: content.byteLength,
+    files: {
+      [relativePath]: {
+        size: content.byteLength,
+        sha256: createHash("sha256").update(content).digest("hex")
+      }
+    }
+  };
+  assert.doesNotThrow(() => assertClientArtifactFile(filePath, { ...release, client }));
+  assert.throws(
+    () => assertClientArtifactFile(filePath, {
+      ...release,
+      client: {
+        ...client,
+        files: { [relativePath]: { ...client.files[relativePath], sha256: "0".repeat(64) } }
+      }
+    }),
+    { code: "crm.artifact.client_file_mismatch" }
+  );
+});
+
+test("health exposes the verified release even when an independent dependency is unavailable", async () => {
+  const distDir = mkdtempSync(resolve(tmpdir(), "pyrosa-crm-health-"));
+  const configured = {
+    ...config(),
+    accessLog: false,
+    distDir,
+    dbDsn: null,
+    dbHost: "127.0.0.1",
+    dbPort: 1,
+    dbConnectTimeoutMs: 50
+  };
+  try {
+    await withServer(configured, async (baseUrl) => {
+      const release = testRelease(configured);
+      const response = await fetch(`${baseUrl}${configured.healthPath}`);
+      const payload = await response.json() as {
+        artifact?: unknown;
+        commit?: unknown;
+        releaseId?: unknown;
+        release?: { clientSha256?: unknown; serverSha256?: unknown };
+      };
+      assert.equal(response.status, 503);
+      assert.equal(payload.releaseId, release.releaseId);
+      assert.equal(payload.commit, release.commit);
+      assert.deepEqual(payload.artifact, { ok: true });
+      assert.equal(payload.release?.clientSha256, release.client.sha256);
+      assert.equal(payload.release?.serverSha256, release.server.sha256);
+    });
+  } finally {
+    await closePostgres();
+    rmSync(distDir, { recursive: true, force: true });
+  }
 });
 
 async function withServer(
   configured: ReturnType<typeof config>,
   run: (baseUrl: string) => Promise<void>
 ): Promise<void> {
-  const server = createCrmServer(configured);
+  const server = createCrmServer(testRelease(configured), configured);
   await new Promise<void>((resolve, reject) => {
     server.once("error", reject);
     server.listen(0, "127.0.0.1", resolve);
@@ -149,4 +266,37 @@ async function withServer(
   } finally {
     await new Promise<void>((resolve, reject) => server.close((error) => error ? reject(error) : resolve()));
   }
+}
+
+function testRelease(configured: ReturnType<typeof config>): CrmRuntimeRelease {
+  const manifestPath = fileURLToPath(import.meta.url);
+  const manifestSha256 = createHash("sha256").update(readFileSync(manifestPath)).digest("hex");
+  const artifact = {
+    root: ".",
+    rootPath: configured.distDir,
+    fileCount: 0,
+    bytes: 0,
+    sha256: "1".repeat(64),
+    files: {}
+  };
+  return {
+    schemaVersion: 1,
+    application: "pyrosa-democrm",
+    releaseId: "pyrosa-democrm/test/0123456789ab/1111111111111111",
+    version: configured.version,
+    commit: "0123456789abcdef0123456789abcdef01234567",
+    branch: configured.branch,
+    sourceDirty: false,
+    generatedAt: "2026-07-15T00:00:00.000Z",
+    aggregateSha256: "1".repeat(64),
+    manifestPath,
+    manifestSha256,
+    client: artifact,
+    server: {
+      ...artifact,
+      entry: "index.js",
+      entryPath: manifestPath
+    },
+    launcher: artifact
+  };
 }

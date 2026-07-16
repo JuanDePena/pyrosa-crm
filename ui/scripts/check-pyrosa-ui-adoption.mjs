@@ -6,6 +6,10 @@ const uiRoot = resolve(import.meta.dirname, "..");
 const contract = readJson(resolve(import.meta.dirname, "pyrosa-ui-adoption-contract.json"));
 const packageJson = readJson(resolve(uiRoot, "package.json"));
 const packageLock = readJson(resolve(uiRoot, "package-lock.json"));
+const releaseManifestSource = readFileSync(resolve(uiRoot, "scripts/lib/release-manifest.mjs"), "utf8");
+const runtimeReleaseSource = readFileSync(resolve(uiRoot, "server/release.ts"), "utf8");
+const runtimeServerSource = readFileSync(resolve(uiRoot, "server/index.ts"), "utf8");
+const launcherSource = readFileSync(resolve(uiRoot, "server.mjs"), "utf8");
 const sources = Object.fromEntries(
   Object.entries(contract.sources).map(([key, path]) => [key, readFileSync(resolve(uiRoot, path), "utf8")])
 );
@@ -45,6 +49,30 @@ for (const [dependency, expectedVersion] of Object.entries(contract.sharedDepend
 check("shared package bundle pins published aggregate provenance", () =>
   /^[0-9a-f]{64}$/u.test(contract.packageProvenance?.aggregateSha256 ?? "")
 );
+
+check("build emits one governed frontend and BFF release manifest", () =>
+  contract.artifactCoherence?.schemaVersion === 1 &&
+  contract.artifactCoherence?.application === "pyrosa-democrm" &&
+  packageJson.scripts?.build?.endsWith("npm run build:manifest") &&
+  packageJson.scripts?.["build:manifest"] === "node ./scripts/generate-release-manifest.mjs" &&
+  packageJson.scripts?.["test:release-manifest"] === "node --test ./scripts/release-manifest.test.mjs"
+);
+check("launcher verifies the release before importing its BFF entrypoint", () =>
+  launcherSource.includes("loadAndVerifyReleaseManifest") &&
+  launcherSource.indexOf("loadAndVerifyReleaseManifest") < launcherSource.indexOf("await import") &&
+  launcherSource.includes("runtime.startServer(release)")
+);
+check("runtime fails closed when manifest or static client bytes change", () =>
+  releaseManifestSource.includes("crm.artifact.${name}_mismatch") &&
+  runtimeReleaseSource.includes("crm.artifact.manifest_changed") &&
+  runtimeReleaseSource.includes("crm.artifact.client_file_mismatch") &&
+  runtimeServerSource.includes("crm.artifact.inconsistent")
+);
+for (const field of contract.artifactCoherence?.requiredHealthFields ?? []) {
+  check(`runtime health exposes release coherence field ${field}`, () =>
+    runtimeServerSource.includes(field === "artifact" ? "artifact," : `${field}:`)
+  );
+}
 
 check("route registry exports the canonical routeDefinitions collection", () =>
   /export\s+const\s+routeDefinitions\s*[:=]/u.test(sources.routes)

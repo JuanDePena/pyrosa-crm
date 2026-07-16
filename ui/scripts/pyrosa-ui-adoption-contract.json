@@ -60,6 +60,15 @@
       }
     }
   },
+  "artifactCoherence": {
+    "schemaVersion": 1,
+    "application": "pyrosa-democrm",
+    "manifest": "build/release-manifest.json",
+    "clientRoot": "dist",
+    "serverRoot": "build/server",
+    "serverEntry": "index.js",
+    "requiredHealthFields": ["releaseId", "commit", "artifact"]
+  },
   "routes": [
     { "id": "dashboard", "hash": "dashboard", "groupId": "gestion", "groupLabel": "Gestion", "groupOrder": 1, "itemOrder": 1 },
     { "id": "cuentas", "hash": "cuentas", "groupId": "relacion", "groupLabel": "Relacion", "groupOrder": 2, "itemOrder": 1 },

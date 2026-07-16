@@ -119,6 +119,28 @@ test("uses exact snake_case v1 requests and three isolated client_credentials gr
   }
 });
 
+test("accepts the fixed single-character tenant id only as a candidate for owner decisions", async () => {
+  const observedTenantIds: string[] = [];
+  globalThis.fetch = async (input, init) => {
+    const url = new URL(String(input));
+    if (url.pathname === "/oauth/token") return tokenResponse(ownerForClient(basicClientId(init)), 1);
+    const body = JSON.parse(String(init?.body)) as Record<string, unknown>;
+    observedTenantIds.push(String(body.tenant_id));
+    return decisionResponse(ownerForHost(url.hostname), body);
+  };
+  const req = {
+    headers: {
+      "x-request-id": "request-crm-access-tenant-1",
+      "x-correlation-id": "correlation-crm-access-tenant-1"
+    }
+  } as unknown as IncomingMessage;
+
+  const result = await resolveAccess(req, config({ defaultTenantId: "1" }), identity, "crm.cases.read");
+
+  assert.equal(result.tenantId, "1");
+  assert.deepEqual(observedTenantIds, ["1", "1", "1"]);
+});
+
 test("reuses the generated RequestContext identifiers for every owner decision", async () => {
   const observed: Array<Record<string, unknown>> = [];
   globalThis.fetch = async (input, init) => {

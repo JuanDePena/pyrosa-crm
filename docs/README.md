@@ -24,6 +24,7 @@ Recommended reading order:
 10. [CRM Secrets Annex](ops/secrets-management-local.md)
 11. [Release Flow Canonical](https://github.com/JuanDePena/pyrosa-docs/blob/main/ops/release-flow.md)
    - [Release Flow Local Stable Route](ops/release-flow.md)
+   - [Coherencia de artefacto frontend y BFF](ops/release-artifact-coherence.md)
 12. [Application Schema Convergence](ops/app-schema-convergence.md)
 13. [SharedShell Scaffold Handoff](ops/shared-shell-scaffold.md)
 14. [SharedShell Closure Evidence](evidence/shared-shell-visual-convergence-2026-07-15.md)

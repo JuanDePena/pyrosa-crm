@@ -3,6 +3,7 @@ import type { IncomingMessage, OutgoingHttpHeaders, ServerResponse } from "node:
 import { randomUUID } from "node:crypto";
 import { extname, join, relative, resolve } from "node:path";
 import { mimeTypes, type CrmServerConfig } from "./config.js";
+import { assertClientArtifactFile, type CrmRuntimeRelease } from "./release.js";
 
 export type RequestContext = {
   correlationId: string;
@@ -96,7 +97,8 @@ export function serveStatic(
   req: IncomingMessage,
   res: ServerResponse,
   pathname: string,
-  config: CrmServerConfig
+  config: CrmServerConfig,
+  release: CrmRuntimeRelease
 ): void {
   if (req.method !== "GET" && req.method !== "HEAD") {
     sendText(res, 405, "Method Not Allowed");
@@ -119,6 +121,7 @@ export function serveStatic(
   }
 
   const responsePath = resolved || join(config.distDir, "index.html");
+  assertClientArtifactFile(responsePath, release);
   const stat = statSync(responsePath);
   const ext = extname(responsePath).toLowerCase();
   const isAsset = relative(config.distDir, responsePath).startsWith("assets/");

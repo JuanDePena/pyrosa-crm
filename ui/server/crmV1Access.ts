@@ -239,7 +239,7 @@ function requestedTenant(req: IncomingMessage, config: CrmServerConfig): string 
     ? req.headers["x-pyrosa-tenant-id"][0]
     : req.headers["x-pyrosa-tenant-id"];
   const value = String(header ?? config.defaultTenantId ?? "").trim();
-  if (!/^[A-Za-z0-9_.:-]{3,128}$/.test(value)) {
+  if (!/^[A-Za-z0-9][A-Za-z0-9_.:@/-]{0,127}$/.test(value)) {
     throw new CrmV1Error(400, "crm.tenant.required", "No se pudo resolver un tenant autorizado para la solicitud.");
   }
   return value;

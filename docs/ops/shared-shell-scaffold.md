@@ -32,7 +32,7 @@ Accounts y Platform.
 | Auth | Delegated UI auth through `pyrosa-iam` client `crm`; protected `/ui` and `/api/crm/*` surfaces use `PYROSA_CRM_SESSION`. |
 | Contracts | `/api/crm/contracts` exposes `democrm-contract-v0.4` with CRM workbench rows, platform services, modules and session context. |
 | Actions | `/api/crm/contracts/action-preview` supports `inspect` and `prepare`; both are `GET`, `preview-only` and `mutates=false`. |
-| Runtime | `npm run build` produces client chunks and `build/server`; `server.mjs` loads `build/server/index.js`. |
+| Runtime | `npm run build` produce cliente, `build/server` y un manifiesto comun; `server.mjs` verifica hashes/commit/version antes de cargar el BFF. |
 | Visual QA | `npm run qa:visual -- --base-url http://127.0.0.1:10166` captura screenshots y manifiesto bajo `ui/tmp/qa-visual`. |
 
 ## Verificación operativa
@@ -41,8 +41,10 @@ Desde la raíz del repositorio:
 
 ```bash
 npm --prefix ui run check:pyrosa-ui
+npm --prefix ui run test:release-manifest
 npm --prefix ui run typecheck
 npm --prefix ui run build
+systemctl restart app-pyrosa-democrm.service
 curl -fsS http://127.0.0.1:10166/__pyrosa_crm_health
 npm --prefix ui run qa:visual -- --base-url http://127.0.0.1:10166
 ```
@@ -51,7 +53,8 @@ La corrida es válida cuando:
 
 - el contrato ejecutable de adopción Pyrosa UI pasa;
 - typecheck y build terminan con código `0`;
-- el health responde `ok` para `pyrosa-crm`;
+- el health responde `ok` para `pyrosa-crm`, `artifact.ok=true` y publica el
+  `releaseId`/commit esperado;
 - `ui/tmp/qa-visual/manifest.json` declara `ok: true`;
 - Dashboard no contiene tabla;
 - Cuentas conserva la inspección read-only;
@@ -107,6 +110,10 @@ funcional:
 Un cambio de screenshots sin fallo funcional bloquea promoción, pero no exige
 rollback automático. Comparar primero el manifiesto y las capturas desktop y
 móvil.
+
+El rollback de runtime mueve siempre `dist`, `build/server` y
+`build/release-manifest.json` del mismo release. No se restauran archivos
+individuales ni se ejecuta un build sobre el checkout live.
 
 ## Guardrails
 

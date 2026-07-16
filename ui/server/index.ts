@@ -27,12 +27,41 @@ import { buildActionPreview, buildCrmContracts } from "./contracts.js";
 import { authenticateCrmApiBearer, hasApiAuthorization, type CrmApiPrincipal } from "./oauthApiAuth.js";
 import { handleCrmV1, resolveBootstrapContext, sendCrmV1Error } from "./crmV1Http.js";
 import { CrmV1Error } from "./crmV1Domain.js";
+import {
+  assertReleaseFresh,
+  assertReleaseMatchesConfig,
+  CrmArtifactConsistencyError,
+  inspectReleaseFreshness,
+  publicReleaseIdentity,
+  type CrmRuntimeRelease
+} from "./release.js";
 
-export function createCrmServer(config: CrmServerConfig = loadConfig()) {
+export function createCrmServer(release: CrmRuntimeRelease, config: CrmServerConfig = loadConfig()) {
+  assertReleaseMatchesConfig(release, config);
   const server = createServer((req, res) => {
-    void handleRequest(req, res, config).catch((error) => {
+    void handleRequest(req, res, config, release).catch((error) => {
       if (res.headersSent) {
         res.destroy(error);
+        return;
+      }
+      if (error instanceof CrmArtifactConsistencyError) {
+        const requestId = runtimeRequestId(res);
+        console.error(
+          `[crm_artifact_inconsistent] request_id=${requestId} code=${error.code} release_id=${release.releaseId}`
+        );
+        sendJson(res, 503, {
+          error: {
+            code: "crm.artifact.inconsistent",
+            message: "PYROSA CRM detecto una mezcla de artefactos y detuvo la solicitud.",
+            occurredAt: new Date().toISOString(),
+            requestId,
+            retryable: false
+          },
+          release: {
+            releaseId: release.releaseId,
+            commit: release.commit
+          }
+        });
         return;
       }
       if (error instanceof CrmAuthError) {
@@ -93,12 +122,17 @@ function runtimeRequestId(res: ServerResponse): string {
   return /^[A-Za-z0-9][A-Za-z0-9._:@/+~-]{2,127}$/u.test(value) ? value : randomUUID();
 }
 
-export function startServer(config: CrmServerConfig = loadConfig()): ReturnType<typeof createCrmServer> {
+export function startServer(
+  release: CrmRuntimeRelease,
+  config: CrmServerConfig = loadConfig()
+): ReturnType<typeof createCrmServer> {
   assertStaticShellExists(config);
 
-  const server = createCrmServer(config);
+  const server = createCrmServer(release, config);
   server.listen(config.port, config.host, () => {
-    console.log(`PYROSA CRM listening on http://${config.host}:${config.port}`);
+    console.log(
+      `PYROSA CRM listening on http://${config.host}:${config.port} release_id=${release.releaseId} commit=${release.commit}`
+    );
   });
 
   for (const signal of ["SIGINT", "SIGTERM"] as const) {
@@ -121,11 +155,16 @@ export function startServer(config: CrmServerConfig = loadConfig()): ReturnType<
 async function handleRequest(
   req: IncomingMessage,
   res: ServerResponse,
-  config: CrmServerConfig
+  config: CrmServerConfig,
+  release: CrmRuntimeRelease
 ): Promise<void> {
   const context = createRequestContext(req);
   applyCommonHeaders(res, context.requestId, context.correlationId);
   logAccess(req, res, context, config);
+  const artifact = inspectReleaseFreshness(
+    release,
+    context.url.pathname === config.healthPath
+  );
 
   if (context.url.pathname === config.healthPath) {
     if (req.method !== "GET" && req.method !== "HEAD") {
@@ -134,19 +173,25 @@ async function handleRequest(
     }
     const db = await loadDatabaseStatus(config);
     const payload: Record<string, unknown> = {
-      ok: db.ok === true,
+      ok: db.ok === true && artifact.ok,
       service: "pyrosa-crm",
       version: config.version,
       branch: config.branch,
+      releaseId: release.releaseId,
+      commit: release.commit,
+      release: publicReleaseIdentity(release),
+      artifact,
       database: db
     };
     if (config.healthDetails) {
       payload.distDir = config.distDir;
       payload.platform = buildPlatformContracts(config);
     }
-    sendJson(res, db.ok === true ? 200 : 503, payload, context.headOnly);
+    sendJson(res, db.ok === true && artifact.ok ? 200 : 503, payload, context.headOnly);
     return;
   }
+
+  assertReleaseFresh(release);
 
   if (isLoginPath(context.url.pathname)) {
     if (!allowGetOrHead(req, res)) {
@@ -237,7 +282,9 @@ async function handleRequest(
         app: {
           name: "PYROSA CRM",
           version: config.version,
-          branch: config.branch
+          branch: config.branch,
+          releaseId: release.releaseId,
+          commit: release.commit
         },
         platform: buildPlatformContracts(config),
         auth: {
@@ -331,7 +378,7 @@ async function handleRequest(
   }
 
   if (context.url.pathname.startsWith("/assets/") || context.url.pathname.startsWith("/public/")) {
-    serveStatic(req, res, context.url.pathname, config);
+    serveStatic(req, res, context.url.pathname, config, release);
     return;
   }
 
@@ -342,7 +389,7 @@ async function handleRequest(
       sendRedirect(res, 302, `/auth/login?return_to=${returnTo}`, context.headOnly);
       return;
     }
-    serveStatic(req, res, context.url.pathname, config);
+    serveStatic(req, res, context.url.pathname, config, release);
     return;
   }
 

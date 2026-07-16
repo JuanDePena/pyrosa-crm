@@ -94,6 +94,11 @@ tenant candidato y lo usa cuando la solicitud no incluye
 operacion vuelven a exigir las decisiones positivas de Directory, Store y
 Platform para ese mismo tenant.
 
+El template de `pyrosa-democrm` fija temporalmente el valor `1` para la cohorte
+interna v2607. Ese identificador de un solo caracter es valido en el consumidor
+y debe coincidir con el `tenant_id` transversal ya catalogado por los tres
+owners; no es un alias, slug ni `tenant_key`.
+
 Esta variable no es un selector multitenant ni debe usarse cuando el usuario
 pueda operar mas de un tenant. La promocion multitenant mantiene como gate un
 selector respaldado por el contexto autorizado de Directory; hasta entonces,
@@ -131,14 +136,18 @@ piloto efimero no satisface ese gate.
 ### 6. Despliegue Runtime
 
 1. publicar los commits por repo y fijar el commit/artefacto exacto;
-2. reconciliar el Quadlet y env versionados mediante el flujo operativo
+2. generar desde worktree limpio el manifiesto comun de cliente/BFF, verificar
+   sus hashes y exigir `sourceDirty=false`, version `v2607` y branch esperada;
+3. reconciliar el Quadlet y env versionados mediante el flujo operativo
    autorizado; no usar un `podman run` persistente ad hoc;
-3. promover primero `pyrosa-democrm`, no `pyrosa-crm`;
-4. verificar servicio/contenedor, health, version `v2607`, DB efectiva,
-   dependencias y UI autenticada;
-5. comprobar que el rol runtime no tiene DDL/`TRUNCATE` y que arrancar el
+4. promover como una unidad `dist`, `build/server` y
+   `build/release-manifest.json`, primero en `pyrosa-democrm`, no en
+   `pyrosa-crm`;
+5. verificar servicio/contenedor, health, version `v2607`, `releaseId`, commit,
+   `artifact.ok=true`, DB efectiva, dependencias y UI autenticada;
+6. comprobar que el rol runtime no tiene DDL/`TRUNCATE` y que arrancar el
    servicio no intenta `db:migrate`;
-6. observar logs saneados, latencia, errores owner y drift durante la ventana.
+7. observar logs saneados, latencia, errores owner y drift durante la ventana.
 
 La promocion a `pyrosa-crm` requiere una segunda decision explicita despues del
 canary demo; no se deriva automaticamente del push Git.
@@ -171,8 +180,9 @@ bloquea y la promocion debe detenerse para diseñar una compensacion auditada.
 - Acceso compuesto: apagar el flag del owner afectado; CRM presenta
   indisponibilidad controlada y no activa fallback local.
 - Resource server bearer: `PYROSA_CRM_OAUTH_API_ENABLED=false`.
-- Runtime: volver al artefacto/commit anterior mediante el mismo gestor y
-  verificar health; no se revierte el catalogo por copiar archivos viejos.
+- Runtime: seleccionar el artefacto anterior ya construido con cliente, BFF y
+  manifiesto coherentes, reiniciar y verificar su `releaseId`; no reconstruir
+  ni copiar archivos individuales sobre el runtime live.
 - Datos/diccionario: usar exclusivamente el recovery gobernado de Platform y
   sus backups/attestations. El rol CRM nunca ejecuta DDL de rollback.
 - Import: detener nuevas escrituras, ejecutar el comando versionado de rollback

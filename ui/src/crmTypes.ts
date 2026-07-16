@@ -33,7 +33,9 @@ export type SessionResponse = {
 export type BootstrapResponse = {
   app?: {
     branch?: string;
+    commit?: string;
     name?: string;
+    releaseId?: string;
     version?: string;
   };
   context?: {
