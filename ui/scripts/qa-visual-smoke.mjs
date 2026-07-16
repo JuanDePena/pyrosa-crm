@@ -94,6 +94,11 @@ async function main() {
   const chromiumBin = args.chromiumBin ?? process.env.CHROMIUM_BIN ?? findChromium();
   const debugPort = parseDebugPort(args.debugPort ?? process.env.PYROSA_CRM_QA_DEBUG_PORT ?? randomPort());
   const sessionSecret = process.env.PYROSA_CRM_IAM_CLIENT_SECRET ?? "";
+  const iamIssuer = new URL(
+    process.env.PYROSA_CRM_QA_IAM_ISSUER ??
+      process.env.PYROSA_CRM_IAM_BASE_URL ??
+      "https://iam.pyrosa.com.do"
+  ).origin;
 
   if (!chromiumBin) {
     throw new Error("Chromium no esta disponible. Define CHROMIUM_BIN para ejecutar QA visual.");
@@ -172,7 +177,7 @@ async function main() {
       "Network.setCookie",
       {
         name: "PYROSA_CRM_SESSION",
-        value: buildSessionCookie(sessionSecret),
+        value: buildSessionCookie(sessionSecret, iamIssuer),
         url: baseUrl.origin,
         path: "/",
         httpOnly: true,
@@ -365,10 +370,14 @@ function findChromium() {
   return "";
 }
 
-function buildSessionCookie(secret) {
+function buildSessionCookie(secret, iamIssuer) {
   const now = new Date();
   const session = {
     sid: `qa-${randomBytes(8).toString("hex")}`,
+    iamIdentity: {
+      issuer: iamIssuer,
+      subject: "qa-democrm"
+    },
     user: {
       id: 9001,
       email: "qa-democrm@pyrosa.local",
