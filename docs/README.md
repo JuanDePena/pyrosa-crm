@@ -40,6 +40,14 @@ Recommended reading order:
 24. [Architecture Decision Records](design/adr/)
 25. [OAuth2 API consumer contract](design/oauth-api-consumer.md)
 
+Diccionarios owner v2 en source:
+
+- [global-app](../database/dictionaries/pyrosa-democrm-global.owner-v2.json)
+- [tenant-product](../database/dictionaries/pyrosa-democrm-tenant-product.owner-v2.json)
+
+Ambos candidatos usan `2026.07.16.0`; su publicacion Git no sustituye la
+catalogacion, promocion ni aplicacion gobernada en Platform.
+
 Baseline historica:
 
 - [Vision v2606](product/vision-v2606.md)
