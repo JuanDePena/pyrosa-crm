@@ -17,46 +17,46 @@
     "visualQa": "scripts/qa-visual-smoke.mjs"
   },
   "sharedDependencies": {
-    "@pyrosa/ui": "0.2.2",
-    "@pyrosa/ui-icons": "0.2.2",
-    "@pyrosa/ui-layouts": "0.2.2",
-    "@pyrosa/ui-templates": "0.2.2",
-    "@pyrosa/ui-theme": "0.2.2",
-    "@pyrosa/ui-tokens": "0.2.2"
+    "@pyrosa/ui": "0.2.3",
+    "@pyrosa/ui-icons": "0.2.3",
+    "@pyrosa/ui-layouts": "0.2.3",
+    "@pyrosa/ui-templates": "0.2.3",
+    "@pyrosa/ui-theme": "0.2.3",
+    "@pyrosa/ui-tokens": "0.2.3"
   },
   "packageProvenance": {
-    "aggregateSha256": "1c3820c51c54b91125235444f98977ece15251599bd967466b2860e320f7e823",
+    "aggregateSha256": "31faea2551ce134ad1f167d77f523e9eae12b58be2c26ec7d751ff21485603c6",
     "baseUrl": "https://ui.pyrosa.com.do/public/packages/tarballs",
     "packages": {
       "@pyrosa/ui": {
-        "integrity": "sha512-kMYhXwW40GsftteRFuXzXbD0IDmkvLOwHkBCWLiDaTwXCRIeW7EFuypaWK2gqSMm8WFBi7hMhjoYFTnfslodIg==",
-        "sha256": "030484d6f97eb9cdc41414331ea3e74d23391f89ff3a75aa41d948ef8fd1b918",
-        "tarball": "pyrosa-ui-0.2.2.tgz"
+        "integrity": "sha512-sOWPnF6ozx3Xhi1zG8yb41csJzhJNvcl2CfZXXXy2R++iOiOOWO64bSAMp3/BfDNFELMtK8lYHWbIi/YMvKLbw==",
+        "sha256": "58ca09ca08bfbb530080bb9e25e5262704bc16f3999af6732afd67b58e437eee",
+        "tarball": "pyrosa-ui-0.2.3.tgz"
       },
       "@pyrosa/ui-icons": {
-        "integrity": "sha512-37ZSuBwKIvMeAYeYi6k9RBJ81hUbc7l1sJN1WQADbepOv9CgkKX5YFUIJlfbuSK0PxTZoIwO4CrxPI5iS//P5A==",
-        "sha256": "08aac4b18d4fdf97014738be7a7e2bcc50635ad32e20e6d1ac42dfa266a5bd5e",
-        "tarball": "pyrosa-ui-icons-0.2.2.tgz"
+        "integrity": "sha512-1tj+qeJY6dE2tjmIyZVy78Nogu1J5qDqxOfvxHGNxrJp9gN2LSdTNenzhksL8f+MF7ulS1UnAJD0JStZOt7UxA==",
+        "sha256": "8e39410c19369b35602dd2b644783d99c6be319dc9d353ce637395fae448b7d5",
+        "tarball": "pyrosa-ui-icons-0.2.3.tgz"
       },
       "@pyrosa/ui-layouts": {
-        "integrity": "sha512-Du/USHs6GxqaHWcVbn26yU6VWwkTsNilmOy+ZXfeibZN1Wv7Rqjutdu8Q/RJfjKJD5GPsgEiRMYavLkVr6Shnw==",
-        "sha256": "ae5300f701d9544db3a4968db2f053fba10e1487c1c8c3571f6e0fdc84b7c033",
-        "tarball": "pyrosa-ui-layouts-0.2.2.tgz"
+        "integrity": "sha512-+PxVpXxwCcqjlHSNXI264lv9n1C0Ew9qoyNGXHbNImboSQS+kJALCWqWNJi3RLxck67QCn1Z+q/yaiziKSfvGg==",
+        "sha256": "8b46adb31ef93d12365f178e635b7cfd527dd7c97e77ef6b45a4f63401a31e19",
+        "tarball": "pyrosa-ui-layouts-0.2.3.tgz"
       },
       "@pyrosa/ui-templates": {
-        "integrity": "sha512-uK6Ds45pRdn7ZDaEaLt7B+VRa5cjuyLWB4JdEWuecftKMZUWH59wBmI4dzOpSUjYb8Hzl3MHxkOlciHX7f7R3g==",
-        "sha256": "e4ecc8758958e514ec97eadc6cc73f2f617c57cd47fdf77d309eeb14dbbfd361",
-        "tarball": "pyrosa-ui-templates-0.2.2.tgz"
+        "integrity": "sha512-svwfg7pKL3lLPct1h8tksIakJNW9ONhg1jdUzVrKDIbd2oQeeva2S7+dMS346zaoObSSBn5/LGFAB3gIgJDcnw==",
+        "sha256": "24fc740be98b38d4c283f87c0aa718ae62ed2fdc0c22f40d402bc13b1f24c61f",
+        "tarball": "pyrosa-ui-templates-0.2.3.tgz"
       },
       "@pyrosa/ui-theme": {
-        "integrity": "sha512-EynVPSqX6ka2VL9qBjU/KuXEwQkzD91QwP1mYP4UjV5QuUcDUcPzvwXrrsrxImAhe/ALKTGCPGjr/lEORDvOHA==",
-        "sha256": "d899072fb0b89ab0dbbf5e384044394b95a91708243c1b856e00014d369f4a57",
-        "tarball": "pyrosa-ui-theme-0.2.2.tgz"
+        "integrity": "sha512-f7hd/kQbnxfu473GAHa3qzmzJrvdNx/Mbr4RO+Ckzrw3gpgHY2kL1gEbNv6J4/BKut984q301FO5OtQjzlCSeQ==",
+        "sha256": "b1b1dd891a79592de289d7601a10789a1f22b86d18bdd53a3d03736ef599c9be",
+        "tarball": "pyrosa-ui-theme-0.2.3.tgz"
       },
       "@pyrosa/ui-tokens": {
-        "integrity": "sha512-qrJMnv348B11bWSSBeeMXJZyxmt5gOKooep27ZEIgN+523D/8rwkCHSqwMH17Pb2eKtoLMrT5RwHWAu+32BXAA==",
-        "sha256": "efdce801e0d463767ba8ebf4350fa02d9a83a54e6782790687b6cc3e2b0dbcb4",
-        "tarball": "pyrosa-ui-tokens-0.2.2.tgz"
+        "integrity": "sha512-DiVsewUEJGZFrq0lhY9r48X+igWVzYYzzl8VlZXYYQevT6Mzg3TBuKPU6GD+gOM90N3sr9kEUnV5/h0LHuFIYw==",
+        "sha256": "8072b15f0917533603ab3d6118fe4983cf07b55bcd930e2fbecfe15a6ad47967",
+        "tarball": "pyrosa-ui-tokens-0.2.3.tgz"
       }
     }
   },
@@ -180,7 +180,7 @@
     "strategy": "source-revert",
     "steps": [
       "Revertir el commit de UI v2607 sin alterar datos ni contratos CRM.",
-      "Restaurar en conjunto el bundle inmutable @pyrosa/ui 0.2.1.",
+      "Restaurar en conjunto el bundle inmutable @pyrosa/ui 0.2.2.",
       "Conservar las rutas hash y el ownership de datos de DemoCRM.",
       "Ejecutar check:pyrosa-ui, typecheck, build y qa:visual antes de reabrir el runtime."
     ],

@@ -78,7 +78,7 @@ const visualCases = [
     id: "desktop-fatal-error",
     hash: "dashboard",
     viewport: { width: 1440, height: 1000, mobile: false },
-    expect: ["PYROSA CRM", "DemoCRM no esta disponible", "Detalle tecnico"],
+    expect: ["PYROSA CRM", "DemoCRM no está disponible", "Detalle técnico"],
     expectedFatal: true,
     mockBootstrapError: true,
     requiredSelector: "[data-py-internal-error-landing='true']"
@@ -687,6 +687,9 @@ async function inspectPage(client, sessionId, visualCase) {
     const root = document.documentElement;
     const drawer = document.querySelector(".py-user-drawer");
     const drawerRect = drawer?.getBoundingClientRect();
+    const fatalTitle = document.querySelector("[data-py-internal-error-landing='true'] h1");
+    const fatalTitleStyle = fatalTitle ? getComputedStyle(fatalTitle) : null;
+    const technicalCopy = document.querySelector(".py-application-state-landing__details-copy");
     return {
       path: location.pathname + location.hash,
       title: document.title,
@@ -705,6 +708,14 @@ async function inspectPage(client, sessionId, visualCase) {
       hasLoginRedirect: location.pathname.includes("/auth/login") || text.includes("Autenticacion requerida"),
       hasContractFallback: text.includes("Contrato local") || text.includes("fallback local"),
       hasRuntimeError: text.includes("PYROSA CRM no pudo completar la solicitud"),
+      fatalTitleFocused: !fatalTitle || document.activeElement === fatalTitle,
+      fatalTitleBorderless: !fatalTitleStyle || (
+        fatalTitleStyle.borderStyle === "none" &&
+        fatalTitleStyle.borderWidth === "0px" &&
+        fatalTitleStyle.boxShadow === "none" &&
+        fatalTitleStyle.outlineStyle === "none"
+      ),
+      technicalCopyPresent: !fatalTitle || technicalCopy?.getAttribute("aria-label") === "Copiar detalle técnico",
       missing: ${JSON.stringify(visualCase.expect)}.filter((item) => !text.includes(item))
     };
   })()`;
@@ -718,6 +729,9 @@ async function inspectPage(client, sessionId, visualCase) {
   if (value.hasRuntimeError) failures.push("la UI mostro error runtime");
   if (visualCase.expectedFatal) {
     if (value.shellPresent || value.sidebarPresent || value.topbarPresent) failures.push("la landing fatal se renderizo dentro del SharedShell");
+    if (!value.fatalTitleFocused) failures.push("el título fatal no recibió foco programático");
+    if (!value.fatalTitleBorderless) failures.push("el título fatal enfocado dibujó borde, outline o shadow");
+    if (!value.technicalCopyPresent) failures.push("falta la acción accesible para copiar el detalle técnico");
   } else if (!value.shellPresent || !value.sidebarPresent || !value.topbarPresent) {
     failures.push("faltan superficies del SharedShell");
   }

@@ -14,7 +14,7 @@ el canario interno en una promocion productiva.
 
 ## Baseline Confirmado
 
-- El source fija el bundle coordinado `@pyrosa/*` `0.2.2`; su publicacion y la
+- El source fija el bundle coordinado `@pyrosa/*` `0.2.3`; su publicación y la
   promocion del runtime se verifican como gates separados antes del canario.
 - El BFF, API CRM v1, inventario/detalle/alta/edicion de seis recursos,
   dashboard, perfiles, import staging y audit/outbox estan implementados en

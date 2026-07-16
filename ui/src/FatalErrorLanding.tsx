@@ -10,8 +10,8 @@ export function FatalErrorLanding({
   issue,
   message,
   onRetry,
-  subtitle = "La aplicacion no puede iniciar de forma segura en este momento.",
-  title = "DemoCRM no esta disponible"
+  subtitle = "La aplicación no puede iniciar de forma segura en este momento.",
+  title = "DemoCRM no está disponible"
 }: {
   issue: TechnicalIssue;
   message: string;
@@ -37,8 +37,8 @@ export function FatalErrorBoundary({ children }: { children: ReactNode }) {
       model={crmErrorPresentation({
         issue,
         message: "Se produjo un error interno al preparar la vista. No se mostraron datos alternativos.",
-        subtitle: "La aplicacion no puede iniciar de forma segura en este momento.",
-        title: "DemoCRM no esta disponible"
+        subtitle: "La aplicación no puede iniciar de forma segura en este momento.",
+        title: "DemoCRM no está disponible"
       })}
       onAction={() => window.location.reload()}
     >
@@ -67,8 +67,8 @@ function crmErrorPresentation({
       actionId: "retry",
       label: "Intentar nuevamente"
     },
-    supportHint: "Si el problema continua, comparte solamente el codigo y el Request ID con soporte.",
-    detailsLabel: "Detalle tecnico",
+    supportHint: "Si el problema continúa, comparte solamente el código y el Request ID con soporte.",
+    detailsLabel: "Detalle técnico",
     technicalDetails: {
       code: issue.code,
       httpStatus: issue.status,

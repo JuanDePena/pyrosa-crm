@@ -240,7 +240,7 @@ check("fatal landing contains brand title subtitle message retry and technical d
   sources.fatalError.includes('appName: "PYROSA CRM"') &&
   sources.fatalError.includes("technicalDetails:") &&
   sources.fatalError.includes("Intentar nuevamente") &&
-  sources.fatalError.includes("Detalle tecnico")
+  sources.fatalError.includes("Detalle técnico")
 );
 check("fatal landing delegates markup and styling to the shared provider", () =>
   !sources.fatalError.includes("<main") &&
