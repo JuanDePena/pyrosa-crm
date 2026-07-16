@@ -299,7 +299,12 @@ async function main() {
     browser?.close();
     await terminateProcess(chromium);
     if (preview) await terminateProcess(preview);
-    await rm(userDataDir, { recursive: true, force: true });
+    await rm(userDataDir, {
+      recursive: true,
+      force: true,
+      maxRetries: 5,
+      retryDelay: 100
+    });
     if ((failed || process.exitCode) && chromiumStderr) {
       console.error(sanitizeDiagnostic({ source: "chromium", message: chromiumStderr }).message);
     }
