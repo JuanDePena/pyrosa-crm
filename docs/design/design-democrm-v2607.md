@@ -295,7 +295,9 @@ alternas por cliente.
 ## Errores Y Datos De Referencia
 
 - Un error fatal de bootstrap/contrato muestra la landing transversal fuera de
-  SharedShell.
+  SharedShell mediante `InternalErrorLanding` de `@pyrosa/ui-templates`.
+- DemoCRM solo aporta logo local, copy, metadata tecnica allowlisted y la
+  accion de reintento; no conserva markup ni estilos `crm-fatal*` propios.
 - La landing observada con `crm.bootstrap.csrf_missing` no habilita datos de
   respaldo. La correccion exige una sesion IAM canonica y CSRF valido; cookies
   anteriores sin identidad se descartan para forzar un login limpio.

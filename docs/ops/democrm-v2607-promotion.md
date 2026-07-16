@@ -14,10 +14,12 @@ el canario interno en una promocion productiva.
 
 ## Baseline Confirmado
 
-- Los paquetes `@pyrosa/*` estan fijados a la release inmutable `0.2.1`.
+- El source fija el bundle coordinado `@pyrosa/*` `0.2.2`; su publicacion y la
+  promocion del runtime se verifican como gates separados antes del canario.
 - El BFF, API CRM v1, inventario/detalle/alta/edicion de seis recursos,
-  dashboard, perfiles, import staging, audit/outbox y landing de error estan
-  implementados en source.
+  dashboard, perfiles, import staging y audit/outbox estan implementados en
+  source. La landing de error delega su composicion en
+  `@pyrosa/ui-templates/InternalErrorLanding`.
 - Los tres targets fisicos de diccionario estan aplicados y verificados; ver
   [evidencia del rollout](../evidence/democrm-v2607-dictionary-rollout-2026-07-15.md).
 - Platform completo adopcion/readiness del tenant interno `1`, con diccionario

@@ -137,7 +137,9 @@ sintetico y no uso el XLSX ni PII de VOIX.
 ## Sistema visual
 
 `pyrosa-democrm` / `pyrosa-crm` consume `pyrosa-ui` con perfil `business-ops` y
-paquetes publicados/inmutables `0.2.1`. El contrato source esta `ready`, sin
+el contrato coordinado `0.2.2`. Esta release extrae la landing fatal hacia
+`InternalErrorLanding` de `@pyrosa/ui-templates`; DemoCRM conserva solamente
+logo, copy, clasificacion y recuperacion. El contrato source esta `ready`, sin
 fallback productivo silencioso, y Dashboard/workareas consumen la API CRM v1.
 El runtime demo ya sirve el canario v2607; la promocion hacia
 `crm.pyrosa.com.do` permanece separada.

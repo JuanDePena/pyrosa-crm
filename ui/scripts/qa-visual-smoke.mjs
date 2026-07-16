@@ -81,7 +81,7 @@ const visualCases = [
     expect: ["PYROSA CRM", "DemoCRM no esta disponible", "Detalle tecnico"],
     expectedFatal: true,
     mockBootstrapError: true,
-    requiredSelector: "[data-crm-fatal-error='true']"
+    requiredSelector: "[data-py-internal-error-landing='true']"
   }
 ];
 

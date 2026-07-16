@@ -31,12 +31,12 @@
     "start": "node server.mjs"
   },
   "dependencies": {
-    "@pyrosa/ui": "https://ui.pyrosa.com.do/public/packages/tarballs/pyrosa-ui-0.2.1.tgz",
-    "@pyrosa/ui-icons": "https://ui.pyrosa.com.do/public/packages/tarballs/pyrosa-ui-icons-0.2.1.tgz",
-    "@pyrosa/ui-layouts": "https://ui.pyrosa.com.do/public/packages/tarballs/pyrosa-ui-layouts-0.2.1.tgz",
-    "@pyrosa/ui-templates": "https://ui.pyrosa.com.do/public/packages/tarballs/pyrosa-ui-templates-0.2.1.tgz",
-    "@pyrosa/ui-theme": "https://ui.pyrosa.com.do/public/packages/tarballs/pyrosa-ui-theme-0.2.1.tgz",
-    "@pyrosa/ui-tokens": "https://ui.pyrosa.com.do/public/packages/tarballs/pyrosa-ui-tokens-0.2.1.tgz",
+    "@pyrosa/ui": "https://ui.pyrosa.com.do/public/packages/tarballs/pyrosa-ui-0.2.2.tgz",
+    "@pyrosa/ui-icons": "https://ui.pyrosa.com.do/public/packages/tarballs/pyrosa-ui-icons-0.2.2.tgz",
+    "@pyrosa/ui-layouts": "https://ui.pyrosa.com.do/public/packages/tarballs/pyrosa-ui-layouts-0.2.2.tgz",
+    "@pyrosa/ui-templates": "https://ui.pyrosa.com.do/public/packages/tarballs/pyrosa-ui-templates-0.2.2.tgz",
+    "@pyrosa/ui-theme": "https://ui.pyrosa.com.do/public/packages/tarballs/pyrosa-ui-theme-0.2.2.tgz",
+    "@pyrosa/ui-tokens": "https://ui.pyrosa.com.do/public/packages/tarballs/pyrosa-ui-tokens-0.2.2.tgz",
     "lucide-react": "^0.468.0",
     "pg": "^8.20.0",
     "react": "^18.3.1",

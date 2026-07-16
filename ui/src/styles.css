@@ -154,15 +154,13 @@ dl {
   align-items: end;
 }
 
-.crm-regional-error details,
-.crm-fatal__details {
+.crm-regional-error details {
   border: 1px solid var(--py-color-border);
   border-radius: var(--py-radius-control);
   padding: var(--py-space-3);
 }
 
-.crm-regional-error summary,
-.crm-fatal__details summary {
+.crm-regional-error summary {
   cursor: pointer;
   font-weight: var(--py-font-weight-semibold);
 }
@@ -205,100 +203,6 @@ dl {
   width: 1rem;
 }
 
-.crm-fatal {
-  align-items: center;
-  background: var(--py-color-bg);
-  box-sizing: border-box;
-  display: flex;
-  justify-content: center;
-  min-height: 100vh;
-  padding: var(--py-space-6);
-}
-
-.crm-fatal__card {
-  align-items: start;
-  background: var(--py-color-surface);
-  border: 1px solid var(--py-color-border);
-  border-radius: var(--py-radius-surface);
-  box-shadow: var(--py-shadow-lg);
-  display: grid;
-  gap: var(--py-space-5);
-  max-width: 42rem;
-  padding: clamp(var(--py-space-5), 5vw, calc(var(--py-space-6) * 2));
-  width: 100%;
-}
-
-.crm-fatal__brand {
-  align-items: center;
-  display: flex;
-  gap: var(--py-space-3);
-}
-
-.crm-fatal__brand img {
-  height: 2.5rem;
-  object-fit: contain;
-  width: 2.5rem;
-}
-
-.crm-fatal__brand strong {
-  font-size: var(--py-font-size-lg);
-}
-
-.crm-fatal__icon {
-  align-items: center;
-  background: color-mix(in srgb, var(--py-color-danger) 12%, transparent);
-  border-radius: var(--py-radius-surface);
-  color: var(--py-color-danger);
-  display: inline-flex;
-  height: 3rem;
-  justify-content: center;
-  width: 3rem;
-}
-
-.crm-fatal__copy {
-  display: grid;
-  gap: var(--py-space-3);
-}
-
-.crm-fatal__copy h1 {
-  font-size: var(--py-font-size-2xl);
-}
-
-.crm-fatal__subtitle {
-  color: var(--py-color-info);
-  font-size: var(--py-font-size-lg);
-}
-
-.crm-fatal__details dl {
-  display: grid;
-  gap: var(--py-space-2);
-  margin-top: var(--py-space-3);
-}
-
-.crm-fatal__details dl > div {
-  display: grid;
-  gap: var(--py-space-2);
-  grid-template-columns: minmax(6rem, 0.3fr) minmax(0, 1fr);
-}
-
-.crm-fatal__details dt {
-  color: var(--py-color-info);
-  font-size: var(--py-font-size-xs);
-  font-weight: var(--py-font-weight-bold);
-}
-
-.crm-fatal__details dd {
-  font-family: var(--py-font-family-mono);
-  font-size: var(--py-font-size-xs);
-  margin: 0;
-  overflow-wrap: anywhere;
-}
-
-.crm-fatal__note {
-  color: var(--py-color-info);
-  font-size: var(--py-font-size-xs);
-}
-
 @media (max-width: 760px) {
   .crm-detail-list,
   .crm-editor__grid,
@@ -320,19 +224,9 @@ dl {
     flex: 1 1 auto;
   }
 
-  .crm-fatal {
-    align-items: stretch;
-    padding: var(--py-space-3);
-  }
-
-  .crm-fatal__card {
-    box-shadow: none;
-    padding: var(--py-space-5);
-  }
 }
 
 @media (forced-colors: active) {
-  .crm-fatal__icon,
   .crm-input,
   .crm-detail-list {
     forced-color-adjust: auto;

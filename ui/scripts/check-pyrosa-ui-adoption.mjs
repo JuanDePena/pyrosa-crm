@@ -234,18 +234,24 @@ check("fatal bootstrap errors render outside SharedShell", () =>
   sources.app.includes("bootstrapState.kind === \"error\"")
 );
 check("fatal landing contains brand title subtitle message retry and technical disclosure", () =>
+  sources.fatalError.includes('from "@pyrosa/ui-templates"') &&
+  sources.fatalError.includes(`<${contract.fatalError.component}`) &&
   sources.fatalError.includes("crm-logo.png") &&
-  sources.fatalError.includes("<h1") &&
-  sources.fatalError.includes("crm-fatal__subtitle") &&
-  sources.fatalError.includes("{message}") &&
+  sources.fatalError.includes('appName: "PYROSA CRM"') &&
+  sources.fatalError.includes("technicalDetails:") &&
   sources.fatalError.includes("Intentar nuevamente") &&
-  sources.fatalError.includes("<details") &&
   sources.fatalError.includes("Detalle tecnico")
+);
+check("fatal landing delegates markup and styling to the shared provider", () =>
+  !sources.fatalError.includes("<main") &&
+  !sources.fatalError.includes("<details") &&
+  !sources.styles.includes("crm-fatal")
 );
 for (const fragment of contract.fatalError.forbiddenFragments) {
   check(`fatal landing does not expose ${fragment}`, () => !sources.fatalError.includes(fragment));
 }
 check("render failures are contained by the fatal error boundary", () =>
+  sources.fatalError.includes(`<${contract.fatalError.boundary}`) &&
   sources.fatalError.includes("FatalErrorBoundary") &&
   readFileSync(resolve(uiRoot, "src/main.tsx"), "utf8").includes("<FatalErrorBoundary>")
 );
