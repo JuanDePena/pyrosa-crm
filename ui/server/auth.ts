@@ -57,10 +57,6 @@ type UiAuthExchangeResult = {
     locale?: string;
     timezone?: string;
     status?: string;
-    issuer?: string | null;
-    subject?: string | null;
-    iamIssuer?: string | null;
-    iamSubject?: string | null;
   };
   identity?: {
     issuer?: string | null;
@@ -344,13 +340,7 @@ function sessionHasStrictIdentitySignals(session: CrmSession, config: CrmServerC
 }
 
 function normalizeIamIdentity(input: UiAuthExchangeResult, config: CrmServerConfig): CrmIamIdentity {
-  const suppliedIdentity = input.identity === null || input.identity === undefined
-    ? {
-        issuer: input.user?.iamIssuer ?? input.user?.issuer,
-        subject: input.user?.iamSubject ?? input.user?.subject
-      }
-    : input.identity;
-  return normalizeIamIdentityValue(suppliedIdentity, config);
+  return normalizeIamIdentityValue(input.identity, config);
 }
 
 function normalizeIamIdentityValue(input: unknown, config: CrmServerConfig): CrmIamIdentity {

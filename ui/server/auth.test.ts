@@ -46,6 +46,25 @@ for (const [label, identity] of [
   });
 }
 
+test("ticket exchange rejects identity aliases nested in user", async () => {
+  const payload = exchangePayload(undefined);
+  globalThis.fetch = async () => json({
+    ...payload,
+    user: {
+      ...payload.user,
+      issuer: "https://iam.pyrosa.test",
+      subject: "1",
+      iamIssuer: "https://iam.pyrosa.test",
+      iamSubject: "1"
+    }
+  });
+
+  await assert.rejects(
+    () => createSessionFromTicket(request(), config(), "ticket_synthetic_001"),
+    { code: "ui_auth_identity_invalid", status: 502 }
+  );
+});
+
 test("signed legacy cookies without a canonical IAM identity fail closed", async () => {
   const configured = config();
   const legacy = { ...sessionFixture(), iamIdentity: undefined };
