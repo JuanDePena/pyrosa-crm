@@ -10,12 +10,16 @@ last promoted version. The active development checkout is:
 
 - `/srv/containers/apps/pyrosa-democrm/app`
 
-The stable production checkout is:
+The reserved production checkout, not yet materialized on this host, is:
 
 - `/srv/containers/apps/pyrosa-crm/app`
 
 Changes should land in the demo checkout, be pushed to GitHub, then be promoted
 to production by approved release tag.
+
+The shared source repository does not make `pyrosa-democrm` and `pyrosa-crm`
+catalog aliases. Owner manifests must bind each app slug explicitly and keep
+database, schema, release, checksum, and promotion identities separate.
 
 ## Runtime Boundary
 

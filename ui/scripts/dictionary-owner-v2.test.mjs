@@ -9,15 +9,27 @@ const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
 const expected = [
   {
     "appSlug": "pyrosa-democrm",
+    "genesis": false,
     "objectCount": 90,
     "path": "database/dictionaries/pyrosa-democrm-global.owner-v2.json",
-    "scopeType": "global-app"
+    "scopeType": "global-app",
+    "version": "2026.07.16.0"
   },
   {
     "appSlug": "pyrosa-democrm",
+    "genesis": true,
     "objectCount": 413,
     "path": "database/dictionaries/pyrosa-democrm-tenant-product.owner-v2.json",
-    "scopeType": "tenant-product"
+    "scopeType": "tenant-product",
+    "version": "2026.07.17.0"
+  },
+  {
+    "appSlug": "pyrosa-crm",
+    "genesis": true,
+    "objectCount": 413,
+    "path": "database/dictionaries/pyrosa-crm-tenant-product.owner-v2.json",
+    "scopeType": "tenant-product",
+    "version": "2026.07.17.0"
   }
 ];
 const checksumScheme = "dictionary-content-v2";
@@ -40,7 +52,8 @@ test("owner dictionary v2 manifests are canonical and source-pinned", async () =
     assert.equal(manifest.scopeType, item.scopeType);
     assert.equal(manifest.artifactKind, "desired-state");
     assert.match(manifest.version, versionPattern);
-    assert.equal(manifest.version, "2026.07.16.0");
+    assert.equal(manifest.version, item.version);
+    assert.equal(manifest.owner, manifest.appSlug);
     assert.equal(manifest.checksumScheme, checksumScheme);
     assert.equal(manifest.release.version, manifest.version);
     assert.equal(manifest.release.checksumScheme, checksumScheme);
@@ -70,7 +83,12 @@ test("owner dictionary v2 manifests are canonical and source-pinned", async () =
     }
 
     const predecessorIds = new Set(manifest.predecessors.map((entry) => entry.sourceId));
-    assert.ok(predecessorIds.size > 0);
+    if (item.genesis) {
+      assert.deepEqual(manifest.predecessors, []);
+      assert.deepEqual(manifest.ownerDecisions, []);
+    } else {
+      assert.ok(predecessorIds.size > 0);
+    }
     for (const predecessor of manifest.predecessors) {
       assert.match(predecessor.checksum, checksumPattern);
       assert.match(predecessor.sourceId, /^[a-z0-9][a-z0-9._:-]{0,199}$/);
@@ -90,13 +108,74 @@ test("owner dictionary v2 manifests are canonical and source-pinned", async () =
     }
 
     assert.equal(manifest.checksum, dictionaryChecksum(manifest));
+    assert.doesNotMatch(JSON.stringify(manifest.objects), /\bpublic\b/i);
     if (manifest.scopeType !== "global-app") {
       const serialized = JSON.stringify(manifest.objects);
       assert.doesNotMatch(serialized, /_[0-9a-f]{12}\b/, "tenant manifest must not pin a concrete tenant schema");
+      assert.doesNotMatch(serialized, /definitionHash|app_pyrosa_(?:demo)?crm|pyrosa_(?:demo)?crm_[0-9a-f]{12}/i);
+      const schemaObjects = manifest.objects.filter((object) => object.objectType === "schema");
+      assert.deepEqual(schemaObjects.map((object) => object.objectName), ["tenant_product"]);
     }
     observedScopes.push(manifest.scopeType);
   }
   assert.deepEqual(observedScopes.sort(), expected.map((item) => item.scopeType).sort());
+});
+
+test("CRM genesis bundle binds one target-neutral source to separate app identities", async () => {
+  const sourcePath = "database/dictionaries/crm-tenant-product.genesis-v2607.json";
+  const bundlePath = "database/dictionaries/manifest.genesis-v2607.json";
+  const sourceRaw = await readFile(resolve(repoRoot, sourcePath), "utf8");
+  const source = JSON.parse(sourceRaw);
+  const bundle = JSON.parse(await readFile(resolve(repoRoot, bundlePath), "utf8"));
+
+  assert.equal(source.schemaVersion, "pyrosa-crm-shared-tenant-product-genesis-v1");
+  assert.equal(source.version, "2026.07.17.0");
+  assert.equal(source.scopeType, "tenant-product");
+  assert.equal(source.schemaObjectName, "tenant_product");
+  assert.equal(source.objectCount, 413);
+  assert.equal(source.objects.length, 413);
+  assert.equal(Object.hasOwn(source, "appSlug"), false);
+  assert.equal(Object.hasOwn(source, "owner"), false);
+  assert.equal(Object.hasOwn(source, "target"), false);
+  assert.doesNotMatch(JSON.stringify(source), /\bpublic\b|definitionHash|app_pyrosa_(?:demo)?crm|pyrosa_(?:demo)?crm_[0-9a-f]{12}/i);
+
+  assert.equal(bundle.schemaVersion, "pyrosa-platform-dictionary-genesis-owner-bundle-v1");
+  assert.equal(bundle.epoch, 1);
+  assert.equal(bundle.version, source.version);
+  assert.equal(bundle.ownerRepository, "JuanDePena/pyrosa-crm");
+  assert.deepEqual(bundle.scopeCoverage, ["tenant-product"]);
+  assert.deepEqual(bundle.publicSchemaPolicy, {
+    applicationObjectsAllowed: false,
+    fallbackTargetAllowed: false,
+    requiredNonExtensionObjectCount: 0
+  });
+  assert.equal(bundle.source.path, sourcePath);
+  assert.equal(bundle.source.sha256, `sha256:${createHash("sha256").update(sourceRaw).digest("hex")}`);
+  assert.deepEqual(bundle.manifests.map((entry) => entry.appSlug), ["pyrosa-democrm", "pyrosa-crm"]);
+
+  const logicalManifests = [];
+  for (const entry of bundle.manifests) {
+    const raw = await readFile(resolve(repoRoot, entry.path), "utf8");
+    const manifest = JSON.parse(raw);
+    assert.equal(entry.sha256, `sha256:${createHash("sha256").update(raw).digest("hex")}`);
+    assert.equal(entry.owner, entry.appSlug);
+    assert.equal(manifest.appSlug, entry.appSlug);
+    assert.equal(manifest.owner, entry.appSlug);
+    assert.equal(manifest.dictionarySlug, entry.dictionarySlug);
+    assert.equal(manifest.version, entry.version);
+    assert.equal(manifest.objectCount, entry.objectCount);
+    assert.deepEqual(manifest.predecessors, []);
+    assert.deepEqual(manifest.ownerDecisions, []);
+    logicalManifests.push(manifest.objects.map(({ definition, objectName, objectType, parentObjectName }) => ({
+      definition,
+      objectName,
+      objectType,
+      parentObjectName
+    })));
+  }
+  assert.deepEqual(logicalManifests[0], source.objects);
+  assert.deepEqual(logicalManifests[1], source.objects);
+  assert.notEqual(bundle.manifests[0].sha256, bundle.manifests[1].sha256);
 });
 
 test("checksum v2 retains temporal-looking dictionary semantics", () => {

@@ -121,12 +121,22 @@ owner. El id numerico y el perfil visible del usuario no sustituyen al subject.
 - Schema tenant demo: `pyrosa_democrm_<tenant_key>`.
 - Schema producto futuro: `pyrosa_crm_<tenant_key>`, solo cuando Platform lo
   catalogue y provisione; no se infiere desde el sandbox.
+- `public` no contiene objetos app-owned ni es un target de respaldo: el estado
+  funcional vive en el schema global de aplicacion o en el schema tenant, y
+  los schemas de guard/bootstrap pertenecen al gobierno Platform.
 - Tenant key y schema se resuelven desde Platform despues de validar Directory
   y Store.
 - En el canario tenant `1`, Platform reporta los contratos activos global
   `2.0.0` y tenant-aware `2.0.1` como ready.
 - CRM no duplica memberships, asientos, vigencias, perfiles o politicas.
 - Toda fila de negocio queda dentro del schema tenant correspondiente.
+
+La base genesis tenant v2607 usa una fuente logica target-neutral comun, pero
+genera manifests owner separados para `pyrosa-democrm` y `pyrosa-crm`. Compartir
+repositorio y definicion de producto no comparte identidad catalogal: cada app
+conserva owner, slug, key, release y checksum propios. El bundle y la politica
+de `public` se documentan en
+[`database/dictionaries/README.md`](../../database/dictionaries/README.md).
 
 La tabla historica `crm_operating_contexts.accounts_organization_id` no define
 el modelo v2607. Su sustitucion se expresa en un diccionario nuevo y plan

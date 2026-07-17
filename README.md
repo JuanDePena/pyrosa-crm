@@ -78,6 +78,10 @@ La raiz reservada para produccion es:
 `pyrosa-democrm` sirve el entorno de desarrollo/demo en
 `democrm.pyrosa.com.do`. `pyrosa-crm` queda reservado para el producto
 canonico en `crm.pyrosa.com.do`, promovido desde cortes aprobados.
+Al `2026-07-17`, el checkout estable reservado aun no esta materializado: este
+repositorio y su remoto `pyrosa-crm` conservan el ownership source. Eso no
+convierte ambos slugs en aliases; diccionarios, bases, schemas, releases y
+promociones mantienen identidades separadas.
 
 ## Fronteras de plataforma
 
@@ -202,6 +206,7 @@ requerir variables equivalentes al entorno demo.
 - release flow:
   [politica transversal](https://github.com/JuanDePena/pyrosa-docs/blob/main/ops/release-flow.md)
 - convergencia de schema: `docs/ops/app-schema-convergence.md`
+- contrato de diccionarios y bundle genesis: `database/dictionaries/README.md`
 - plan v2607 cerrado: `docs/plans-completed/plan-democrm-v2607.md`
 - promocion operativa pendiente: `docs/ops/democrm-v2607-promotion.md`
 - evidencia saneada del canario owner:

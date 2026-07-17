@@ -1,0 +1,42 @@
+{
+  "schemaVersion": "pyrosa-platform-dictionary-genesis-owner-bundle-v1",
+  "epoch": 1,
+  "release": "v2607",
+  "version": "2026.07.17.0",
+  "ownerRepository": "JuanDePena/pyrosa-crm",
+  "scopeCoverage": [
+    "tenant-product"
+  ],
+  "publicSchemaPolicy": {
+    "applicationObjectsAllowed": false,
+    "fallbackTargetAllowed": false,
+    "requiredNonExtensionObjectCount": 0
+  },
+  "source": {
+    "path": "database/dictionaries/crm-tenant-product.genesis-v2607.json",
+    "schemaVersion": "pyrosa-crm-shared-tenant-product-genesis-v1",
+    "sha256": "sha256:42a310d42736b05f4e61eadf798328c8381478e28c8bceaa14ef837be41228ac"
+  },
+  "manifests": [
+    {
+      "appSlug": "pyrosa-democrm",
+      "dictionarySlug": "pyrosa-democrm-tenant-product",
+      "objectCount": 413,
+      "owner": "pyrosa-democrm",
+      "path": "database/dictionaries/pyrosa-democrm-tenant-product.owner-v2.json",
+      "scopeType": "tenant-product",
+      "sha256": "sha256:8826feadf533948b4aa6d4ff2cee78ccadc2002bd9ce5de708da20ace0b1ea5f",
+      "version": "2026.07.17.0"
+    },
+    {
+      "appSlug": "pyrosa-crm",
+      "dictionarySlug": "pyrosa-crm-tenant-product",
+      "objectCount": 413,
+      "owner": "pyrosa-crm",
+      "path": "database/dictionaries/pyrosa-crm-tenant-product.owner-v2.json",
+      "scopeType": "tenant-product",
+      "sha256": "sha256:81da473e2ea4f606fab72ddb9bd0008b74e1a050935818bcc8ae594cbf9982c0",
+      "version": "2026.07.17.0"
+    }
+  ]
+}

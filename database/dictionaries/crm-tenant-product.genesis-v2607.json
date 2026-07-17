@@ -1,10 +1,12 @@
 {
-  "appSlug": "pyrosa-democrm",
+  "schemaVersion": "pyrosa-crm-shared-tenant-product-genesis-v1",
+  "version": "2026.07.17.0",
+  "productFamily": "pyrosa-crm-v2607",
+  "scopeType": "tenant-product",
   "artifactKind": "desired-state",
-  "checksum": "sha256:3d5ec69603de089bf4ee1430ba7f425993669d131ff99981bceb25a88a804732",
-  "checksumScheme": "dictionary-content-v2",
-  "dictionarySlug": "pyrosa-democrm-tenant-product",
-  "key": "pyrosa-democrm:pyrosa-democrm-tenant-product@2026.07.17.0#tenant-product",
+  "applyOwner": "pyrosa-platform",
+  "runtimeDdlAllowed": false,
+  "schemaObjectName": "tenant_product",
   "objectCount": 413,
   "objects": [
     {
@@ -17,8 +19,7 @@
       },
       "objectName": "tenant_product",
       "objectType": "schema",
-      "parentObjectName": null,
-      "objectChecksum": "sha256:a6c8ce47c911664fe9831bca6f50ab27de0a71925854e0c7d68c5f820090a9ea"
+      "parentObjectName": null
     },
     {
       "definition": {
@@ -72,8 +73,7 @@
       },
       "objectName": "crm_account_contact_links",
       "objectType": "table",
-      "parentObjectName": null,
-      "objectChecksum": "sha256:b123ce2cd070ebe968c69a4421e61dd7be511becdef8945bf8a374a93621204c"
+      "parentObjectName": null
     },
     {
       "definition": {
@@ -149,8 +149,7 @@
       },
       "objectName": "crm_accounts",
       "objectType": "table",
-      "parentObjectName": null,
-      "objectChecksum": "sha256:1831a430c907324a84a6e0d805ce2482613a1cdf0617d1075b26cd38a100576c"
+      "parentObjectName": null
     },
     {
       "definition": {
@@ -246,8 +245,7 @@
       },
       "objectName": "crm_activities",
       "objectType": "table",
-      "parentObjectName": null,
-      "objectChecksum": "sha256:184c2c71bb6e69bc1103c1a088a0cefd9855aff770f6cbd05c7dee89c42f5915"
+      "parentObjectName": null
     },
     {
       "definition": {
@@ -301,8 +299,7 @@
       },
       "objectName": "crm_appointment_participants",
       "objectType": "table",
-      "parentObjectName": null,
-      "objectChecksum": "sha256:a233c524b3fa2b1a9b0bc2f01c7f621cd14b5917c6e91f64c5ed9afdde74c2f6"
+      "parentObjectName": null
     },
     {
       "definition": {
@@ -357,8 +354,7 @@
       },
       "objectName": "crm_appointment_status_history",
       "objectType": "table",
-      "parentObjectName": null,
-      "objectChecksum": "sha256:1b4458437042fb5484253744cd9c803ab30000a874c5d506423d07f59cd28b18"
+      "parentObjectName": null
     },
     {
       "definition": {
@@ -464,8 +460,7 @@
       },
       "objectName": "crm_appointments",
       "objectType": "table",
-      "parentObjectName": null,
-      "objectChecksum": "sha256:933f72f4c0d8083cf092ade911c32525f844737f208b10360e49915f3b494cbc"
+      "parentObjectName": null
     },
     {
       "definition": {
@@ -486,8 +481,7 @@
       },
       "objectName": "crm_audit_events",
       "objectType": "table",
-      "parentObjectName": null,
-      "objectChecksum": "sha256:505fa9da39fe94f88ae523fa31f448defc924a861b4b345d4d9bf1cd316c4f42"
+      "parentObjectName": null
     },
     {
       "definition": {
@@ -536,8 +530,7 @@
       },
       "objectName": "crm_case_parties",
       "objectType": "table",
-      "parentObjectName": null,
-      "objectChecksum": "sha256:08d452d41bb29b1e3f1df77f3c1076a8d20147ff16f8449c9cc8553cbd72d0e1"
+      "parentObjectName": null
     },
     {
       "definition": {
@@ -592,8 +585,7 @@
       },
       "objectName": "crm_case_status_history",
       "objectType": "table",
-      "parentObjectName": null,
-      "objectChecksum": "sha256:8aaa5046370f1239a89eccb16a958c1f0714bcff4bd2310bb7736fee1b21dd80"
+      "parentObjectName": null
     },
     {
       "definition": {
@@ -689,8 +681,7 @@
       },
       "objectName": "crm_cases",
       "objectType": "table",
-      "parentObjectName": null,
-      "objectChecksum": "sha256:3ac5af32c770fbc1695414e38dde724e3057ece20ba9804ff9c1f29c21b36e13"
+      "parentObjectName": null
     },
     {
       "definition": {
@@ -740,8 +731,7 @@
       },
       "objectName": "crm_contact_preferences",
       "objectType": "table",
-      "parentObjectName": null,
-      "objectChecksum": "sha256:5428e3b4de2f80442e42c67a6ca663c0c4dd5483d41eff12d8bbc9b3b47db060"
+      "parentObjectName": null
     },
     {
       "definition": {
@@ -824,8 +814,7 @@
       },
       "objectName": "crm_contacts",
       "objectType": "table",
-      "parentObjectName": null,
-      "objectChecksum": "sha256:b33a810f056223381f2b2709cd4cde2fae0c4b301dd3f64211e872c6f99eeee3"
+      "parentObjectName": null
     },
     {
       "definition": {
@@ -867,8 +856,7 @@
       },
       "objectName": "crm_idempotency_results",
       "objectType": "table",
-      "parentObjectName": null,
-      "objectChecksum": "sha256:3d543a5e289a10d7f583f5c36a63deae18920fafee70ff500c4d746f4d7b9692"
+      "parentObjectName": null
     },
     {
       "definition": {
@@ -940,8 +928,7 @@
       },
       "objectName": "crm_import_batches",
       "objectType": "table",
-      "parentObjectName": null,
-      "objectChecksum": "sha256:ffc187385e4ed3869a275d8e4a908890c3dd504fd1a52a048aa7c2abd5c06dcb"
+      "parentObjectName": null
     },
     {
       "definition": {
@@ -993,8 +980,7 @@
       },
       "objectName": "crm_import_records",
       "objectType": "table",
-      "parentObjectName": null,
-      "objectChecksum": "sha256:c926f7b96514ea3579cd5a419d0fd50f496f6067da83055c81838ae6061b3f94"
+      "parentObjectName": null
     },
     {
       "definition": {
@@ -1050,8 +1036,7 @@
       },
       "objectName": "crm_jobs",
       "objectType": "table",
-      "parentObjectName": null,
-      "objectChecksum": "sha256:e55710b7739c85caa5baba2e02220043f91b69129419894502f543a3ff09c526"
+      "parentObjectName": null
     },
     {
       "definition": {
@@ -1070,8 +1055,7 @@
       },
       "objectName": "crm_operating_contexts",
       "objectType": "table",
-      "parentObjectName": null,
-      "objectChecksum": "sha256:33fca8a57adc7cdd915060e85a13e90af3ecae64b3e49f434d35032eb5cfafba"
+      "parentObjectName": null
     },
     {
       "definition": {
@@ -1177,8 +1161,7 @@
       },
       "objectName": "crm_opportunities",
       "objectType": "table",
-      "parentObjectName": null,
-      "objectChecksum": "sha256:69b5f7d72444e2d1bc575f6f84b3ce812179f81be08a3e0192da2d67ca9f9b86"
+      "parentObjectName": null
     },
     {
       "definition": {
@@ -1238,8 +1221,7 @@
       },
       "objectName": "crm_opportunity_stage_history",
       "objectType": "table",
-      "parentObjectName": null,
-      "objectChecksum": "sha256:a8f4080702f0c07f0de094bbf08598d7a03050bdf18faaea837540db4a1afb61"
+      "parentObjectName": null
     },
     {
       "definition": {
@@ -1322,8 +1304,7 @@
       },
       "objectName": "crm_outbox_events",
       "objectType": "table",
-      "parentObjectName": null,
-      "objectChecksum": "sha256:4427fae58cf92bda103d91074e88c9a8eb9b7105b5ca00848cb12bc4a608e2cf"
+      "parentObjectName": null
     },
     {
       "definition": {
@@ -1377,8 +1358,7 @@
       },
       "objectName": "crm_pipeline_stages",
       "objectType": "table",
-      "parentObjectName": null,
-      "objectChecksum": "sha256:9a6ec580c0b6a3266588e6681dac89f4e0f033f97f4b44fffff336cf0da1739b"
+      "parentObjectName": null
     },
     {
       "definition": {
@@ -1427,8 +1407,7 @@
       },
       "objectName": "crm_pipelines",
       "objectType": "table",
-      "parentObjectName": null,
-      "objectChecksum": "sha256:dd32a5f9ba186a396a376e001b726b30803f35aa7dfdd7be62ed6dec4b57e71c"
+      "parentObjectName": null
     },
     {
       "definition": {
@@ -1448,8 +1427,7 @@
       },
       "objectName": "crm_platform_links",
       "objectType": "table",
-      "parentObjectName": null,
-      "objectChecksum": "sha256:42f350fe64b2695b7e4ff2d3b48ee98c0f27cb15a5aa0107ae83b81b8db00134"
+      "parentObjectName": null
     },
     {
       "definition": {
@@ -1463,8 +1441,7 @@
       },
       "objectName": "crm_schema_migrations",
       "objectType": "table",
-      "parentObjectName": null,
-      "objectChecksum": "sha256:816429f8b21b5fbfb487f3a12b00b4e17a3c03f1f31cc027f1244ec5a31c8b6c"
+      "parentObjectName": null
     },
     {
       "definition": {
@@ -1510,8 +1487,7 @@
       },
       "objectName": "crm_tenant_configuration",
       "objectType": "table",
-      "parentObjectName": null,
-      "objectChecksum": "sha256:8a91cf67ac99d9d3781d4e5becc29d8e8c9a37039ebb050ad4574d8020c2d519"
+      "parentObjectName": null
     },
     {
       "definition": {
@@ -1524,8 +1500,7 @@
       },
       "objectName": "crm_audit_events_audit_event_id_seq",
       "objectType": "sequence",
-      "parentObjectName": null,
-      "objectChecksum": "sha256:d4adf69763fb2efed2813c1d2384fffd6df9aff9c344f7b0424750cfe1d67e24"
+      "parentObjectName": null
     },
     {
       "definition": {
@@ -1538,8 +1513,7 @@
       },
       "objectName": "crm_operating_contexts_context_id_seq",
       "objectType": "sequence",
-      "parentObjectName": null,
-      "objectChecksum": "sha256:74b3df902b0ae9ff8f53032aeef720f50c95bc1ef3a9a1f6f9b48d9171e7e386"
+      "parentObjectName": null
     },
     {
       "definition": {
@@ -1552,8 +1526,7 @@
       },
       "objectName": "crm_platform_links_link_id_seq",
       "objectType": "sequence",
-      "parentObjectName": null,
-      "objectChecksum": "sha256:3fe23df2e004a36c705a6b4e1f931f2bf73e77a8ffb1a47a802c871709baad3e"
+      "parentObjectName": null
     },
     {
       "definition": {
@@ -1562,8 +1535,7 @@
       },
       "objectName": "crm_account_contact_links.account_id",
       "objectType": "column",
-      "parentObjectName": "crm_account_contact_links",
-      "objectChecksum": "sha256:2fa80301bbf59cb4f9ce4de263e0610b17d596a7907b2d904db7db98959bfd50"
+      "parentObjectName": "crm_account_contact_links"
     },
     {
       "definition": {
@@ -1572,8 +1544,7 @@
       },
       "objectName": "crm_account_contact_links.archived_at",
       "objectType": "column",
-      "parentObjectName": "crm_account_contact_links",
-      "objectChecksum": "sha256:a8e01b72f00fe92e613678aa930b79aacd90807460a956db18e86a9c878a3cf8"
+      "parentObjectName": "crm_account_contact_links"
     },
     {
       "definition": {
@@ -1582,8 +1553,7 @@
       },
       "objectName": "crm_account_contact_links.contact_id",
       "objectType": "column",
-      "parentObjectName": "crm_account_contact_links",
-      "objectChecksum": "sha256:5e728a9106a8e211320dc515c7952bbc3a1588e261220258be63ed759fd0b8ce"
+      "parentObjectName": "crm_account_contact_links"
     },
     {
       "definition": {
@@ -1592,8 +1562,7 @@
       },
       "objectName": "crm_account_contact_links.created_at",
       "objectType": "column",
-      "parentObjectName": "crm_account_contact_links",
-      "objectChecksum": "sha256:8050373c389e139686792139456e3fd8bb019cd42c2d61ef88ee1f7cbbf47041"
+      "parentObjectName": "crm_account_contact_links"
     },
     {
       "definition": {
@@ -1602,8 +1571,7 @@
       },
       "objectName": "crm_account_contact_links.id",
       "objectType": "column",
-      "parentObjectName": "crm_account_contact_links",
-      "objectChecksum": "sha256:af28cea6f3cca80d3ec63efe52bfd317df88c88805806ea1f55553e9870a3ff6"
+      "parentObjectName": "crm_account_contact_links"
     },
     {
       "definition": {
@@ -1612,8 +1580,7 @@
       },
       "objectName": "crm_account_contact_links.is_primary",
       "objectType": "column",
-      "parentObjectName": "crm_account_contact_links",
-      "objectChecksum": "sha256:ece446ca7088ca8b67cdf193e89992ab1886c923087b29f510ef2facdb477632"
+      "parentObjectName": "crm_account_contact_links"
     },
     {
       "definition": {
@@ -1622,8 +1589,7 @@
       },
       "objectName": "crm_account_contact_links.role_key",
       "objectType": "column",
-      "parentObjectName": "crm_account_contact_links",
-      "objectChecksum": "sha256:caf5dfb835a32abfafe2c6fa7f54542b463948ee1fcb48b98b2e68479428b6a1"
+      "parentObjectName": "crm_account_contact_links"
     },
     {
       "definition": {
@@ -1632,8 +1598,7 @@
       },
       "objectName": "crm_account_contact_links.version",
       "objectType": "column",
-      "parentObjectName": "crm_account_contact_links",
-      "objectChecksum": "sha256:accfd200d1ef956077d42919f09e88905217ec304b5dedf23c52279d619441f5"
+      "parentObjectName": "crm_account_contact_links"
     },
     {
       "definition": {
@@ -1642,8 +1607,7 @@
       },
       "objectName": "crm_accounts.account_type",
       "objectType": "column",
-      "parentObjectName": "crm_accounts",
-      "objectChecksum": "sha256:4a7c8e0134b9db19cc7ee77df1fd937b3ff0a9e500cdb47ab2c319c18f810ff2"
+      "parentObjectName": "crm_accounts"
     },
     {
       "definition": {
@@ -1652,8 +1616,7 @@
       },
       "objectName": "crm_accounts.archived_at",
       "objectType": "column",
-      "parentObjectName": "crm_accounts",
-      "objectChecksum": "sha256:b598b0cf77ff4764ecb7daaf80e23ecd1026e37541bf9196f735b2151139c7ab"
+      "parentObjectName": "crm_accounts"
     },
     {
       "definition": {
@@ -1662,8 +1625,7 @@
       },
       "objectName": "crm_accounts.created_at",
       "objectType": "column",
-      "parentObjectName": "crm_accounts",
-      "objectChecksum": "sha256:72a805d77526c4d709ad25c46bb2c8ffb8045e92f1b5955ac45bd9d20e1403e1"
+      "parentObjectName": "crm_accounts"
     },
     {
       "definition": {
@@ -1672,8 +1634,7 @@
       },
       "objectName": "crm_accounts.external_ref",
       "objectType": "column",
-      "parentObjectName": "crm_accounts",
-      "objectChecksum": "sha256:248bb3015ed6932104eed03f1a73175bad5ff67c879aa7a22b6956134d8d9f04"
+      "parentObjectName": "crm_accounts"
     },
     {
       "definition": {
@@ -1682,8 +1643,7 @@
       },
       "objectName": "crm_accounts.id",
       "objectType": "column",
-      "parentObjectName": "crm_accounts",
-      "objectChecksum": "sha256:23996b81184cf88aca0bb75b1f388727c27d7015749c03aca7cfc00528b1173c"
+      "parentObjectName": "crm_accounts"
     },
     {
       "definition": {
@@ -1692,8 +1652,7 @@
       },
       "objectName": "crm_accounts.owner_id",
       "objectType": "column",
-      "parentObjectName": "crm_accounts",
-      "objectChecksum": "sha256:d5cd291937a1644582ae945bf581523cc036dad66b96c7342379491f6186e6b9"
+      "parentObjectName": "crm_accounts"
     },
     {
       "definition": {
@@ -1703,8 +1662,7 @@
       },
       "objectName": "crm_accounts.record_json",
       "objectType": "column",
-      "parentObjectName": "crm_accounts",
-      "objectChecksum": "sha256:8b73d970275036eeda9a56705ba700cfcaa19e2cfaf5a472dab3cf4dbdc6188c"
+      "parentObjectName": "crm_accounts"
     },
     {
       "definition": {
@@ -1714,8 +1672,7 @@
       },
       "objectName": "crm_accounts.search_text",
       "objectType": "column",
-      "parentObjectName": "crm_accounts",
-      "objectChecksum": "sha256:8cd3abcbbd3126e3a161e9c683bb087c078fe1d6c26ef777a6ce6ad383c1853d"
+      "parentObjectName": "crm_accounts"
     },
     {
       "definition": {
@@ -1724,8 +1681,7 @@
       },
       "objectName": "crm_accounts.status",
       "objectType": "column",
-      "parentObjectName": "crm_accounts",
-      "objectChecksum": "sha256:73a76dc642ddc59ef75c071c78c18e0bbf49a4bdf731ec2323e4c115aff8a9f6"
+      "parentObjectName": "crm_accounts"
     },
     {
       "definition": {
@@ -1734,8 +1690,7 @@
       },
       "objectName": "crm_accounts.updated_at",
       "objectType": "column",
-      "parentObjectName": "crm_accounts",
-      "objectChecksum": "sha256:3ec471b6ce7cb4a6ad6aaa15c94b86f945f32568c4aa7467267dc4654cc8bb11"
+      "parentObjectName": "crm_accounts"
     },
     {
       "definition": {
@@ -1745,8 +1700,7 @@
       },
       "objectName": "crm_accounts.version",
       "objectType": "column",
-      "parentObjectName": "crm_accounts",
-      "objectChecksum": "sha256:05d0ad9860527cbbea881282564bd97ee93205487102efafc4ac877bc73f0fd9"
+      "parentObjectName": "crm_accounts"
     },
     {
       "definition": {
@@ -1755,8 +1709,7 @@
       },
       "objectName": "crm_activities.account_id",
       "objectType": "column",
-      "parentObjectName": "crm_activities",
-      "objectChecksum": "sha256:c2aeeec4c8f4acd5c6e25e89b31401d6ade2c8da85db74de409b98c5b5142c65"
+      "parentObjectName": "crm_activities"
     },
     {
       "definition": {
@@ -1765,8 +1718,7 @@
       },
       "objectName": "crm_activities.activity_type",
       "objectType": "column",
-      "parentObjectName": "crm_activities",
-      "objectChecksum": "sha256:25bc63a6e254167ee7f7f21d87d1a773c16744d67951ba9ce2c21c2c2f1b74ba"
+      "parentObjectName": "crm_activities"
     },
     {
       "definition": {
@@ -1775,8 +1727,7 @@
       },
       "objectName": "crm_activities.archived_at",
       "objectType": "column",
-      "parentObjectName": "crm_activities",
-      "objectChecksum": "sha256:1dfa17a029a785be732eed1e957a9cbcf40ad3c0d7c83f0cbc56fd88a4130384"
+      "parentObjectName": "crm_activities"
     },
     {
       "definition": {
@@ -1785,8 +1736,7 @@
       },
       "objectName": "crm_activities.case_id",
       "objectType": "column",
-      "parentObjectName": "crm_activities",
-      "objectChecksum": "sha256:d77269407dac810c64bd05b3dbf89c4355fb4cdd5af92ecb80fbf4365434bf2b"
+      "parentObjectName": "crm_activities"
     },
     {
       "definition": {
@@ -1795,8 +1745,7 @@
       },
       "objectName": "crm_activities.completed_at",
       "objectType": "column",
-      "parentObjectName": "crm_activities",
-      "objectChecksum": "sha256:a8f9e87d78860616723276c182c789884a97ab64509391317e1333eba2abb601"
+      "parentObjectName": "crm_activities"
     },
     {
       "definition": {
@@ -1805,8 +1754,7 @@
       },
       "objectName": "crm_activities.contact_id",
       "objectType": "column",
-      "parentObjectName": "crm_activities",
-      "objectChecksum": "sha256:855910911b20e3f422eb4b8ea4aae074391fdd2072859850d8d7818a8d8371bc"
+      "parentObjectName": "crm_activities"
     },
     {
       "definition": {
@@ -1815,8 +1763,7 @@
       },
       "objectName": "crm_activities.created_at",
       "objectType": "column",
-      "parentObjectName": "crm_activities",
-      "objectChecksum": "sha256:46585db568ba972eb961b669ab15f23464257eb9fae3681610862a85ef0e6e00"
+      "parentObjectName": "crm_activities"
     },
     {
       "definition": {
@@ -1825,8 +1772,7 @@
       },
       "objectName": "crm_activities.due_at",
       "objectType": "column",
-      "parentObjectName": "crm_activities",
-      "objectChecksum": "sha256:c1839ad0bcc4329ec988e1eeac70ce605768ca55232a10cb6975b96ca5512124"
+      "parentObjectName": "crm_activities"
     },
     {
       "definition": {
@@ -1835,8 +1781,7 @@
       },
       "objectName": "crm_activities.id",
       "objectType": "column",
-      "parentObjectName": "crm_activities",
-      "objectChecksum": "sha256:8ef6eb7711272cf002cf232e90d98ccc98fc15b424026cd337f19f361a39ebdc"
+      "parentObjectName": "crm_activities"
     },
     {
       "definition": {
@@ -1845,8 +1790,7 @@
       },
       "objectName": "crm_activities.owner_id",
       "objectType": "column",
-      "parentObjectName": "crm_activities",
-      "objectChecksum": "sha256:9eaca51acd2bd6d4fcce3b9672787b14316705ff088efb12526ffd49319b9f6b"
+      "parentObjectName": "crm_activities"
     },
     {
       "definition": {
@@ -1856,8 +1800,7 @@
       },
       "objectName": "crm_activities.record_json",
       "objectType": "column",
-      "parentObjectName": "crm_activities",
-      "objectChecksum": "sha256:dfafa94f5ada46c70c4657b7460b069e361f559cfbb440bd523f47fa1022ce69"
+      "parentObjectName": "crm_activities"
     },
     {
       "definition": {
@@ -1867,8 +1810,7 @@
       },
       "objectName": "crm_activities.search_text",
       "objectType": "column",
-      "parentObjectName": "crm_activities",
-      "objectChecksum": "sha256:cccad4dd95f07a3e90faa70317b173b60abb24b3d69c6e57610c35933ced7cd4"
+      "parentObjectName": "crm_activities"
     },
     {
       "definition": {
@@ -1877,8 +1819,7 @@
       },
       "objectName": "crm_activities.status",
       "objectType": "column",
-      "parentObjectName": "crm_activities",
-      "objectChecksum": "sha256:15fb07a45a51c814443354de461a652e00d2f1832e8cab52b59dfcd8442760c1"
+      "parentObjectName": "crm_activities"
     },
     {
       "definition": {
@@ -1887,8 +1828,7 @@
       },
       "objectName": "crm_activities.updated_at",
       "objectType": "column",
-      "parentObjectName": "crm_activities",
-      "objectChecksum": "sha256:f8ba0ad984c017f9f0a9d32aaa1b9df61b7662ab02e6762b3c09489fac14ef57"
+      "parentObjectName": "crm_activities"
     },
     {
       "definition": {
@@ -1898,8 +1838,7 @@
       },
       "objectName": "crm_activities.version",
       "objectType": "column",
-      "parentObjectName": "crm_activities",
-      "objectChecksum": "sha256:b8d5aa20c28716df052409d2c49794f3d37473f34b3fc8274c6f629892955288"
+      "parentObjectName": "crm_activities"
     },
     {
       "definition": {
@@ -1908,8 +1847,7 @@
       },
       "objectName": "crm_appointment_participants.appointment_id",
       "objectType": "column",
-      "parentObjectName": "crm_appointment_participants",
-      "objectChecksum": "sha256:0dc5615fbad2fb4a1e81e9caf85c10ce83f60a4cf8ef378d3f7351943f1f58af"
+      "parentObjectName": "crm_appointment_participants"
     },
     {
       "definition": {
@@ -1918,8 +1856,7 @@
       },
       "objectName": "crm_appointment_participants.created_at",
       "objectType": "column",
-      "parentObjectName": "crm_appointment_participants",
-      "objectChecksum": "sha256:e07f1a0f4a4f360504cdc3f8714ee62e48d498982b5eda00a96694e755f90ea7"
+      "parentObjectName": "crm_appointment_participants"
     },
     {
       "definition": {
@@ -1928,8 +1865,7 @@
       },
       "objectName": "crm_appointment_participants.id",
       "objectType": "column",
-      "parentObjectName": "crm_appointment_participants",
-      "objectChecksum": "sha256:a15951184dcdc47777124de211cbdabd8a0f564f80c67e0e56fd7e2463a6b8ed"
+      "parentObjectName": "crm_appointment_participants"
     },
     {
       "definition": {
@@ -1938,8 +1874,7 @@
       },
       "objectName": "crm_appointment_participants.participant_id",
       "objectType": "column",
-      "parentObjectName": "crm_appointment_participants",
-      "objectChecksum": "sha256:aca85897e68a6bed37d1b905fa99445cd2446bd96fc1b8b87d85248f8535f3b6"
+      "parentObjectName": "crm_appointment_participants"
     },
     {
       "definition": {
@@ -1948,8 +1883,7 @@
       },
       "objectName": "crm_appointment_participants.participant_type",
       "objectType": "column",
-      "parentObjectName": "crm_appointment_participants",
-      "objectChecksum": "sha256:01b113d30a0f72944b955a9bb82375ea4934a4279660b53402ccec7fcca0d10d"
+      "parentObjectName": "crm_appointment_participants"
     },
     {
       "definition": {
@@ -1958,8 +1892,7 @@
       },
       "objectName": "crm_appointment_participants.response_status",
       "objectType": "column",
-      "parentObjectName": "crm_appointment_participants",
-      "objectChecksum": "sha256:9854b76aec19bf4db55c4e9484573d816ed3df0e604f345673f842769e2e4b07"
+      "parentObjectName": "crm_appointment_participants"
     },
     {
       "definition": {
@@ -1968,8 +1901,7 @@
       },
       "objectName": "crm_appointment_participants.role_key",
       "objectType": "column",
-      "parentObjectName": "crm_appointment_participants",
-      "objectChecksum": "sha256:28c5a06a2d62c67a47dbf70c3efcfd1e4957ba0fe4f9195c7bce529579872424"
+      "parentObjectName": "crm_appointment_participants"
     },
     {
       "definition": {
@@ -1978,8 +1910,7 @@
       },
       "objectName": "crm_appointment_participants.updated_at",
       "objectType": "column",
-      "parentObjectName": "crm_appointment_participants",
-      "objectChecksum": "sha256:e844ed2e78ab21a86469f92c4a52e7f6b4aa0c626617aa3699fa6ea48f31d808"
+      "parentObjectName": "crm_appointment_participants"
     },
     {
       "definition": {
@@ -1988,8 +1919,7 @@
       },
       "objectName": "crm_appointment_status_history.actor_subject",
       "objectType": "column",
-      "parentObjectName": "crm_appointment_status_history",
-      "objectChecksum": "sha256:dc90348ae333d137e59624c9501946030cda99031902f45827b7834865d0d528"
+      "parentObjectName": "crm_appointment_status_history"
     },
     {
       "definition": {
@@ -1998,8 +1928,7 @@
       },
       "objectName": "crm_appointment_status_history.aggregate_version",
       "objectType": "column",
-      "parentObjectName": "crm_appointment_status_history",
-      "objectChecksum": "sha256:b094434c8ba0dda992ce9ef950aa63fe072d5a6b7a36e5809e0395526dfeaca8"
+      "parentObjectName": "crm_appointment_status_history"
     },
     {
       "definition": {
@@ -2008,8 +1937,7 @@
       },
       "objectName": "crm_appointment_status_history.appointment_id",
       "objectType": "column",
-      "parentObjectName": "crm_appointment_status_history",
-      "objectChecksum": "sha256:7e704a42a79dcc082af69637b01044ba1594f09097bb09c9f4e99069d7ef988d"
+      "parentObjectName": "crm_appointment_status_history"
     },
     {
       "definition": {
@@ -2018,8 +1946,7 @@
       },
       "objectName": "crm_appointment_status_history.from_status",
       "objectType": "column",
-      "parentObjectName": "crm_appointment_status_history",
-      "objectChecksum": "sha256:0ebe2e1e33062d41c0e8e26d30e9f9365da9a69355b6009bc72d6578a74824cb"
+      "parentObjectName": "crm_appointment_status_history"
     },
     {
       "definition": {
@@ -2028,8 +1955,7 @@
       },
       "objectName": "crm_appointment_status_history.id",
       "objectType": "column",
-      "parentObjectName": "crm_appointment_status_history",
-      "objectChecksum": "sha256:ebae146c8fa5dba59fe9a2a5d8526a99e28542280ee01adabeaea1af477f0903"
+      "parentObjectName": "crm_appointment_status_history"
     },
     {
       "definition": {
@@ -2038,8 +1964,7 @@
       },
       "objectName": "crm_appointment_status_history.occurred_at",
       "objectType": "column",
-      "parentObjectName": "crm_appointment_status_history",
-      "objectChecksum": "sha256:73f228036c78a6924b525d8b024bf31ec347dca453b9de6559048b22e6663451"
+      "parentObjectName": "crm_appointment_status_history"
     },
     {
       "definition": {
@@ -2048,8 +1973,7 @@
       },
       "objectName": "crm_appointment_status_history.reason_code",
       "objectType": "column",
-      "parentObjectName": "crm_appointment_status_history",
-      "objectChecksum": "sha256:4f210042c946c5acb57b81c0113fdf6450a3a76259f97ceb315cb3bf9c465da3"
+      "parentObjectName": "crm_appointment_status_history"
     },
     {
       "definition": {
@@ -2058,8 +1982,7 @@
       },
       "objectName": "crm_appointment_status_history.to_status",
       "objectType": "column",
-      "parentObjectName": "crm_appointment_status_history",
-      "objectChecksum": "sha256:4439c54b6501fce66113c87f73be671151e731ea59cd2597303f502fbc8248b1"
+      "parentObjectName": "crm_appointment_status_history"
     },
     {
       "definition": {
@@ -2068,8 +1991,7 @@
       },
       "objectName": "crm_appointments.account_id",
       "objectType": "column",
-      "parentObjectName": "crm_appointments",
-      "objectChecksum": "sha256:4804425757637cdf76fe9def8286716ab5b45f89910b71037b7bd7b98c95cfc9"
+      "parentObjectName": "crm_appointments"
     },
     {
       "definition": {
@@ -2078,8 +2000,7 @@
       },
       "objectName": "crm_appointments.archived_at",
       "objectType": "column",
-      "parentObjectName": "crm_appointments",
-      "objectChecksum": "sha256:988933c8bfe175e920d57aa126cca59169591f04c5d0b37e57919d1948242813"
+      "parentObjectName": "crm_appointments"
     },
     {
       "definition": {
@@ -2088,8 +2009,7 @@
       },
       "objectName": "crm_appointments.case_id",
       "objectType": "column",
-      "parentObjectName": "crm_appointments",
-      "objectChecksum": "sha256:0be60936a520e230bc887e379142141e18a30e241f0b8619081146916122e652"
+      "parentObjectName": "crm_appointments"
     },
     {
       "definition": {
@@ -2098,8 +2018,7 @@
       },
       "objectName": "crm_appointments.contact_id",
       "objectType": "column",
-      "parentObjectName": "crm_appointments",
-      "objectChecksum": "sha256:18c09d0d2678bf62520467e184c6bd0dc56de0d3c463d5ea3fed92702c348475"
+      "parentObjectName": "crm_appointments"
     },
     {
       "definition": {
@@ -2108,8 +2027,7 @@
       },
       "objectName": "crm_appointments.created_at",
       "objectType": "column",
-      "parentObjectName": "crm_appointments",
-      "objectChecksum": "sha256:03fc47a81e75fb1553ba26e3b0bac28fe2e02c80ac469d81cc2be471b94df09e"
+      "parentObjectName": "crm_appointments"
     },
     {
       "definition": {
@@ -2118,8 +2036,7 @@
       },
       "objectName": "crm_appointments.end_at",
       "objectType": "column",
-      "parentObjectName": "crm_appointments",
-      "objectChecksum": "sha256:6852706229bc7b7256346c59613c9a7bf7ff95e85a0b63a7346b59bb549f681a"
+      "parentObjectName": "crm_appointments"
     },
     {
       "definition": {
@@ -2128,8 +2045,7 @@
       },
       "objectName": "crm_appointments.external_ref",
       "objectType": "column",
-      "parentObjectName": "crm_appointments",
-      "objectChecksum": "sha256:95c4a8476ad1aa885e9e965cd8382e0cfa4ec37067c54867164adc7c4eea5297"
+      "parentObjectName": "crm_appointments"
     },
     {
       "definition": {
@@ -2138,8 +2054,7 @@
       },
       "objectName": "crm_appointments.id",
       "objectType": "column",
-      "parentObjectName": "crm_appointments",
-      "objectChecksum": "sha256:d03be7ecc47446e6e8082743e3e2652a6d61b9db0062a73bd496a988bb41e306"
+      "parentObjectName": "crm_appointments"
     },
     {
       "definition": {
@@ -2148,8 +2063,7 @@
       },
       "objectName": "crm_appointments.owner_id",
       "objectType": "column",
-      "parentObjectName": "crm_appointments",
-      "objectChecksum": "sha256:ba00b2c1dd7cb72e82e7c15c66a47f367e5fad49c27698aaf88bf5d3171aa50f"
+      "parentObjectName": "crm_appointments"
     },
     {
       "definition": {
@@ -2159,8 +2073,7 @@
       },
       "objectName": "crm_appointments.record_json",
       "objectType": "column",
-      "parentObjectName": "crm_appointments",
-      "objectChecksum": "sha256:f224fa87ef52028a131bb2e8433bc627d7299a96b82e607b567cc258c3ebf2b3"
+      "parentObjectName": "crm_appointments"
     },
     {
       "definition": {
@@ -2169,8 +2082,7 @@
       },
       "objectName": "crm_appointments.resource_id",
       "objectType": "column",
-      "parentObjectName": "crm_appointments",
-      "objectChecksum": "sha256:318d60d1aa51cfee595b0f5244e4b7364a1e26fd711219b8f2028fcdebfaa030"
+      "parentObjectName": "crm_appointments"
     },
     {
       "definition": {
@@ -2180,8 +2092,7 @@
       },
       "objectName": "crm_appointments.search_text",
       "objectType": "column",
-      "parentObjectName": "crm_appointments",
-      "objectChecksum": "sha256:38e6a4c9d5dc83b740564db511079f7ae71936f7fcdbca4f915ab68e08f852bd"
+      "parentObjectName": "crm_appointments"
     },
     {
       "definition": {
@@ -2190,8 +2101,7 @@
       },
       "objectName": "crm_appointments.start_at",
       "objectType": "column",
-      "parentObjectName": "crm_appointments",
-      "objectChecksum": "sha256:8e6a62d10a34f078d1d908987b4b0d2a815a8f77ddc55c11f0f3eaee8fed6245"
+      "parentObjectName": "crm_appointments"
     },
     {
       "definition": {
@@ -2200,8 +2110,7 @@
       },
       "objectName": "crm_appointments.status",
       "objectType": "column",
-      "parentObjectName": "crm_appointments",
-      "objectChecksum": "sha256:a5d46d4883409206a9c03f9a22bcb6d0d03aa6407a0a2277ff19c4dc081065a0"
+      "parentObjectName": "crm_appointments"
     },
     {
       "definition": {
@@ -2210,8 +2119,7 @@
       },
       "objectName": "crm_appointments.timezone",
       "objectType": "column",
-      "parentObjectName": "crm_appointments",
-      "objectChecksum": "sha256:0ce8f594d0844bd92227d2af8d851d1326e9dbc011319b5099d6a649db92af40"
+      "parentObjectName": "crm_appointments"
     },
     {
       "definition": {
@@ -2220,8 +2128,7 @@
       },
       "objectName": "crm_appointments.updated_at",
       "objectType": "column",
-      "parentObjectName": "crm_appointments",
-      "objectChecksum": "sha256:43a9de4c21addca30c5914bd52823cda576d62bb622a937543dec412db50e512"
+      "parentObjectName": "crm_appointments"
     },
     {
       "definition": {
@@ -2231,8 +2138,7 @@
       },
       "objectName": "crm_appointments.version",
       "objectType": "column",
-      "parentObjectName": "crm_appointments",
-      "objectChecksum": "sha256:7d30c365b5abc4769f93412ff2375a81c87e742699005f166508795363057fff"
+      "parentObjectName": "crm_appointments"
     },
     {
       "definition": {
@@ -2241,8 +2147,7 @@
       },
       "objectName": "crm_audit_events.action",
       "objectType": "column",
-      "parentObjectName": "crm_audit_events",
-      "objectChecksum": "sha256:bd093d843ad697e7718676094de19ea7cc6446c8cfc3429c513def2d6e3afdcb"
+      "parentObjectName": "crm_audit_events"
     },
     {
       "definition": {
@@ -2253,8 +2158,7 @@
       },
       "objectName": "crm_audit_events.actor_source",
       "objectType": "column",
-      "parentObjectName": "crm_audit_events",
-      "objectChecksum": "sha256:b375337606a87fe68b76a2b048e1f83d94b98da59271091857cfd50d6d865331"
+      "parentObjectName": "crm_audit_events"
     },
     {
       "definition": {
@@ -2264,8 +2168,7 @@
       },
       "objectName": "crm_audit_events.actor_subject",
       "objectType": "column",
-      "parentObjectName": "crm_audit_events",
-      "objectChecksum": "sha256:d2529f754a226b5da9903b7d93a6f51e6938a37511bb4451de02b68ce80b76a9"
+      "parentObjectName": "crm_audit_events"
     },
     {
       "definition": {
@@ -2278,8 +2181,7 @@
       },
       "objectName": "crm_audit_events.audit_event_id",
       "objectType": "column",
-      "parentObjectName": "crm_audit_events",
-      "objectChecksum": "sha256:fd1c3991f22da9e8a81740b1e8c608f2040611a38b3442f6a8c02736216f7d9b"
+      "parentObjectName": "crm_audit_events"
     },
     {
       "definition": {
@@ -2288,8 +2190,7 @@
       },
       "objectName": "crm_audit_events.authorization_decision_id",
       "objectType": "column",
-      "parentObjectName": "crm_audit_events",
-      "objectChecksum": "sha256:bf8c8367d013e59670bd033cc33ee1c9d1327dc8f08a72a9166c73be6d233e38"
+      "parentObjectName": "crm_audit_events"
     },
     {
       "definition": {
@@ -2301,8 +2202,7 @@
       },
       "objectName": "crm_audit_events.context_id",
       "objectType": "column",
-      "parentObjectName": "crm_audit_events",
-      "objectChecksum": "sha256:8417bea5934b13ef22c70be892aaed99a0fa8f4e73354cb9f7e40c2330aedea6"
+      "parentObjectName": "crm_audit_events"
     },
     {
       "definition": {
@@ -2313,8 +2213,7 @@
       },
       "objectName": "crm_audit_events.created_at",
       "objectType": "column",
-      "parentObjectName": "crm_audit_events",
-      "objectChecksum": "sha256:d3939b552a5e60335a34e1c175094a5345ab2ae4df1952af0207b8244bd4660e"
+      "parentObjectName": "crm_audit_events"
     },
     {
       "definition": {
@@ -2324,8 +2223,7 @@
       },
       "objectName": "crm_audit_events.entity_id",
       "objectType": "column",
-      "parentObjectName": "crm_audit_events",
-      "objectChecksum": "sha256:6e7c0a0dc6576c2934aba508474236cbfe5d8c7cd95c890787c2e31315f24051"
+      "parentObjectName": "crm_audit_events"
     },
     {
       "definition": {
@@ -2335,8 +2233,7 @@
       },
       "objectName": "crm_audit_events.entity_type",
       "objectType": "column",
-      "parentObjectName": "crm_audit_events",
-      "objectChecksum": "sha256:0098fd7793957cb4804b835b884f9405b5c136d7d83e645a253f0fdeed0495ba"
+      "parentObjectName": "crm_audit_events"
     },
     {
       "definition": {
@@ -2346,8 +2243,7 @@
       },
       "objectName": "crm_audit_events.event_type",
       "objectType": "column",
-      "parentObjectName": "crm_audit_events",
-      "objectChecksum": "sha256:8e453aa789163d68daa5ae44dab143c1909c5a6ea01fa10c9057f1930d7c7424"
+      "parentObjectName": "crm_audit_events"
     },
     {
       "definition": {
@@ -2356,8 +2252,7 @@
       },
       "objectName": "crm_audit_events.id",
       "objectType": "column",
-      "parentObjectName": "crm_audit_events",
-      "objectChecksum": "sha256:a10b185c5feb008e86fa066d8a8c9fcbdf0c9237ada1b83d97ad69a241f92996"
+      "parentObjectName": "crm_audit_events"
     },
     {
       "definition": {
@@ -2366,8 +2261,7 @@
       },
       "objectName": "crm_audit_events.occurred_at",
       "objectType": "column",
-      "parentObjectName": "crm_audit_events",
-      "objectChecksum": "sha256:6f6387cade58673aa4390fb204b6b121ab16d477ac5950f718efa7b542d333b9"
+      "parentObjectName": "crm_audit_events"
     },
     {
       "definition": {
@@ -2376,8 +2270,7 @@
       },
       "objectName": "crm_audit_events.outcome",
       "objectType": "column",
-      "parentObjectName": "crm_audit_events",
-      "objectChecksum": "sha256:0b82caae125937cc766d993b9dc9785bbd16b974f0abaced66a8032586944047"
+      "parentObjectName": "crm_audit_events"
     },
     {
       "definition": {
@@ -2388,8 +2281,7 @@
       },
       "objectName": "crm_audit_events.payload",
       "objectType": "column",
-      "parentObjectName": "crm_audit_events",
-      "objectChecksum": "sha256:f2991b497433c493f7c8a2fabae9c95c2a48e31b0023b78824668c09982a0a31"
+      "parentObjectName": "crm_audit_events"
     },
     {
       "definition": {
@@ -2398,8 +2290,7 @@
       },
       "objectName": "crm_audit_events.reason_code",
       "objectType": "column",
-      "parentObjectName": "crm_audit_events",
-      "objectChecksum": "sha256:243f41772a43f0c8098756444a320722476f2e01f61ad74ceb5355211e2b57db"
+      "parentObjectName": "crm_audit_events"
     },
     {
       "definition": {
@@ -2408,8 +2299,7 @@
       },
       "objectName": "crm_audit_events.request_id",
       "objectType": "column",
-      "parentObjectName": "crm_audit_events",
-      "objectChecksum": "sha256:2f6b2c61542807c92e13e6a9e174ac91eef943972a82a326b818396723daf04a"
+      "parentObjectName": "crm_audit_events"
     },
     {
       "definition": {
@@ -2418,8 +2308,7 @@
       },
       "objectName": "crm_case_parties.archived_at",
       "objectType": "column",
-      "parentObjectName": "crm_case_parties",
-      "objectChecksum": "sha256:87035155512f9fd45ecc4c9471a5fae18faaa4eb1c79104b6c7d0da88049d2f2"
+      "parentObjectName": "crm_case_parties"
     },
     {
       "definition": {
@@ -2428,8 +2317,7 @@
       },
       "objectName": "crm_case_parties.case_id",
       "objectType": "column",
-      "parentObjectName": "crm_case_parties",
-      "objectChecksum": "sha256:18327afb70ab3e420cba37081df7e182610203440626fda76ebe4933ca831d74"
+      "parentObjectName": "crm_case_parties"
     },
     {
       "definition": {
@@ -2438,8 +2326,7 @@
       },
       "objectName": "crm_case_parties.created_at",
       "objectType": "column",
-      "parentObjectName": "crm_case_parties",
-      "objectChecksum": "sha256:533421fa9c4764badf81886c8e742d52a0606c10185d6a1582b73e3ceebfa3f5"
+      "parentObjectName": "crm_case_parties"
     },
     {
       "definition": {
@@ -2448,8 +2335,7 @@
       },
       "objectName": "crm_case_parties.id",
       "objectType": "column",
-      "parentObjectName": "crm_case_parties",
-      "objectChecksum": "sha256:a0eab582741e30db40e2733c3d759cf6a1ec34fa54949e5274e0824d6c77b4c9"
+      "parentObjectName": "crm_case_parties"
     },
     {
       "definition": {
@@ -2458,8 +2344,7 @@
       },
       "objectName": "crm_case_parties.party_id",
       "objectType": "column",
-      "parentObjectName": "crm_case_parties",
-      "objectChecksum": "sha256:d821de7f4b16eb35944daee088383b116371eb1bb1e423caf43beba10e062087"
+      "parentObjectName": "crm_case_parties"
     },
     {
       "definition": {
@@ -2468,8 +2353,7 @@
       },
       "objectName": "crm_case_parties.party_type",
       "objectType": "column",
-      "parentObjectName": "crm_case_parties",
-      "objectChecksum": "sha256:b275102792c14e4d074ed75a8bdeaac5da56288f94f05b587041fdb4fa25c4c9"
+      "parentObjectName": "crm_case_parties"
     },
     {
       "definition": {
@@ -2478,8 +2362,7 @@
       },
       "objectName": "crm_case_parties.role_key",
       "objectType": "column",
-      "parentObjectName": "crm_case_parties",
-      "objectChecksum": "sha256:299e201e3eb161ec52452ee45e7abb9d4e246982c83379da67e04ee2539741c7"
+      "parentObjectName": "crm_case_parties"
     },
     {
       "definition": {
@@ -2488,8 +2371,7 @@
       },
       "objectName": "crm_case_status_history.actor_subject",
       "objectType": "column",
-      "parentObjectName": "crm_case_status_history",
-      "objectChecksum": "sha256:52706f4180125f843bb928d7f23d50088804a35e8a743d1365e686731c5b30ab"
+      "parentObjectName": "crm_case_status_history"
     },
     {
       "definition": {
@@ -2498,8 +2380,7 @@
       },
       "objectName": "crm_case_status_history.aggregate_version",
       "objectType": "column",
-      "parentObjectName": "crm_case_status_history",
-      "objectChecksum": "sha256:1ea7fe4f1a960ea177836383fba8ac06147a40d6e4ab647b59d8971bdf939618"
+      "parentObjectName": "crm_case_status_history"
     },
     {
       "definition": {
@@ -2508,8 +2389,7 @@
       },
       "objectName": "crm_case_status_history.case_id",
       "objectType": "column",
-      "parentObjectName": "crm_case_status_history",
-      "objectChecksum": "sha256:18593a90d1912693cba077bcb441bc216063186f0b2902d45f530da6411d2395"
+      "parentObjectName": "crm_case_status_history"
     },
     {
       "definition": {
@@ -2518,8 +2398,7 @@
       },
       "objectName": "crm_case_status_history.from_status",
       "objectType": "column",
-      "parentObjectName": "crm_case_status_history",
-      "objectChecksum": "sha256:16e0be700ac15755e798fa864e0e67614280adf72b9bb77d3664b3acd17e526c"
+      "parentObjectName": "crm_case_status_history"
     },
     {
       "definition": {
@@ -2528,8 +2407,7 @@
       },
       "objectName": "crm_case_status_history.id",
       "objectType": "column",
-      "parentObjectName": "crm_case_status_history",
-      "objectChecksum": "sha256:446cf12d3313cac9d862c0823b6c3856f0c9ee4c7e47c07b87aad51e330c84f2"
+      "parentObjectName": "crm_case_status_history"
     },
     {
       "definition": {
@@ -2538,8 +2416,7 @@
       },
       "objectName": "crm_case_status_history.occurred_at",
       "objectType": "column",
-      "parentObjectName": "crm_case_status_history",
-      "objectChecksum": "sha256:ed4f80e91fc4460a39c84d2b61be84c884a8100820270b08fe44aed222e2eef0"
+      "parentObjectName": "crm_case_status_history"
     },
     {
       "definition": {
@@ -2548,8 +2425,7 @@
       },
       "objectName": "crm_case_status_history.reason_code",
       "objectType": "column",
-      "parentObjectName": "crm_case_status_history",
-      "objectChecksum": "sha256:d54cb5e17a4be293ab3a679b556c6a565a5a05f13d852f3616a1b845802c03a0"
+      "parentObjectName": "crm_case_status_history"
     },
     {
       "definition": {
@@ -2558,8 +2434,7 @@
       },
       "objectName": "crm_case_status_history.to_status",
       "objectType": "column",
-      "parentObjectName": "crm_case_status_history",
-      "objectChecksum": "sha256:93c0cc57d6d13c5379987043f845376a41d8983a7b1dff7e100d9b0c3cb4293a"
+      "parentObjectName": "crm_case_status_history"
     },
     {
       "definition": {
@@ -2568,8 +2443,7 @@
       },
       "objectName": "crm_cases.account_id",
       "objectType": "column",
-      "parentObjectName": "crm_cases",
-      "objectChecksum": "sha256:54c83d841dc4d404baf63938e7a52eedb92acb59e1fe8ab800dcf7e7931f9758"
+      "parentObjectName": "crm_cases"
     },
     {
       "definition": {
@@ -2578,8 +2452,7 @@
       },
       "objectName": "crm_cases.archived_at",
       "objectType": "column",
-      "parentObjectName": "crm_cases",
-      "objectChecksum": "sha256:ab768ea5ffd4b8083561b876e085b1cc3b9d1ad6639ddf1aea5e1842c643e7f8"
+      "parentObjectName": "crm_cases"
     },
     {
       "definition": {
@@ -2588,8 +2461,7 @@
       },
       "objectName": "crm_cases.case_type",
       "objectType": "column",
-      "parentObjectName": "crm_cases",
-      "objectChecksum": "sha256:8a249c686c604292384ab875bd3da8017274de354cf0a5ec0e59f3c45e0c4abc"
+      "parentObjectName": "crm_cases"
     },
     {
       "definition": {
@@ -2598,8 +2470,7 @@
       },
       "objectName": "crm_cases.contact_id",
       "objectType": "column",
-      "parentObjectName": "crm_cases",
-      "objectChecksum": "sha256:69756f0562843cb17f1b953894ae477fef60998b3dcb58898d2050527ab57fc0"
+      "parentObjectName": "crm_cases"
     },
     {
       "definition": {
@@ -2608,8 +2479,7 @@
       },
       "objectName": "crm_cases.created_at",
       "objectType": "column",
-      "parentObjectName": "crm_cases",
-      "objectChecksum": "sha256:a8da398ed275cefccb2da0ec75ac599ddfe011c98d65e16842dacc76b51ad4db"
+      "parentObjectName": "crm_cases"
     },
     {
       "definition": {
@@ -2618,8 +2488,7 @@
       },
       "objectName": "crm_cases.id",
       "objectType": "column",
-      "parentObjectName": "crm_cases",
-      "objectChecksum": "sha256:673327e7190c99af829ab678b4165ae9948c7532c8e2d70e892d86b947955efe"
+      "parentObjectName": "crm_cases"
     },
     {
       "definition": {
@@ -2628,8 +2497,7 @@
       },
       "objectName": "crm_cases.owner_id",
       "objectType": "column",
-      "parentObjectName": "crm_cases",
-      "objectChecksum": "sha256:9d8f20d41957a00a4d9f88425557153f3bfb6a8739b854f1890bf5d9777724df"
+      "parentObjectName": "crm_cases"
     },
     {
       "definition": {
@@ -2638,8 +2506,7 @@
       },
       "objectName": "crm_cases.priority",
       "objectType": "column",
-      "parentObjectName": "crm_cases",
-      "objectChecksum": "sha256:bc2f8f5b82f034005cc031c466a067923e0af32d00767cfd093bc16796561252"
+      "parentObjectName": "crm_cases"
     },
     {
       "definition": {
@@ -2648,8 +2515,7 @@
       },
       "objectName": "crm_cases.queue_id",
       "objectType": "column",
-      "parentObjectName": "crm_cases",
-      "objectChecksum": "sha256:51de45c4f66a8e81200f44ca8d7564e6e07a9e49eaa46b0fd2c00fae92c74e64"
+      "parentObjectName": "crm_cases"
     },
     {
       "definition": {
@@ -2659,8 +2525,7 @@
       },
       "objectName": "crm_cases.record_json",
       "objectType": "column",
-      "parentObjectName": "crm_cases",
-      "objectChecksum": "sha256:15cb144d6d8da5f9be86a14e40eaea1d162ecaae88248202c2361cff8fb5448a"
+      "parentObjectName": "crm_cases"
     },
     {
       "definition": {
@@ -2670,8 +2535,7 @@
       },
       "objectName": "crm_cases.search_text",
       "objectType": "column",
-      "parentObjectName": "crm_cases",
-      "objectChecksum": "sha256:e9c944f77ab092a2655c0422430a4e33800263ea5832b180d7ae4b4fe4a97c85"
+      "parentObjectName": "crm_cases"
     },
     {
       "definition": {
@@ -2680,8 +2544,7 @@
       },
       "objectName": "crm_cases.sla_due_at",
       "objectType": "column",
-      "parentObjectName": "crm_cases",
-      "objectChecksum": "sha256:c3eac1c1e5106bdc4c6399262fe4b83275611c9d92d131b76a8013af0340721b"
+      "parentObjectName": "crm_cases"
     },
     {
       "definition": {
@@ -2690,8 +2553,7 @@
       },
       "objectName": "crm_cases.status",
       "objectType": "column",
-      "parentObjectName": "crm_cases",
-      "objectChecksum": "sha256:0fbfc59dd6b852f82fe9f418f6909ec27803a4b5300696127a03eeb5f5d547fd"
+      "parentObjectName": "crm_cases"
     },
     {
       "definition": {
@@ -2700,8 +2562,7 @@
       },
       "objectName": "crm_cases.updated_at",
       "objectType": "column",
-      "parentObjectName": "crm_cases",
-      "objectChecksum": "sha256:7056e36a7a8a14404c56f60ce4c7f6ed64c03824fe254bfb2298dc96ccf2dbcf"
+      "parentObjectName": "crm_cases"
     },
     {
       "definition": {
@@ -2711,8 +2572,7 @@
       },
       "objectName": "crm_cases.version",
       "objectType": "column",
-      "parentObjectName": "crm_cases",
-      "objectChecksum": "sha256:bc36e66a6d908312c00d2373fb10f381fd62c503f183a9d2742f99b2ee849120"
+      "parentObjectName": "crm_cases"
     },
     {
       "definition": {
@@ -2721,8 +2581,7 @@
       },
       "objectName": "crm_contact_preferences.channel_key",
       "objectType": "column",
-      "parentObjectName": "crm_contact_preferences",
-      "objectChecksum": "sha256:c4a985fd429f85ee82bbba2fbea60f5e200032e798226fd2f2c0d69b94e9124c"
+      "parentObjectName": "crm_contact_preferences"
     },
     {
       "definition": {
@@ -2731,8 +2590,7 @@
       },
       "objectName": "crm_contact_preferences.consent_source",
       "objectType": "column",
-      "parentObjectName": "crm_contact_preferences",
-      "objectChecksum": "sha256:b29c08af8e4f62a702967c946752d50bf38265547a86b1801d7d68d286a93dee"
+      "parentObjectName": "crm_contact_preferences"
     },
     {
       "definition": {
@@ -2741,8 +2599,7 @@
       },
       "objectName": "crm_contact_preferences.consent_status",
       "objectType": "column",
-      "parentObjectName": "crm_contact_preferences",
-      "objectChecksum": "sha256:bed0c11c79adc6526a3a0fb1138e7f2dac7ca4cf8af4404ef674409a77e770e1"
+      "parentObjectName": "crm_contact_preferences"
     },
     {
       "definition": {
@@ -2751,8 +2608,7 @@
       },
       "objectName": "crm_contact_preferences.contact_id",
       "objectType": "column",
-      "parentObjectName": "crm_contact_preferences",
-      "objectChecksum": "sha256:6246e80bfcf4db9378feff8cf5d8aacc8372a284cd8780a29065046249416f8f"
+      "parentObjectName": "crm_contact_preferences"
     },
     {
       "definition": {
@@ -2761,8 +2617,7 @@
       },
       "objectName": "crm_contact_preferences.preference",
       "objectType": "column",
-      "parentObjectName": "crm_contact_preferences",
-      "objectChecksum": "sha256:132dd8dc32dcc796bf9278ea14d069a46a224d67fadc93b4636477f60ddd9629"
+      "parentObjectName": "crm_contact_preferences"
     },
     {
       "definition": {
@@ -2771,8 +2626,7 @@
       },
       "objectName": "crm_contact_preferences.updated_at",
       "objectType": "column",
-      "parentObjectName": "crm_contact_preferences",
-      "objectChecksum": "sha256:d87038b83534bbd5738414da7bb7c3600d904ec1b7fcd0498b4d934dae1071ba"
+      "parentObjectName": "crm_contact_preferences"
     },
     {
       "definition": {
@@ -2781,8 +2635,7 @@
       },
       "objectName": "crm_contact_preferences.version",
       "objectType": "column",
-      "parentObjectName": "crm_contact_preferences",
-      "objectChecksum": "sha256:85be4f65a1d109158fb2ef1789125557dfc69a09f1fd2fd04a7f3f71457ef362"
+      "parentObjectName": "crm_contact_preferences"
     },
     {
       "definition": {
@@ -2791,8 +2644,7 @@
       },
       "objectName": "crm_contacts.archived_at",
       "objectType": "column",
-      "parentObjectName": "crm_contacts",
-      "objectChecksum": "sha256:2f4ac545df5891fc3aa5a557f904c647153e2f872a9e932e2a2f5a867d3a4cfa"
+      "parentObjectName": "crm_contacts"
     },
     {
       "definition": {
@@ -2801,8 +2653,7 @@
       },
       "objectName": "crm_contacts.contact_role",
       "objectType": "column",
-      "parentObjectName": "crm_contacts",
-      "objectChecksum": "sha256:240e1dce8aff9c91da14b7e595b2a4e66aaf97f33af2dfc07591f7309b338111"
+      "parentObjectName": "crm_contacts"
     },
     {
       "definition": {
@@ -2811,8 +2662,7 @@
       },
       "objectName": "crm_contacts.created_at",
       "objectType": "column",
-      "parentObjectName": "crm_contacts",
-      "objectChecksum": "sha256:c14c783763a8db22d45d347507082996c42eee97304628aa24bb590f9f5f7c3f"
+      "parentObjectName": "crm_contacts"
     },
     {
       "definition": {
@@ -2821,8 +2671,7 @@
       },
       "objectName": "crm_contacts.id",
       "objectType": "column",
-      "parentObjectName": "crm_contacts",
-      "objectChecksum": "sha256:94bbd2e541d9ee8bcb566234b2163d64a91509ca8317400a8a58d7170bf0f69a"
+      "parentObjectName": "crm_contacts"
     },
     {
       "definition": {
@@ -2831,8 +2680,7 @@
       },
       "objectName": "crm_contacts.owner_id",
       "objectType": "column",
-      "parentObjectName": "crm_contacts",
-      "objectChecksum": "sha256:c05786f107eb7b05752359a6bd9b366c108d6baaa1f60b9e5d905a6db27f17d4"
+      "parentObjectName": "crm_contacts"
     },
     {
       "definition": {
@@ -2841,8 +2689,7 @@
       },
       "objectName": "crm_contacts.primary_account_id",
       "objectType": "column",
-      "parentObjectName": "crm_contacts",
-      "objectChecksum": "sha256:18716fae9e27cc1537cdbb24da7b78146d27010ac2b510560e896306e77c910c"
+      "parentObjectName": "crm_contacts"
     },
     {
       "definition": {
@@ -2852,8 +2699,7 @@
       },
       "objectName": "crm_contacts.record_json",
       "objectType": "column",
-      "parentObjectName": "crm_contacts",
-      "objectChecksum": "sha256:83890ed7aafc324e8675803ee5dcbf09e60730f449aec093640a4c2ada46bc1c"
+      "parentObjectName": "crm_contacts"
     },
     {
       "definition": {
@@ -2863,8 +2709,7 @@
       },
       "objectName": "crm_contacts.search_text",
       "objectType": "column",
-      "parentObjectName": "crm_contacts",
-      "objectChecksum": "sha256:354451fc8bf1ff9bb155ce6eb7ecf3be12f222a74ed5aad04970ddce47030423"
+      "parentObjectName": "crm_contacts"
     },
     {
       "definition": {
@@ -2874,8 +2719,7 @@
       },
       "objectName": "crm_contacts.sensitive_json",
       "objectType": "column",
-      "parentObjectName": "crm_contacts",
-      "objectChecksum": "sha256:0c9fdcdb29a3034cb1db8a70f73b88c79e8a3b3c19e23c2304df3e4196a4f9a3"
+      "parentObjectName": "crm_contacts"
     },
     {
       "definition": {
@@ -2884,8 +2728,7 @@
       },
       "objectName": "crm_contacts.status",
       "objectType": "column",
-      "parentObjectName": "crm_contacts",
-      "objectChecksum": "sha256:0eca6f540cead9d668e11274941a6e7bbb0feb6588a1a306b8c5cbb0edf255bc"
+      "parentObjectName": "crm_contacts"
     },
     {
       "definition": {
@@ -2894,8 +2737,7 @@
       },
       "objectName": "crm_contacts.updated_at",
       "objectType": "column",
-      "parentObjectName": "crm_contacts",
-      "objectChecksum": "sha256:f8eb4d1f6e700e25f4fdfb5c2fee194c96c45bdf122379843229be0536cc333f"
+      "parentObjectName": "crm_contacts"
     },
     {
       "definition": {
@@ -2905,8 +2747,7 @@
       },
       "objectName": "crm_contacts.version",
       "objectType": "column",
-      "parentObjectName": "crm_contacts",
-      "objectChecksum": "sha256:8678e43dce90ca6ec659314ca178262b67770d46f34d3e478bcb822352666001"
+      "parentObjectName": "crm_contacts"
     },
     {
       "definition": {
@@ -2915,8 +2756,7 @@
       },
       "objectName": "crm_idempotency_results.created_at",
       "objectType": "column",
-      "parentObjectName": "crm_idempotency_results",
-      "objectChecksum": "sha256:461dbc1867fb9fc9e36a387d2c237356faeed7a912f5225ead7938d76b469e6c"
+      "parentObjectName": "crm_idempotency_results"
     },
     {
       "definition": {
@@ -2925,8 +2765,7 @@
       },
       "objectName": "crm_idempotency_results.idempotency_key",
       "objectType": "column",
-      "parentObjectName": "crm_idempotency_results",
-      "objectChecksum": "sha256:3d6763f046f4f41884bc2ff0fb23f00d9036a67266905e587e2e635fe0805878"
+      "parentObjectName": "crm_idempotency_results"
     },
     {
       "definition": {
@@ -2935,8 +2774,7 @@
       },
       "objectName": "crm_idempotency_results.request_checksum",
       "objectType": "column",
-      "parentObjectName": "crm_idempotency_results",
-      "objectChecksum": "sha256:8861f303ef94fb3c148e0a78e6cf73d0e7ee1d7dddefc5606332f98e8ab5724e"
+      "parentObjectName": "crm_idempotency_results"
     },
     {
       "definition": {
@@ -2945,8 +2783,7 @@
       },
       "objectName": "crm_idempotency_results.response_json",
       "objectType": "column",
-      "parentObjectName": "crm_idempotency_results",
-      "objectChecksum": "sha256:5ae36c05aa4ccad8dc2f71f5059441df914408eeb04a998b65a28f337f7bcd9d"
+      "parentObjectName": "crm_idempotency_results"
     },
     {
       "definition": {
@@ -2955,8 +2792,7 @@
       },
       "objectName": "crm_idempotency_results.updated_at",
       "objectType": "column",
-      "parentObjectName": "crm_idempotency_results",
-      "objectChecksum": "sha256:d9799aa5693e44cc4e82deb44c121e8772ff25d59c3b66b5e8e35bfb10920a79"
+      "parentObjectName": "crm_idempotency_results"
     },
     {
       "definition": {
@@ -2965,8 +2801,7 @@
       },
       "objectName": "crm_import_batches.accepted_count",
       "objectType": "column",
-      "parentObjectName": "crm_import_batches",
-      "objectChecksum": "sha256:30b82e94e704d68e7c238fb0eef0df7f7a4440804d79f1bd4cc419947966d20a"
+      "parentObjectName": "crm_import_batches"
     },
     {
       "definition": {
@@ -2975,8 +2810,7 @@
       },
       "objectName": "crm_import_batches.created_at",
       "objectType": "column",
-      "parentObjectName": "crm_import_batches",
-      "objectChecksum": "sha256:2ce37a03a309c7378648605d4c3b8c5acad5aae1571964cff8994bd2c75dc29e"
+      "parentObjectName": "crm_import_batches"
     },
     {
       "definition": {
@@ -2985,8 +2819,7 @@
       },
       "objectName": "crm_import_batches.duplicate_count",
       "objectType": "column",
-      "parentObjectName": "crm_import_batches",
-      "objectChecksum": "sha256:eaef0bca48ea044f02c27b9c984efa0c237c734941b1cb9136fd8c73441171ac"
+      "parentObjectName": "crm_import_batches"
     },
     {
       "definition": {
@@ -2995,8 +2828,7 @@
       },
       "objectName": "crm_import_batches.id",
       "objectType": "column",
-      "parentObjectName": "crm_import_batches",
-      "objectChecksum": "sha256:2aff15e1e86384fd9be2f450883b71efbc45fc984c1f20a709fd9c56c2279d53"
+      "parentObjectName": "crm_import_batches"
     },
     {
       "definition": {
@@ -3005,8 +2837,7 @@
       },
       "objectName": "crm_import_batches.quarantine_count",
       "objectType": "column",
-      "parentObjectName": "crm_import_batches",
-      "objectChecksum": "sha256:38d9f1ea0c34b8c0dc0e5a7d6f17a4d6c9dc89968614393a0129db6f4edb1a6d"
+      "parentObjectName": "crm_import_batches"
     },
     {
       "definition": {
@@ -3015,8 +2846,7 @@
       },
       "objectName": "crm_import_batches.quarantine_json",
       "objectType": "column",
-      "parentObjectName": "crm_import_batches",
-      "objectChecksum": "sha256:62f9e01d25d761fddcc9da5a448cbb6114a20ddd5dfe67f0892b7fce21a58287"
+      "parentObjectName": "crm_import_batches"
     },
     {
       "definition": {
@@ -3025,8 +2855,7 @@
       },
       "objectName": "crm_import_batches.source_fingerprint",
       "objectType": "column",
-      "parentObjectName": "crm_import_batches",
-      "objectChecksum": "sha256:aafb050479489d16bd1aa8bf7bc5b049b1d48b40fefecd1e0f02865e4f262c29"
+      "parentObjectName": "crm_import_batches"
     },
     {
       "definition": {
@@ -3035,8 +2864,7 @@
       },
       "objectName": "crm_import_batches.source_record_count",
       "objectType": "column",
-      "parentObjectName": "crm_import_batches",
-      "objectChecksum": "sha256:9b96bbd31d4a49efe0cc8a5b78eb3d3ee541b37885210f17bfd5d68cd61125b6"
+      "parentObjectName": "crm_import_batches"
     },
     {
       "definition": {
@@ -3045,8 +2873,7 @@
       },
       "objectName": "crm_import_batches.status",
       "objectType": "column",
-      "parentObjectName": "crm_import_batches",
-      "objectChecksum": "sha256:cce30a1b8920956e3b361eb420be1e4eb670374105e81710ba8c4d4d58f46bb5"
+      "parentObjectName": "crm_import_batches"
     },
     {
       "definition": {
@@ -3055,8 +2882,7 @@
       },
       "objectName": "crm_import_batches.updated_at",
       "objectType": "column",
-      "parentObjectName": "crm_import_batches",
-      "objectChecksum": "sha256:8a95ce873a0b7fcd095473b1a420f1cf57cb3e2081a6dee4658fa5a5ddb5fa80"
+      "parentObjectName": "crm_import_batches"
     },
     {
       "definition": {
@@ -3065,8 +2891,7 @@
       },
       "objectName": "crm_import_batches.version",
       "objectType": "column",
-      "parentObjectName": "crm_import_batches",
-      "objectChecksum": "sha256:e640faf4308ee78234100f04f10ae5c9fde03c0077149fa39fd3ca60380acf70"
+      "parentObjectName": "crm_import_batches"
     },
     {
       "definition": {
@@ -3075,8 +2900,7 @@
       },
       "objectName": "crm_import_records.batch_id",
       "objectType": "column",
-      "parentObjectName": "crm_import_records",
-      "objectChecksum": "sha256:3a5a88004d5c112706c20268f804d2e5d298b538fd531cf40c8d75f8715c8662"
+      "parentObjectName": "crm_import_records"
     },
     {
       "definition": {
@@ -3085,8 +2909,7 @@
       },
       "objectName": "crm_import_records.created_at",
       "objectType": "column",
-      "parentObjectName": "crm_import_records",
-      "objectChecksum": "sha256:55dcf610054f34b3292822fe8c103b55ecf13c96eda2e6ac7814d844616365b7"
+      "parentObjectName": "crm_import_records"
     },
     {
       "definition": {
@@ -3095,8 +2918,7 @@
       },
       "objectName": "crm_import_records.normalized_json",
       "objectType": "column",
-      "parentObjectName": "crm_import_records",
-      "objectChecksum": "sha256:8b5d97871d8159528e41339ba8611bbaccc62f2ac36c8a285647a4baf720f40d"
+      "parentObjectName": "crm_import_records"
     },
     {
       "definition": {
@@ -3105,8 +2927,7 @@
       },
       "objectName": "crm_import_records.source_row",
       "objectType": "column",
-      "parentObjectName": "crm_import_records",
-      "objectChecksum": "sha256:74a1dfbd4a396959e78a3f2319dbbb197fdfbabf2d2074da74113df7941b9490"
+      "parentObjectName": "crm_import_records"
     },
     {
       "definition": {
@@ -3115,8 +2936,7 @@
       },
       "objectName": "crm_import_records.status",
       "objectType": "column",
-      "parentObjectName": "crm_import_records",
-      "objectChecksum": "sha256:4ee09e33736d31bb441461cdd1add0c00a840a87911c2a088b44c96d3b5ed48d"
+      "parentObjectName": "crm_import_records"
     },
     {
       "definition": {
@@ -3125,8 +2945,7 @@
       },
       "objectName": "crm_import_records.target_id",
       "objectType": "column",
-      "parentObjectName": "crm_import_records",
-      "objectChecksum": "sha256:cd23f079d3cfcf4b659898e4827452a6bc29b8a80d08144fa3bbf0309c8fde7d"
+      "parentObjectName": "crm_import_records"
     },
     {
       "definition": {
@@ -3135,8 +2954,7 @@
       },
       "objectName": "crm_import_records.target_type",
       "objectType": "column",
-      "parentObjectName": "crm_import_records",
-      "objectChecksum": "sha256:f4c52f56c51a7ad30ec810f1d965c8e75e81ea2ddd80a9ffaa2fdbfa297ed737"
+      "parentObjectName": "crm_import_records"
     },
     {
       "definition": {
@@ -3145,8 +2963,7 @@
       },
       "objectName": "crm_jobs.created_at",
       "objectType": "column",
-      "parentObjectName": "crm_jobs",
-      "objectChecksum": "sha256:6d66c8f800f9ef2fb9550eed75d2de8b82674930d849ae78dd362e8a2afa7756"
+      "parentObjectName": "crm_jobs"
     },
     {
       "definition": {
@@ -3155,8 +2972,7 @@
       },
       "objectName": "crm_jobs.expires_at",
       "objectType": "column",
-      "parentObjectName": "crm_jobs",
-      "objectChecksum": "sha256:30deee9530ab1e97e467786b15427d3d1f850b0365e7fa4e1d4f204460acdddb"
+      "parentObjectName": "crm_jobs"
     },
     {
       "definition": {
@@ -3165,8 +2981,7 @@
       },
       "objectName": "crm_jobs.id",
       "objectType": "column",
-      "parentObjectName": "crm_jobs",
-      "objectChecksum": "sha256:f8b85d4c7ea3334abdb9b35ffcba62ba7d3d0b671bd56b191a6efbb47988daeb"
+      "parentObjectName": "crm_jobs"
     },
     {
       "definition": {
@@ -3175,8 +2990,7 @@
       },
       "objectName": "crm_jobs.kind",
       "objectType": "column",
-      "parentObjectName": "crm_jobs",
-      "objectChecksum": "sha256:e7e3e487a305c36bdc1f9844dabf3aecb712f3428060e60236bdc4e40a71cb57"
+      "parentObjectName": "crm_jobs"
     },
     {
       "definition": {
@@ -3185,8 +2999,7 @@
       },
       "objectName": "crm_jobs.record_json",
       "objectType": "column",
-      "parentObjectName": "crm_jobs",
-      "objectChecksum": "sha256:50eb64dcc0f556b6452cb9dd2758fda4c70bd83bc64fc60a449d1ce9338dc43d"
+      "parentObjectName": "crm_jobs"
     },
     {
       "definition": {
@@ -3195,8 +3008,7 @@
       },
       "objectName": "crm_jobs.status",
       "objectType": "column",
-      "parentObjectName": "crm_jobs",
-      "objectChecksum": "sha256:104f9cac4d274d923113ac6bac91d02d4f1946181c9d945c7a38ca4cd46cff72"
+      "parentObjectName": "crm_jobs"
     },
     {
       "definition": {
@@ -3205,8 +3017,7 @@
       },
       "objectName": "crm_jobs.updated_at",
       "objectType": "column",
-      "parentObjectName": "crm_jobs",
-      "objectChecksum": "sha256:f7066c4adca1d6b5ac86fc3996cfa34c4faced4ede838ac998a8263b7b33d10b"
+      "parentObjectName": "crm_jobs"
     },
     {
       "definition": {
@@ -3215,8 +3026,7 @@
       },
       "objectName": "crm_jobs.version",
       "objectType": "column",
-      "parentObjectName": "crm_jobs",
-      "objectChecksum": "sha256:7021b73245fe4af9d204c1e263d936e249f1d116a398dabfcee78b393a49cfee"
+      "parentObjectName": "crm_jobs"
     },
     {
       "definition": {
@@ -3226,8 +3036,7 @@
       },
       "objectName": "crm_operating_contexts.accounts_organization_id",
       "objectType": "column",
-      "parentObjectName": "crm_operating_contexts",
-      "objectChecksum": "sha256:250b2f9804e3ae18f2d052542cb0f057085cf8cb9bd903e5d2495ef0ac80dc8d"
+      "parentObjectName": "crm_operating_contexts"
     },
     {
       "definition": {
@@ -3240,8 +3049,7 @@
       },
       "objectName": "crm_operating_contexts.context_id",
       "objectType": "column",
-      "parentObjectName": "crm_operating_contexts",
-      "objectChecksum": "sha256:0d11c9dcd5d2918879b54455fadf4926261d91f0b00386e36958169118638c97"
+      "parentObjectName": "crm_operating_contexts"
     },
     {
       "definition": {
@@ -3252,8 +3060,7 @@
       },
       "objectName": "crm_operating_contexts.created_at",
       "objectType": "column",
-      "parentObjectName": "crm_operating_contexts",
-      "objectChecksum": "sha256:fe5c7a78ead05db06646e6871ff7d88eb01cc15f082a58dbb68367a86c9a781a"
+      "parentObjectName": "crm_operating_contexts"
     },
     {
       "definition": {
@@ -3263,8 +3070,7 @@
       },
       "objectName": "crm_operating_contexts.display_name",
       "objectType": "column",
-      "parentObjectName": "crm_operating_contexts",
-      "objectChecksum": "sha256:8d89946e95442d17c100780ee63daac27ab18ada78cc75bd2e0887157ee3fd8c"
+      "parentObjectName": "crm_operating_contexts"
     },
     {
       "definition": {
@@ -3274,8 +3080,7 @@
       },
       "objectName": "crm_operating_contexts.platform_tenant_id",
       "objectType": "column",
-      "parentObjectName": "crm_operating_contexts",
-      "objectChecksum": "sha256:42be209ffb579c8107a7702e7bb63ced0ae216e0c02d3b16006027a46da5b75f"
+      "parentObjectName": "crm_operating_contexts"
     },
     {
       "definition": {
@@ -3286,8 +3091,7 @@
       },
       "objectName": "crm_operating_contexts.status",
       "objectType": "column",
-      "parentObjectName": "crm_operating_contexts",
-      "objectChecksum": "sha256:9f4088dae175752930d4af13c6ce50c6a28a65f2bfaf67394995578b403fe699"
+      "parentObjectName": "crm_operating_contexts"
     },
     {
       "definition": {
@@ -3298,8 +3102,7 @@
       },
       "objectName": "crm_operating_contexts.updated_at",
       "objectType": "column",
-      "parentObjectName": "crm_operating_contexts",
-      "objectChecksum": "sha256:05b2674d01f8b90a08f175d0c5f91b9f27dce0259c589e63d2ae80e1524794ca"
+      "parentObjectName": "crm_operating_contexts"
     },
     {
       "definition": {
@@ -3308,8 +3111,7 @@
       },
       "objectName": "crm_opportunities.account_id",
       "objectType": "column",
-      "parentObjectName": "crm_opportunities",
-      "objectChecksum": "sha256:a0a3145779657e8c357caf40d7a58bf4d22e272a3b1cadbcc138ef320cabf158"
+      "parentObjectName": "crm_opportunities"
     },
     {
       "definition": {
@@ -3318,8 +3120,7 @@
       },
       "objectName": "crm_opportunities.amount_minor",
       "objectType": "column",
-      "parentObjectName": "crm_opportunities",
-      "objectChecksum": "sha256:974a3ae5a74c75ce0c3186888232dd70218b78b380c480d9ab9e73a57ef2a7b4"
+      "parentObjectName": "crm_opportunities"
     },
     {
       "definition": {
@@ -3328,8 +3129,7 @@
       },
       "objectName": "crm_opportunities.archived_at",
       "objectType": "column",
-      "parentObjectName": "crm_opportunities",
-      "objectChecksum": "sha256:591d249036552fd491e32b6a9f6e87e9679701472bf3cadb2894779e847d3e88"
+      "parentObjectName": "crm_opportunities"
     },
     {
       "definition": {
@@ -3338,8 +3138,7 @@
       },
       "objectName": "crm_opportunities.close_reason",
       "objectType": "column",
-      "parentObjectName": "crm_opportunities",
-      "objectChecksum": "sha256:8b0a65cbbcd7939f97afa95ba1ac9b838fc5c8ac12fb939a93e9510f1f6a1f37"
+      "parentObjectName": "crm_opportunities"
     },
     {
       "definition": {
@@ -3348,8 +3147,7 @@
       },
       "objectName": "crm_opportunities.created_at",
       "objectType": "column",
-      "parentObjectName": "crm_opportunities",
-      "objectChecksum": "sha256:5800bdbac399efa29be378d4662aadfddcf6d3547b7c20236e8e73a206d273c5"
+      "parentObjectName": "crm_opportunities"
     },
     {
       "definition": {
@@ -3358,8 +3156,7 @@
       },
       "objectName": "crm_opportunities.currency",
       "objectType": "column",
-      "parentObjectName": "crm_opportunities",
-      "objectChecksum": "sha256:7138e1679ecd6cfd0729b7d3168b09195edfa027ac53d014bab662391b491005"
+      "parentObjectName": "crm_opportunities"
     },
     {
       "definition": {
@@ -3368,8 +3165,7 @@
       },
       "objectName": "crm_opportunities.id",
       "objectType": "column",
-      "parentObjectName": "crm_opportunities",
-      "objectChecksum": "sha256:85d66887b6f9855cec6ab8bb6c140e165470f0fdc9565ae32cbcba5a74111f27"
+      "parentObjectName": "crm_opportunities"
     },
     {
       "definition": {
@@ -3378,8 +3174,7 @@
       },
       "objectName": "crm_opportunities.owner_id",
       "objectType": "column",
-      "parentObjectName": "crm_opportunities",
-      "objectChecksum": "sha256:29b8018ae3f00bc939810115e232d4ea64a5ab76a35cb8ddd1d9d1e6b20ac65f"
+      "parentObjectName": "crm_opportunities"
     },
     {
       "definition": {
@@ -3388,8 +3183,7 @@
       },
       "objectName": "crm_opportunities.pipeline_id",
       "objectType": "column",
-      "parentObjectName": "crm_opportunities",
-      "objectChecksum": "sha256:078a2d5ce9ac3932c95a071af936991863d50bdd517fc17affb2efaf8591a783"
+      "parentObjectName": "crm_opportunities"
     },
     {
       "definition": {
@@ -3398,8 +3192,7 @@
       },
       "objectName": "crm_opportunities.primary_contact_id",
       "objectType": "column",
-      "parentObjectName": "crm_opportunities",
-      "objectChecksum": "sha256:b24388cc3eca38a3466e0bd264db8dea139e9c1146967dee6bdcc429d2a5bfeb"
+      "parentObjectName": "crm_opportunities"
     },
     {
       "definition": {
@@ -3408,8 +3201,7 @@
       },
       "objectName": "crm_opportunities.probability",
       "objectType": "column",
-      "parentObjectName": "crm_opportunities",
-      "objectChecksum": "sha256:f99c90843cf4886e2d5f19b5b7eac3404fd144583110ee1c57edfb9ed1b3ef47"
+      "parentObjectName": "crm_opportunities"
     },
     {
       "definition": {
@@ -3419,8 +3211,7 @@
       },
       "objectName": "crm_opportunities.record_json",
       "objectType": "column",
-      "parentObjectName": "crm_opportunities",
-      "objectChecksum": "sha256:0ff00f709f58f2beb9493868ad6f201f5e08fc580e6ff010f40533bcb6a44a8f"
+      "parentObjectName": "crm_opportunities"
     },
     {
       "definition": {
@@ -3430,8 +3221,7 @@
       },
       "objectName": "crm_opportunities.search_text",
       "objectType": "column",
-      "parentObjectName": "crm_opportunities",
-      "objectChecksum": "sha256:68048c31bf646d735c6f27608c45861b892e5ef1fe7e839d16e707479d722ca3"
+      "parentObjectName": "crm_opportunities"
     },
     {
       "definition": {
@@ -3440,8 +3230,7 @@
       },
       "objectName": "crm_opportunities.stage_id",
       "objectType": "column",
-      "parentObjectName": "crm_opportunities",
-      "objectChecksum": "sha256:728e3356fd55491f30d08fc83311117eadec6a5259d93655515a633aedd10ebb"
+      "parentObjectName": "crm_opportunities"
     },
     {
       "definition": {
@@ -3450,8 +3239,7 @@
       },
       "objectName": "crm_opportunities.status",
       "objectType": "column",
-      "parentObjectName": "crm_opportunities",
-      "objectChecksum": "sha256:d3cffcbb0f15b7be9b5eed199b1b85186bc7ae1dc2b9643a96a6fdba47d543f0"
+      "parentObjectName": "crm_opportunities"
     },
     {
       "definition": {
@@ -3460,8 +3248,7 @@
       },
       "objectName": "crm_opportunities.updated_at",
       "objectType": "column",
-      "parentObjectName": "crm_opportunities",
-      "objectChecksum": "sha256:590e47a097936304dc3b0d3ffdb0f43b1ab6509640dcadca7307aa2d84bea973"
+      "parentObjectName": "crm_opportunities"
     },
     {
       "definition": {
@@ -3471,8 +3258,7 @@
       },
       "objectName": "crm_opportunities.version",
       "objectType": "column",
-      "parentObjectName": "crm_opportunities",
-      "objectChecksum": "sha256:585e17508e1d09337c5bf6df6ccdef6d8df6a6d97764b53288ec02dcc59eb41f"
+      "parentObjectName": "crm_opportunities"
     },
     {
       "definition": {
@@ -3481,8 +3267,7 @@
       },
       "objectName": "crm_opportunity_stage_history.actor_subject",
       "objectType": "column",
-      "parentObjectName": "crm_opportunity_stage_history",
-      "objectChecksum": "sha256:f70ddf72edfe5bd34da26fea5fece788b3fcb2ccf0599327a114077265e2df92"
+      "parentObjectName": "crm_opportunity_stage_history"
     },
     {
       "definition": {
@@ -3491,8 +3276,7 @@
       },
       "objectName": "crm_opportunity_stage_history.aggregate_version",
       "objectType": "column",
-      "parentObjectName": "crm_opportunity_stage_history",
-      "objectChecksum": "sha256:99dd9d65f1e2b488a8e9c50dba01ae18287918e691eb9ec585755597338041e8"
+      "parentObjectName": "crm_opportunity_stage_history"
     },
     {
       "definition": {
@@ -3501,8 +3285,7 @@
       },
       "objectName": "crm_opportunity_stage_history.from_stage_id",
       "objectType": "column",
-      "parentObjectName": "crm_opportunity_stage_history",
-      "objectChecksum": "sha256:573709b79dcffe5664bc691d8c991eb4e88d799b40328f2834f4ca64fa2d512e"
+      "parentObjectName": "crm_opportunity_stage_history"
     },
     {
       "definition": {
@@ -3511,8 +3294,7 @@
       },
       "objectName": "crm_opportunity_stage_history.id",
       "objectType": "column",
-      "parentObjectName": "crm_opportunity_stage_history",
-      "objectChecksum": "sha256:d81c5e84d3ea72a206f1acd42d202f4da91c5dc954af785df4d4a89a305a17f6"
+      "parentObjectName": "crm_opportunity_stage_history"
     },
     {
       "definition": {
@@ -3521,8 +3303,7 @@
       },
       "objectName": "crm_opportunity_stage_history.occurred_at",
       "objectType": "column",
-      "parentObjectName": "crm_opportunity_stage_history",
-      "objectChecksum": "sha256:d25b6ea610623fc2489cda53aacfd2f4edd8357b276ed8d5fc14bb05694411db"
+      "parentObjectName": "crm_opportunity_stage_history"
     },
     {
       "definition": {
@@ -3531,8 +3312,7 @@
       },
       "objectName": "crm_opportunity_stage_history.opportunity_id",
       "objectType": "column",
-      "parentObjectName": "crm_opportunity_stage_history",
-      "objectChecksum": "sha256:b4e87ffc3fb88d8a9abaa1bb2b890e19670f53452ccfe3566acb95ce31d369d1"
+      "parentObjectName": "crm_opportunity_stage_history"
     },
     {
       "definition": {
@@ -3541,8 +3321,7 @@
       },
       "objectName": "crm_opportunity_stage_history.probability",
       "objectType": "column",
-      "parentObjectName": "crm_opportunity_stage_history",
-      "objectChecksum": "sha256:777afd6249741f9675dc58bff6e751368e59b2c9be9c44a77074ba06dbe6d48e"
+      "parentObjectName": "crm_opportunity_stage_history"
     },
     {
       "definition": {
@@ -3551,8 +3330,7 @@
       },
       "objectName": "crm_opportunity_stage_history.reason_code",
       "objectType": "column",
-      "parentObjectName": "crm_opportunity_stage_history",
-      "objectChecksum": "sha256:afc17ce83b8e76c0519ccbb87dbb3e235dd33a3dc8c3f654cc0e617325f5c8e2"
+      "parentObjectName": "crm_opportunity_stage_history"
     },
     {
       "definition": {
@@ -3561,8 +3339,7 @@
       },
       "objectName": "crm_opportunity_stage_history.to_stage_id",
       "objectType": "column",
-      "parentObjectName": "crm_opportunity_stage_history",
-      "objectChecksum": "sha256:91b3006388b6eb7b303e1e5a571600793713bd3b010ab9c9a2b08771fc14eb7a"
+      "parentObjectName": "crm_opportunity_stage_history"
     },
     {
       "definition": {
@@ -3571,8 +3348,7 @@
       },
       "objectName": "crm_outbox_events.actor_subject",
       "objectType": "column",
-      "parentObjectName": "crm_outbox_events",
-      "objectChecksum": "sha256:41e134d3a8a70d830b7d2cff46851cd2fde0535f07857e50b9ab9b5174e31f3a"
+      "parentObjectName": "crm_outbox_events"
     },
     {
       "definition": {
@@ -3582,8 +3358,7 @@
       },
       "objectName": "crm_outbox_events.attempt_count",
       "objectType": "column",
-      "parentObjectName": "crm_outbox_events",
-      "objectChecksum": "sha256:59aa7a414f6facdcd497b8157f94a10b8e95dbb4ef1167358c3c3a92cdec085b"
+      "parentObjectName": "crm_outbox_events"
     },
     {
       "definition": {
@@ -3593,8 +3368,7 @@
       },
       "objectName": "crm_outbox_events.available_at",
       "objectType": "column",
-      "parentObjectName": "crm_outbox_events",
-      "objectChecksum": "sha256:eb4db29a1134962197101c916a732b9aceaa6f87567e8a03e03141e497de59fb"
+      "parentObjectName": "crm_outbox_events"
     },
     {
       "definition": {
@@ -3603,8 +3377,7 @@
       },
       "objectName": "crm_outbox_events.causation_id",
       "objectType": "column",
-      "parentObjectName": "crm_outbox_events",
-      "objectChecksum": "sha256:3d9c1cedbf6bc9d1a9eca319ab7c60822cf43c9f973bedb1848a19fb12d084e7"
+      "parentObjectName": "crm_outbox_events"
     },
     {
       "definition": {
@@ -3613,8 +3386,7 @@
       },
       "objectName": "crm_outbox_events.contract_version",
       "objectType": "column",
-      "parentObjectName": "crm_outbox_events",
-      "objectChecksum": "sha256:618703a7d8c046af1cdae9c86d3e502f80ccb4dda570f5f5079ae4624c4c1659"
+      "parentObjectName": "crm_outbox_events"
     },
     {
       "definition": {
@@ -3623,8 +3395,7 @@
       },
       "objectName": "crm_outbox_events.correlation_id",
       "objectType": "column",
-      "parentObjectName": "crm_outbox_events",
-      "objectChecksum": "sha256:0d36beb6e2a26054c56c20b72c882e03a7e4e09112616faadf3b283dd5b59a3b"
+      "parentObjectName": "crm_outbox_events"
     },
     {
       "definition": {
@@ -3633,8 +3404,7 @@
       },
       "objectName": "crm_outbox_events.delivered_at",
       "objectType": "column",
-      "parentObjectName": "crm_outbox_events",
-      "objectChecksum": "sha256:d8c234585ef605d7a0154a1077f09db5237805f38f58c9746d330aed6bc755f3"
+      "parentObjectName": "crm_outbox_events"
     },
     {
       "definition": {
@@ -3643,8 +3413,7 @@
       },
       "objectName": "crm_outbox_events.event_id",
       "objectType": "column",
-      "parentObjectName": "crm_outbox_events",
-      "objectChecksum": "sha256:c38a50efe7eb5ac9aa4143cba4a3bfeca7021f1006a115e7fe12ed5e3b194a44"
+      "parentObjectName": "crm_outbox_events"
     },
     {
       "definition": {
@@ -3653,8 +3422,7 @@
       },
       "objectName": "crm_outbox_events.event_type",
       "objectType": "column",
-      "parentObjectName": "crm_outbox_events",
-      "objectChecksum": "sha256:1d329c46b711da843d759179256d0fccb8a3479c345ebd33a7b821ea760771e5"
+      "parentObjectName": "crm_outbox_events"
     },
     {
       "definition": {
@@ -3663,8 +3431,7 @@
       },
       "objectName": "crm_outbox_events.last_error_code",
       "objectType": "column",
-      "parentObjectName": "crm_outbox_events",
-      "objectChecksum": "sha256:3284c2f7f14db66221b3ba978189c00e0cd48597151e3166088bcd3c244a1e74"
+      "parentObjectName": "crm_outbox_events"
     },
     {
       "definition": {
@@ -3673,8 +3440,7 @@
       },
       "objectName": "crm_outbox_events.occurred_at",
       "objectType": "column",
-      "parentObjectName": "crm_outbox_events",
-      "objectChecksum": "sha256:0eaac374d825d73e2d22d9b44971de9db192d23263ff98389954b10bc156e6b7"
+      "parentObjectName": "crm_outbox_events"
     },
     {
       "definition": {
@@ -3683,8 +3449,7 @@
       },
       "objectName": "crm_outbox_events.payload_json",
       "objectType": "column",
-      "parentObjectName": "crm_outbox_events",
-      "objectChecksum": "sha256:5aa7c580825a5935aaaed7e5da59a9024bffdab4599dffc7f96060b1ef569f3d"
+      "parentObjectName": "crm_outbox_events"
     },
     {
       "definition": {
@@ -3693,8 +3458,7 @@
       },
       "objectName": "crm_outbox_events.status",
       "objectType": "column",
-      "parentObjectName": "crm_outbox_events",
-      "objectChecksum": "sha256:883c119c440bf162cf8d942e373dee62bc25db4b8262a35c57796e2af707bcf4"
+      "parentObjectName": "crm_outbox_events"
     },
     {
       "definition": {
@@ -3703,8 +3467,7 @@
       },
       "objectName": "crm_pipeline_stages.default_probability",
       "objectType": "column",
-      "parentObjectName": "crm_pipeline_stages",
-      "objectChecksum": "sha256:d1ee413bf724654aeb7c44c729ecba5602649dde8266a80238e4839bb231c496"
+      "parentObjectName": "crm_pipeline_stages"
     },
     {
       "definition": {
@@ -3713,8 +3476,7 @@
       },
       "objectName": "crm_pipeline_stages.id",
       "objectType": "column",
-      "parentObjectName": "crm_pipeline_stages",
-      "objectChecksum": "sha256:66627f0f74f522684a8854b231a5dde3f19077b1599a2193814bd0d5a4aac1c5"
+      "parentObjectName": "crm_pipeline_stages"
     },
     {
       "definition": {
@@ -3723,8 +3485,7 @@
       },
       "objectName": "crm_pipeline_stages.label",
       "objectType": "column",
-      "parentObjectName": "crm_pipeline_stages",
-      "objectChecksum": "sha256:804fe393a98c2a3d24b15b28f656786e7d6b3089e5ce57b965c1707cc84239a1"
+      "parentObjectName": "crm_pipeline_stages"
     },
     {
       "definition": {
@@ -3733,8 +3494,7 @@
       },
       "objectName": "crm_pipeline_stages.pipeline_id",
       "objectType": "column",
-      "parentObjectName": "crm_pipeline_stages",
-      "objectChecksum": "sha256:ddf6be6135e621aef60d172c5c2b452b0b160d57db48640a4a3de7e561c9687c"
+      "parentObjectName": "crm_pipeline_stages"
     },
     {
       "definition": {
@@ -3743,8 +3503,7 @@
       },
       "objectName": "crm_pipeline_stages.position",
       "objectType": "column",
-      "parentObjectName": "crm_pipeline_stages",
-      "objectChecksum": "sha256:adb4fc92aa36aabc392179a0f713bba0bbf7951657ca82135c8fa0741865ae4f"
+      "parentObjectName": "crm_pipeline_stages"
     },
     {
       "definition": {
@@ -3753,8 +3512,7 @@
       },
       "objectName": "crm_pipeline_stages.stage_key",
       "objectType": "column",
-      "parentObjectName": "crm_pipeline_stages",
-      "objectChecksum": "sha256:f6b3cb63994c8b72d70b74a06b7d5af1ca4762d762debd2efcc00933438b1ec2"
+      "parentObjectName": "crm_pipeline_stages"
     },
     {
       "definition": {
@@ -3763,8 +3521,7 @@
       },
       "objectName": "crm_pipeline_stages.terminal_kind",
       "objectType": "column",
-      "parentObjectName": "crm_pipeline_stages",
-      "objectChecksum": "sha256:fb97c30a0575f844675351ea685c7e8b307927c46290d8ad5d94fdee0ce42c5b"
+      "parentObjectName": "crm_pipeline_stages"
     },
     {
       "definition": {
@@ -3773,8 +3530,7 @@
       },
       "objectName": "crm_pipeline_stages.version",
       "objectType": "column",
-      "parentObjectName": "crm_pipeline_stages",
-      "objectChecksum": "sha256:9f27366c67d32e3ef5c34a1d5b600da2b26ee72c0c98e4c0cd0c80cb6d53230e"
+      "parentObjectName": "crm_pipeline_stages"
     },
     {
       "definition": {
@@ -3783,8 +3539,7 @@
       },
       "objectName": "crm_pipelines.created_at",
       "objectType": "column",
-      "parentObjectName": "crm_pipelines",
-      "objectChecksum": "sha256:1a80f9a6338b1f34458ad2e2d9605a2ae651c3b07650c240b347c60022dec182"
+      "parentObjectName": "crm_pipelines"
     },
     {
       "definition": {
@@ -3793,8 +3548,7 @@
       },
       "objectName": "crm_pipelines.id",
       "objectType": "column",
-      "parentObjectName": "crm_pipelines",
-      "objectChecksum": "sha256:f72e27697fc1a8469a0fe8d0de3212b96edcf097c0a87d25529cf4b049378fa4"
+      "parentObjectName": "crm_pipelines"
     },
     {
       "definition": {
@@ -3803,8 +3557,7 @@
       },
       "objectName": "crm_pipelines.name",
       "objectType": "column",
-      "parentObjectName": "crm_pipelines",
-      "objectChecksum": "sha256:5ea5cd393b7b6d38222a2e0958db97975bd40f2dd6e7a2f77f72ae03bc38e827"
+      "parentObjectName": "crm_pipelines"
     },
     {
       "definition": {
@@ -3813,8 +3566,7 @@
       },
       "objectName": "crm_pipelines.profile_key",
       "objectType": "column",
-      "parentObjectName": "crm_pipelines",
-      "objectChecksum": "sha256:defaf6a9935bc0e984990d8cbc591b043034a6d2f3027a0524c7a9fc10285d53"
+      "parentObjectName": "crm_pipelines"
     },
     {
       "definition": {
@@ -3823,8 +3575,7 @@
       },
       "objectName": "crm_pipelines.status",
       "objectType": "column",
-      "parentObjectName": "crm_pipelines",
-      "objectChecksum": "sha256:e9befb38d05c7035ee50b7ffedc31f7934defa96c6c5fc6ff0e592d207ea4a2c"
+      "parentObjectName": "crm_pipelines"
     },
     {
       "definition": {
@@ -3833,8 +3584,7 @@
       },
       "objectName": "crm_pipelines.updated_at",
       "objectType": "column",
-      "parentObjectName": "crm_pipelines",
-      "objectChecksum": "sha256:6f3e9cc1d1686c07995b93a91bf161cf895b572dce2a26989c40efa576689820"
+      "parentObjectName": "crm_pipelines"
     },
     {
       "definition": {
@@ -3843,8 +3593,7 @@
       },
       "objectName": "crm_pipelines.version",
       "objectType": "column",
-      "parentObjectName": "crm_pipelines",
-      "objectChecksum": "sha256:7c1562213186d4bd3d892386ede667094fe7c34a5c97e56c355882a977b4f714"
+      "parentObjectName": "crm_pipelines"
     },
     {
       "definition": {
@@ -3856,8 +3605,7 @@
       },
       "objectName": "crm_platform_links.context_id",
       "objectType": "column",
-      "parentObjectName": "crm_platform_links",
-      "objectChecksum": "sha256:1b96c729c3f94108337779f294c4ca6ad8703bb12b61345d3bd8db16de11154e"
+      "parentObjectName": "crm_platform_links"
     },
     {
       "definition": {
@@ -3868,8 +3616,7 @@
       },
       "objectName": "crm_platform_links.created_at",
       "objectType": "column",
-      "parentObjectName": "crm_platform_links",
-      "objectChecksum": "sha256:4bef15ec9ba3353fb38d244844b25b4738e6df05d397f618927c4852e716cc83"
+      "parentObjectName": "crm_platform_links"
     },
     {
       "definition": {
@@ -3879,8 +3626,7 @@
       },
       "objectName": "crm_platform_links.external_ref",
       "objectType": "column",
-      "parentObjectName": "crm_platform_links",
-      "objectChecksum": "sha256:7fcdbc73978f6b9630f3b96728851047efee15a3ea16ea93d693d1081785a481"
+      "parentObjectName": "crm_platform_links"
     },
     {
       "definition": {
@@ -3893,8 +3639,7 @@
       },
       "objectName": "crm_platform_links.link_id",
       "objectType": "column",
-      "parentObjectName": "crm_platform_links",
-      "objectChecksum": "sha256:3cb6e8dba38a6074e77785651304149634c02c8343ebb584371d9ae5136ddaed"
+      "parentObjectName": "crm_platform_links"
     },
     {
       "definition": {
@@ -3904,8 +3649,7 @@
       },
       "objectName": "crm_platform_links.purpose",
       "objectType": "column",
-      "parentObjectName": "crm_platform_links",
-      "objectChecksum": "sha256:ead75c6e8c68302d19ec6d945caf4e1885b7962011a2f5cb077f0cae3ebe87cd"
+      "parentObjectName": "crm_platform_links"
     },
     {
       "definition": {
@@ -3915,8 +3659,7 @@
       },
       "objectName": "crm_platform_links.service_slug",
       "objectType": "column",
-      "parentObjectName": "crm_platform_links",
-      "objectChecksum": "sha256:86593284658ccb4291b5e41166c3c57047252469a412ed6075695b2faa49e014"
+      "parentObjectName": "crm_platform_links"
     },
     {
       "definition": {
@@ -3927,8 +3670,7 @@
       },
       "objectName": "crm_platform_links.status",
       "objectType": "column",
-      "parentObjectName": "crm_platform_links",
-      "objectChecksum": "sha256:f1b9ae16ce8e22c78b3b907038767268a94930651c35fa83799503de5b0e6279"
+      "parentObjectName": "crm_platform_links"
     },
     {
       "definition": {
@@ -3939,8 +3681,7 @@
       },
       "objectName": "crm_platform_links.updated_at",
       "objectType": "column",
-      "parentObjectName": "crm_platform_links",
-      "objectChecksum": "sha256:82f13e67b4d19c3e46e8197b5b860b9b11ae6155e68101f64ddf8d4dcfc09d01"
+      "parentObjectName": "crm_platform_links"
     },
     {
       "definition": {
@@ -3951,8 +3692,7 @@
       },
       "objectName": "crm_schema_migrations.applied_at",
       "objectType": "column",
-      "parentObjectName": "crm_schema_migrations",
-      "objectChecksum": "sha256:ef00cc9d5139841827f7aa882c277b65def6779f2eab06071950993e83846d23"
+      "parentObjectName": "crm_schema_migrations"
     },
     {
       "definition": {
@@ -3962,8 +3702,7 @@
       },
       "objectName": "crm_schema_migrations.version",
       "objectType": "column",
-      "parentObjectName": "crm_schema_migrations",
-      "objectChecksum": "sha256:424e705e8a2773502d57fbec537de9e50ec112dd5142a9f6ef3c3c581cae3269"
+      "parentObjectName": "crm_schema_migrations"
     },
     {
       "definition": {
@@ -3972,8 +3711,7 @@
       },
       "objectName": "crm_tenant_configuration.configuration_json",
       "objectType": "column",
-      "parentObjectName": "crm_tenant_configuration",
-      "objectChecksum": "sha256:7f8d7639837130f976b503be59db74679eea07735f7cb51ce78ae1ec96fab6e6"
+      "parentObjectName": "crm_tenant_configuration"
     },
     {
       "definition": {
@@ -3982,8 +3720,7 @@
       },
       "objectName": "crm_tenant_configuration.profile_key",
       "objectType": "column",
-      "parentObjectName": "crm_tenant_configuration",
-      "objectChecksum": "sha256:433049da3ed452444143384df5477d246737b0a4d18f454e229b19e8fe63ee26"
+      "parentObjectName": "crm_tenant_configuration"
     },
     {
       "definition": {
@@ -3992,8 +3729,7 @@
       },
       "objectName": "crm_tenant_configuration.profile_version",
       "objectType": "column",
-      "parentObjectName": "crm_tenant_configuration",
-      "objectChecksum": "sha256:38a8fa923016c43505f2d82ec8fcc330c197b63a1578c8d1f36f2c1a825c8c4c"
+      "parentObjectName": "crm_tenant_configuration"
     },
     {
       "definition": {
@@ -4002,8 +3738,7 @@
       },
       "objectName": "crm_tenant_configuration.singleton_key",
       "objectType": "column",
-      "parentObjectName": "crm_tenant_configuration",
-      "objectChecksum": "sha256:107e44ecaaac452a9fdee1fa51bec5bb10e08329bbfb196097704d32517f6074"
+      "parentObjectName": "crm_tenant_configuration"
     },
     {
       "definition": {
@@ -4012,8 +3747,7 @@
       },
       "objectName": "crm_tenant_configuration.updated_at",
       "objectType": "column",
-      "parentObjectName": "crm_tenant_configuration",
-      "objectChecksum": "sha256:3c6720c005469859cee9cd84b2d20bf42b3119851e812b26aecf72e12e208020"
+      "parentObjectName": "crm_tenant_configuration"
     },
     {
       "definition": {
@@ -4022,8 +3756,7 @@
       },
       "objectName": "crm_tenant_configuration.version",
       "objectType": "column",
-      "parentObjectName": "crm_tenant_configuration",
-      "objectChecksum": "sha256:567ecd5c2fd2d57f1fb9ea4bc5c8070dbb89567bfe6bf0c579ba5478075580a9"
+      "parentObjectName": "crm_tenant_configuration"
     },
     {
       "definition": {
@@ -4037,8 +3770,7 @@
       },
       "objectName": "crm_account_contact_links.crm_account_contact_links_account_id_contact_id_role_47fb949898",
       "objectType": "constraint",
-      "parentObjectName": "crm_account_contact_links",
-      "objectChecksum": "sha256:80aed172e53ce6ddf1d3ee4c5bda0e8cc069dbc81fdcb93c80f15ee4034cbba0"
+      "parentObjectName": "crm_account_contact_links"
     },
     {
       "definition": {
@@ -4056,8 +3788,7 @@
       },
       "objectName": "crm_account_contact_links.crm_account_contact_links_account_id_n1_fk",
       "objectType": "constraint",
-      "parentObjectName": "crm_account_contact_links",
-      "objectChecksum": "sha256:b7c318c7595d765a8c738cd3cb4bc30d2f0e78c799f5418e96b2a947786c3a7d"
+      "parentObjectName": "crm_account_contact_links"
     },
     {
       "definition": {
@@ -4075,8 +3806,7 @@
       },
       "objectName": "crm_account_contact_links.crm_account_contact_links_contact_id_n2_fk",
       "objectType": "constraint",
-      "parentObjectName": "crm_account_contact_links",
-      "objectChecksum": "sha256:d68e2f2ec4242f23188924ccb75ba901feafc61fed407561790beff8ac9cf1b1"
+      "parentObjectName": "crm_account_contact_links"
     },
     {
       "definition": {
@@ -4087,8 +3817,7 @@
       },
       "objectName": "crm_account_contact_links.crm_account_contact_links_pkey",
       "objectType": "constraint",
-      "parentObjectName": "crm_account_contact_links",
-      "objectChecksum": "sha256:73b8b31446d86ec94f153660398d88efdf77c64272fd9eeb4346f54c675a4eec"
+      "parentObjectName": "crm_account_contact_links"
     },
     {
       "definition": {
@@ -4100,8 +3829,7 @@
       },
       "objectName": "crm_accounts.crm_accounts_external_ref_archived_at_n1_uq",
       "objectType": "constraint",
-      "parentObjectName": "crm_accounts",
-      "objectChecksum": "sha256:fdec44a61aa60f71851d85d6c2cafaa4c78a484c295e10a64ba62397ae1963e3"
+      "parentObjectName": "crm_accounts"
     },
     {
       "definition": {
@@ -4112,8 +3840,7 @@
       },
       "objectName": "crm_accounts.crm_accounts_pkey",
       "objectType": "constraint",
-      "parentObjectName": "crm_accounts",
-      "objectChecksum": "sha256:3538c48ed28402969e704073123d73e4f3b9a79e13f6c9bc1e31bdba5f8ec34e"
+      "parentObjectName": "crm_accounts"
     },
     {
       "definition": {
@@ -4122,8 +3849,7 @@
       },
       "objectName": "crm_accounts.crm_accounts_status_n4_chk",
       "objectType": "constraint",
-      "parentObjectName": "crm_accounts",
-      "objectChecksum": "sha256:94379ff6e250b5d84bcd74df241e944edbebbe29868b539c7dc91fb8dfb001fa"
+      "parentObjectName": "crm_accounts"
     },
     {
       "definition": {
@@ -4132,8 +3858,7 @@
       },
       "objectName": "crm_accounts.crm_accounts_version_n1_chk",
       "objectType": "constraint",
-      "parentObjectName": "crm_accounts",
-      "objectChecksum": "sha256:e04f81d33bfeb47865e058d9c2021988fb9d66f0d08dd27a342d413003de4f1b"
+      "parentObjectName": "crm_accounts"
     },
     {
       "definition": {
@@ -4142,8 +3867,7 @@
       },
       "objectName": "crm_activities.crm_activities_activity_type_n4_chk",
       "objectType": "constraint",
-      "parentObjectName": "crm_activities",
-      "objectChecksum": "sha256:8c7f427d04b242e2133afecee28d8c0ba3ea8901c5db9437adf8db85f5932a23"
+      "parentObjectName": "crm_activities"
     },
     {
       "definition": {
@@ -4161,8 +3885,7 @@
       },
       "objectName": "crm_activities.crm_activities_case_id_n1_fk",
       "objectType": "constraint",
-      "parentObjectName": "crm_activities",
-      "objectChecksum": "sha256:3be14a963c2a8bb19f84eb2940c8a873ac21777f534a93542bc75a08cc1235a4"
+      "parentObjectName": "crm_activities"
     },
     {
       "definition": {
@@ -4173,8 +3896,7 @@
       },
       "objectName": "crm_activities.crm_activities_pkey",
       "objectType": "constraint",
-      "parentObjectName": "crm_activities",
-      "objectChecksum": "sha256:1c48dba03369b83bb4802d5a75c7589ed6346522d17d2f5b6a01d0bac31443e0"
+      "parentObjectName": "crm_activities"
     },
     {
       "definition": {
@@ -4183,8 +3905,7 @@
       },
       "objectName": "crm_activities.crm_activities_status_n5_chk",
       "objectType": "constraint",
-      "parentObjectName": "crm_activities",
-      "objectChecksum": "sha256:9374ea9d0304a6db6c7c7afe0db97b274b83937cdf7eb0256757f4b134ac0ec4"
+      "parentObjectName": "crm_activities"
     },
     {
       "definition": {
@@ -4193,8 +3914,7 @@
       },
       "objectName": "crm_activities.crm_activities_version_n1_chk",
       "objectType": "constraint",
-      "parentObjectName": "crm_activities",
-      "objectChecksum": "sha256:8a0c2e9727c0ae203d4cd30f2b391ec93f763193fd28d74ec527c244356baf76"
+      "parentObjectName": "crm_activities"
     },
     {
       "definition": {
@@ -4212,8 +3932,7 @@
       },
       "objectName": "crm_appointment_participants.crm_appointment_participants_appointment_id_n1_fk",
       "objectType": "constraint",
-      "parentObjectName": "crm_appointment_participants",
-      "objectChecksum": "sha256:ec48ca36a04bb4a83bc5eb27e694603d7c5c185c5cfb5be81e5ae011367cde49"
+      "parentObjectName": "crm_appointment_participants"
     },
     {
       "definition": {
@@ -4227,8 +3946,7 @@
       },
       "objectName": "crm_appointment_participants.crm_appointment_participants_appointment_id_particip_e074f7fc69",
       "objectType": "constraint",
-      "parentObjectName": "crm_appointment_participants",
-      "objectChecksum": "sha256:b7b3015d165e98eaf8fa996720c7107541f94c9a459c645a30ea8072a487ade5"
+      "parentObjectName": "crm_appointment_participants"
     },
     {
       "definition": {
@@ -4239,8 +3957,7 @@
       },
       "objectName": "crm_appointment_participants.crm_appointment_participants_pkey",
       "objectType": "constraint",
-      "parentObjectName": "crm_appointment_participants",
-      "objectChecksum": "sha256:daf638765958d185a1000f54230b5bcb07be6dd5fda6f175f0ec33fd9953f8a4"
+      "parentObjectName": "crm_appointment_participants"
     },
     {
       "definition": {
@@ -4252,8 +3969,7 @@
       },
       "objectName": "crm_appointment_status_history.crm_appointment_status_history_appointment_id_aggreg_5c52a32e5b",
       "objectType": "constraint",
-      "parentObjectName": "crm_appointment_status_history",
-      "objectChecksum": "sha256:5051eff930b00325862dff307cad57d524312f53cd5641265b4a0cb43abccda9"
+      "parentObjectName": "crm_appointment_status_history"
     },
     {
       "definition": {
@@ -4271,8 +3987,7 @@
       },
       "objectName": "crm_appointment_status_history.crm_appointment_status_history_appointment_id_n1_fk",
       "objectType": "constraint",
-      "parentObjectName": "crm_appointment_status_history",
-      "objectChecksum": "sha256:79e876305de4615bb78e43e421d33daab77e7837d8926a308ca01ba4a36b36f4"
+      "parentObjectName": "crm_appointment_status_history"
     },
     {
       "definition": {
@@ -4283,8 +3998,7 @@
       },
       "objectName": "crm_appointment_status_history.crm_appointment_status_history_pkey",
       "objectType": "constraint",
-      "parentObjectName": "crm_appointment_status_history",
-      "objectChecksum": "sha256:98dd56e48cfaede1d53fc57a968a98a72a5abdc90d80b89f6893b46013c7c547"
+      "parentObjectName": "crm_appointment_status_history"
     },
     {
       "definition": {
@@ -4302,8 +4016,7 @@
       },
       "objectName": "crm_appointments.crm_appointments_case_id_n1_fk",
       "objectType": "constraint",
-      "parentObjectName": "crm_appointments",
-      "objectChecksum": "sha256:451e06411f9deaf2ac3f8074599f7c1c9dd1f62cc3f80947e9f2481980a5d656"
+      "parentObjectName": "crm_appointments"
     },
     {
       "definition": {
@@ -4312,8 +4025,7 @@
       },
       "objectName": "crm_appointments.crm_appointments_end_at_start_at_n5_chk",
       "objectType": "constraint",
-      "parentObjectName": "crm_appointments",
-      "objectChecksum": "sha256:47feaeb7e1d8ce73218b32d908cf0f152d83c33a2bf264041472f05268006320"
+      "parentObjectName": "crm_appointments"
     },
     {
       "definition": {
@@ -4324,8 +4036,7 @@
       },
       "objectName": "crm_appointments.crm_appointments_pkey",
       "objectType": "constraint",
-      "parentObjectName": "crm_appointments",
-      "objectChecksum": "sha256:8416bf9653fa0d250f4b1feb5f875e406af6e7806ff1402eff03c035e372699e"
+      "parentObjectName": "crm_appointments"
     },
     {
       "definition": {
@@ -4334,8 +4045,7 @@
       },
       "objectName": "crm_appointments.crm_appointments_status_n4_chk",
       "objectType": "constraint",
-      "parentObjectName": "crm_appointments",
-      "objectChecksum": "sha256:9559181dccd0328161047c60790a19201f0556d2e0defd385fd99fdb3fef59d3"
+      "parentObjectName": "crm_appointments"
     },
     {
       "definition": {
@@ -4344,8 +4054,7 @@
       },
       "objectName": "crm_appointments.crm_appointments_version_n1_chk",
       "objectType": "constraint",
-      "parentObjectName": "crm_appointments",
-      "objectChecksum": "sha256:7694315481efb2cbbd1dee371015b497c14903ff79db4bcc9de0e2314437ccb9"
+      "parentObjectName": "crm_appointments"
     },
     {
       "definition": {
@@ -4354,8 +4063,7 @@
       },
       "objectName": "crm_audit_events.crm_audit_events_outcome_check",
       "objectType": "constraint",
-      "parentObjectName": "crm_audit_events",
-      "objectChecksum": "sha256:057d99f2807f1dc9085b8c19f26d462c1f307892e165330812284cc9f7435c8b"
+      "parentObjectName": "crm_audit_events"
     },
     {
       "definition": {
@@ -4366,8 +4074,7 @@
       },
       "objectName": "crm_audit_events.crm_audit_events_pkey",
       "objectType": "constraint",
-      "parentObjectName": "crm_audit_events",
-      "objectChecksum": "sha256:b1c4edfc86f522c3bc4196dd1fbfbaae351a4de593cdf6d3b44e5798899fa2ca"
+      "parentObjectName": "crm_audit_events"
     },
     {
       "definition": {
@@ -4385,8 +4092,7 @@
       },
       "objectName": "crm_case_parties.crm_case_parties_case_id_n1_fk",
       "objectType": "constraint",
-      "parentObjectName": "crm_case_parties",
-      "objectChecksum": "sha256:76d4193f324af52be90351bbdf427dc6af38b408567aac4e2c498eb1ceecede6"
+      "parentObjectName": "crm_case_parties"
     },
     {
       "definition": {
@@ -4401,8 +4107,7 @@
       },
       "objectName": "crm_case_parties.crm_case_parties_case_id_party_type_party_id_role_ke_f0574c804f",
       "objectType": "constraint",
-      "parentObjectName": "crm_case_parties",
-      "objectChecksum": "sha256:170806eb47b291fe64fc3fe40b25c415b669fecf3dbb207e8a9f472eda6b89f1"
+      "parentObjectName": "crm_case_parties"
     },
     {
       "definition": {
@@ -4413,8 +4118,7 @@
       },
       "objectName": "crm_case_parties.crm_case_parties_pkey",
       "objectType": "constraint",
-      "parentObjectName": "crm_case_parties",
-      "objectChecksum": "sha256:2274374a2dec10f9e61729e0605bf7edd177cd728e6e45a971be223c8cbb0ec5"
+      "parentObjectName": "crm_case_parties"
     },
     {
       "definition": {
@@ -4426,8 +4130,7 @@
       },
       "objectName": "crm_case_status_history.crm_case_status_history_case_id_aggregate_version_n1_uq",
       "objectType": "constraint",
-      "parentObjectName": "crm_case_status_history",
-      "objectChecksum": "sha256:12005cc497148c39ed65b875ab19c4a89e2901c2d6211f4b65c37d1b4408e0e2"
+      "parentObjectName": "crm_case_status_history"
     },
     {
       "definition": {
@@ -4445,8 +4148,7 @@
       },
       "objectName": "crm_case_status_history.crm_case_status_history_case_id_n1_fk",
       "objectType": "constraint",
-      "parentObjectName": "crm_case_status_history",
-      "objectChecksum": "sha256:0279ce82d57fbf0e18e4cf62a519e37c9ab480ca58c826fd190a1e2dc7e838b4"
+      "parentObjectName": "crm_case_status_history"
     },
     {
       "definition": {
@@ -4457,8 +4159,7 @@
       },
       "objectName": "crm_case_status_history.crm_case_status_history_pkey",
       "objectType": "constraint",
-      "parentObjectName": "crm_case_status_history",
-      "objectChecksum": "sha256:868898423dfbc92898b532412f8a3eb4dcb2240f1f847eaf880384c62fc08a1e"
+      "parentObjectName": "crm_case_status_history"
     },
     {
       "definition": {
@@ -4476,8 +4177,7 @@
       },
       "objectName": "crm_cases.crm_cases_account_id_n1_fk",
       "objectType": "constraint",
-      "parentObjectName": "crm_cases",
-      "objectChecksum": "sha256:28f637105a65b8588fe2a86500b6893c710453ae6d1aaecc2743c0da0764c680"
+      "parentObjectName": "crm_cases"
     },
     {
       "definition": {
@@ -4495,8 +4195,7 @@
       },
       "objectName": "crm_cases.crm_cases_contact_id_n2_fk",
       "objectType": "constraint",
-      "parentObjectName": "crm_cases",
-      "objectChecksum": "sha256:27cebe9cdbb74b2b0c20e439ec4b4b171f611c9e74a1be0e07a64a98fd251fde"
+      "parentObjectName": "crm_cases"
     },
     {
       "definition": {
@@ -4507,8 +4206,7 @@
       },
       "objectName": "crm_cases.crm_cases_pkey",
       "objectType": "constraint",
-      "parentObjectName": "crm_cases",
-      "objectChecksum": "sha256:a27d97a72d224c704140fd5491fa7e9d37baa117277b350a243bd932f9296992"
+      "parentObjectName": "crm_cases"
     },
     {
       "definition": {
@@ -4517,8 +4215,7 @@
       },
       "objectName": "crm_cases.crm_cases_priority_n5_chk",
       "objectType": "constraint",
-      "parentObjectName": "crm_cases",
-      "objectChecksum": "sha256:dac228967c4444fe560e01918f05a299e1ec49a8e08f311b22e705510063e639"
+      "parentObjectName": "crm_cases"
     },
     {
       "definition": {
@@ -4527,8 +4224,7 @@
       },
       "objectName": "crm_cases.crm_cases_status_n4_chk",
       "objectType": "constraint",
-      "parentObjectName": "crm_cases",
-      "objectChecksum": "sha256:ebc5e3b6e78b898c54fe44d7eb8db29ca38dea703ffd6f8cceaef9f7999fe267"
+      "parentObjectName": "crm_cases"
     },
     {
       "definition": {
@@ -4537,8 +4233,7 @@
       },
       "objectName": "crm_cases.crm_cases_version_n1_chk",
       "objectType": "constraint",
-      "parentObjectName": "crm_cases",
-      "objectChecksum": "sha256:03f1d05b4b281b7dfa5d55f0f22c05e40b6f091a2057ceaae45aba7dec316594"
+      "parentObjectName": "crm_cases"
     },
     {
       "definition": {
@@ -4547,8 +4242,7 @@
       },
       "objectName": "crm_contact_preferences.crm_contact_preferences_consent_status_n2_chk",
       "objectType": "constraint",
-      "parentObjectName": "crm_contact_preferences",
-      "objectChecksum": "sha256:ed54ddb66dc2e6d7ac586949ff8de640f17bbb54f74d2cef1b288cbaa020fd1d"
+      "parentObjectName": "crm_contact_preferences"
     },
     {
       "definition": {
@@ -4566,8 +4260,7 @@
       },
       "objectName": "crm_contact_preferences.crm_contact_preferences_contact_id_n1_fk",
       "objectType": "constraint",
-      "parentObjectName": "crm_contact_preferences",
-      "objectChecksum": "sha256:ba350967b29bf6e0b7f9ea2afbf369f27c13517d7c4ba2ea49dc6c018b2cbf4b"
+      "parentObjectName": "crm_contact_preferences"
     },
     {
       "definition": {
@@ -4579,8 +4272,7 @@
       },
       "objectName": "crm_contact_preferences.crm_contact_preferences_pkey",
       "objectType": "constraint",
-      "parentObjectName": "crm_contact_preferences",
-      "objectChecksum": "sha256:0182e6374a3d0e7dc403f815681038a9c0619c267997b12b01748fc046372ba5"
+      "parentObjectName": "crm_contact_preferences"
     },
     {
       "definition": {
@@ -4589,8 +4281,7 @@
       },
       "objectName": "crm_contact_preferences.crm_contact_preferences_preference_n1_chk",
       "objectType": "constraint",
-      "parentObjectName": "crm_contact_preferences",
-      "objectChecksum": "sha256:22f78725823eb4a0e728d6293c4dde4511e64ba7b2613e61c915111811410951"
+      "parentObjectName": "crm_contact_preferences"
     },
     {
       "definition": {
@@ -4601,8 +4292,7 @@
       },
       "objectName": "crm_contacts.crm_contacts_pkey",
       "objectType": "constraint",
-      "parentObjectName": "crm_contacts",
-      "objectChecksum": "sha256:adcdc91d942b2f0d2bfb74f2ef0f465d9c0257e0f9413c29d919d901355c2ed5"
+      "parentObjectName": "crm_contacts"
     },
     {
       "definition": {
@@ -4620,8 +4310,7 @@
       },
       "objectName": "crm_contacts.crm_contacts_primary_account_id_n1_fk",
       "objectType": "constraint",
-      "parentObjectName": "crm_contacts",
-      "objectChecksum": "sha256:b10c50b61da673b152033d3be93cf49a589a24fbc680f00f72511eca79012753"
+      "parentObjectName": "crm_contacts"
     },
     {
       "definition": {
@@ -4630,8 +4319,7 @@
       },
       "objectName": "crm_contacts.crm_contacts_status_n4_chk",
       "objectType": "constraint",
-      "parentObjectName": "crm_contacts",
-      "objectChecksum": "sha256:ad3eafcfe32deb210b191b5cf36dbd976df3daedbc2ffa5e565ee7c605498bce"
+      "parentObjectName": "crm_contacts"
     },
     {
       "definition": {
@@ -4640,8 +4328,7 @@
       },
       "objectName": "crm_contacts.crm_contacts_version_n1_chk",
       "objectType": "constraint",
-      "parentObjectName": "crm_contacts",
-      "objectChecksum": "sha256:d3bfc6ea5f1a0fefd3f3c12da5a37f36b7c6bdc4f155c216e1bea5d97564b5a7"
+      "parentObjectName": "crm_contacts"
     },
     {
       "definition": {
@@ -4652,8 +4339,7 @@
       },
       "objectName": "crm_idempotency_results.crm_idempotency_results_pkey",
       "objectType": "constraint",
-      "parentObjectName": "crm_idempotency_results",
-      "objectChecksum": "sha256:63be250ffa6c2a6a049af08ed66cacdba339d4a995506bfedccd7ab528ac4e36"
+      "parentObjectName": "crm_idempotency_results"
     },
     {
       "definition": {
@@ -4664,8 +4350,7 @@
       },
       "objectName": "crm_import_batches.crm_import_batches_pkey",
       "objectType": "constraint",
-      "parentObjectName": "crm_import_batches",
-      "objectChecksum": "sha256:19660b7c28f7a7badf61dcea367e57e0e80c02a0982d345d044e395f9e17d3c2"
+      "parentObjectName": "crm_import_batches"
     },
     {
       "definition": {
@@ -4676,8 +4361,7 @@
       },
       "objectName": "crm_import_batches.crm_import_batches_source_fingerprint_n1_uq",
       "objectType": "constraint",
-      "parentObjectName": "crm_import_batches",
-      "objectChecksum": "sha256:81e7c2ab65d447bb49abf3afd6510920341ad1aca6e506c9dbfef4fa0376137b"
+      "parentObjectName": "crm_import_batches"
     },
     {
       "definition": {
@@ -4686,8 +4370,7 @@
       },
       "objectName": "crm_import_batches.crm_import_batches_status_n1_chk",
       "objectType": "constraint",
-      "parentObjectName": "crm_import_batches",
-      "objectChecksum": "sha256:efbf7191fc08f86c2d69b5d9e4a2695cad18c6a339535bd76827efd23e753728"
+      "parentObjectName": "crm_import_batches"
     },
     {
       "definition": {
@@ -4705,8 +4388,7 @@
       },
       "objectName": "crm_import_records.crm_import_records_batch_id_n1_fk",
       "objectType": "constraint",
-      "parentObjectName": "crm_import_records",
-      "objectChecksum": "sha256:4fb58bd38604db83bef44645697d9118305dce94185fa80ce49728dd10d1ce42"
+      "parentObjectName": "crm_import_records"
     },
     {
       "definition": {
@@ -4718,8 +4400,7 @@
       },
       "objectName": "crm_import_records.crm_import_records_pkey",
       "objectType": "constraint",
-      "parentObjectName": "crm_import_records",
-      "objectChecksum": "sha256:19ff360275fda912c550dc1494016cd198631106c8e53daed779a03c7f8bdd4a"
+      "parentObjectName": "crm_import_records"
     },
     {
       "definition": {
@@ -4728,8 +4409,7 @@
       },
       "objectName": "crm_import_records.crm_import_records_status_n1_chk",
       "objectType": "constraint",
-      "parentObjectName": "crm_import_records",
-      "objectChecksum": "sha256:bf5d0e46c300314c5a29da3c956c003d70c071665123dcf687bd8f45282804ba"
+      "parentObjectName": "crm_import_records"
     },
     {
       "definition": {
@@ -4738,8 +4418,7 @@
       },
       "objectName": "crm_jobs.crm_jobs_kind_n1_chk",
       "objectType": "constraint",
-      "parentObjectName": "crm_jobs",
-      "objectChecksum": "sha256:077d34c96330cc6d573ad2d741ebb471f2d1ba521608c52dfb5fa0688135e554"
+      "parentObjectName": "crm_jobs"
     },
     {
       "definition": {
@@ -4750,8 +4429,7 @@
       },
       "objectName": "crm_jobs.crm_jobs_pkey",
       "objectType": "constraint",
-      "parentObjectName": "crm_jobs",
-      "objectChecksum": "sha256:7ef86a8686888c36d0548cf575eb0e5156932c07367fb95dff9b696a6cf451cb"
+      "parentObjectName": "crm_jobs"
     },
     {
       "definition": {
@@ -4760,8 +4438,7 @@
       },
       "objectName": "crm_jobs.crm_jobs_status_n2_chk",
       "objectType": "constraint",
-      "parentObjectName": "crm_jobs",
-      "objectChecksum": "sha256:245319f7e0feb24b34b2f6b9df5f80e5a9b93ac2ec2e0f744d9342e58e47fd0c"
+      "parentObjectName": "crm_jobs"
     },
     {
       "definition": {
@@ -4772,8 +4449,7 @@
       },
       "objectName": "crm_operating_contexts.crm_operating_contexts_pkey",
       "objectType": "constraint",
-      "parentObjectName": "crm_operating_contexts",
-      "objectChecksum": "sha256:d82a32050ba97c6911143fee989adae9e327ea67f3b7b3dfd5a90da62a80fe9e"
+      "parentObjectName": "crm_operating_contexts"
     },
     {
       "definition": {
@@ -4785,8 +4461,7 @@
       },
       "objectName": "crm_operating_contexts.crm_operating_contexts_platform_tenant_id_accounts_organiza_key",
       "objectType": "constraint",
-      "parentObjectName": "crm_operating_contexts",
-      "objectChecksum": "sha256:2b8eaf8d6a2acf39b4d19bba3090678c623e93ab236fe98de6f8cbdbb9daee90"
+      "parentObjectName": "crm_operating_contexts"
     },
     {
       "definition": {
@@ -4804,8 +4479,7 @@
       },
       "objectName": "crm_opportunities.crm_opportunities_account_id_n1_fk",
       "objectType": "constraint",
-      "parentObjectName": "crm_opportunities",
-      "objectChecksum": "sha256:72ad588814cceddfd6bb479cfc09af8abb89f7009f5778ac32c14125216b2991"
+      "parentObjectName": "crm_opportunities"
     },
     {
       "definition": {
@@ -4814,8 +4488,7 @@
       },
       "objectName": "crm_opportunities.crm_opportunities_amount_minor_n4_chk",
       "objectType": "constraint",
-      "parentObjectName": "crm_opportunities",
-      "objectChecksum": "sha256:4345bc5c84bcbe48a52a5c067b6b58ad7b314a1316d82cd0ac5ace6822a7e2dd"
+      "parentObjectName": "crm_opportunities"
     },
     {
       "definition": {
@@ -4833,8 +4506,7 @@
       },
       "objectName": "crm_opportunities.crm_opportunities_pipeline_id_n2_fk",
       "objectType": "constraint",
-      "parentObjectName": "crm_opportunities",
-      "objectChecksum": "sha256:00695bd501f53ac9664912265a0817270c03eda1e6bfb2123da60b290f15f6a8"
+      "parentObjectName": "crm_opportunities"
     },
     {
       "definition": {
@@ -4845,8 +4517,7 @@
       },
       "objectName": "crm_opportunities.crm_opportunities_pkey",
       "objectType": "constraint",
-      "parentObjectName": "crm_opportunities",
-      "objectChecksum": "sha256:6413f254f1708a1da157a218116777352827d14532b2e9275b05f1d48537b1fe"
+      "parentObjectName": "crm_opportunities"
     },
     {
       "definition": {
@@ -4855,8 +4526,7 @@
       },
       "objectName": "crm_opportunities.crm_opportunities_probability_n5_chk",
       "objectType": "constraint",
-      "parentObjectName": "crm_opportunities",
-      "objectChecksum": "sha256:edbe86943b1bea760b2bbc76080413e0e833a80a85f8d12b50b2d080d273bff1"
+      "parentObjectName": "crm_opportunities"
     },
     {
       "definition": {
@@ -4874,8 +4544,7 @@
       },
       "objectName": "crm_opportunities.crm_opportunities_stage_id_n3_fk",
       "objectType": "constraint",
-      "parentObjectName": "crm_opportunities",
-      "objectChecksum": "sha256:0d74794fada1924d0bbbc8d1107369baaa11c66a72a79900e3cd860062cde101"
+      "parentObjectName": "crm_opportunities"
     },
     {
       "definition": {
@@ -4884,8 +4553,7 @@
       },
       "objectName": "crm_opportunities.crm_opportunities_status_n6_chk",
       "objectType": "constraint",
-      "parentObjectName": "crm_opportunities",
-      "objectChecksum": "sha256:8fc038e20980bccd96e8f4721881aad50661e0e07954dad6551e267371e43284"
+      "parentObjectName": "crm_opportunities"
     },
     {
       "definition": {
@@ -4894,8 +4562,7 @@
       },
       "objectName": "crm_opportunities.crm_opportunities_version_n1_chk",
       "objectType": "constraint",
-      "parentObjectName": "crm_opportunities",
-      "objectChecksum": "sha256:65b296ab9b5c158c67b870a205370396bcb282e5c99cc5e9a115df8a4f21dd84"
+      "parentObjectName": "crm_opportunities"
     },
     {
       "definition": {
@@ -4907,8 +4574,7 @@
       },
       "objectName": "crm_opportunity_stage_history.crm_opportunity_stage_history_opportunity_id_aggrega_d14c78e306",
       "objectType": "constraint",
-      "parentObjectName": "crm_opportunity_stage_history",
-      "objectChecksum": "sha256:5689f65820d7cdf6c3e08564676c7a5015a8088de6ebb4a26f6c1c7946263e02"
+      "parentObjectName": "crm_opportunity_stage_history"
     },
     {
       "definition": {
@@ -4926,8 +4592,7 @@
       },
       "objectName": "crm_opportunity_stage_history.crm_opportunity_stage_history_opportunity_id_n1_fk",
       "objectType": "constraint",
-      "parentObjectName": "crm_opportunity_stage_history",
-      "objectChecksum": "sha256:07b9d1001f56fe15fadd113ab88dcd01b53ff3fbabb2733d9417b0180f97dd5c"
+      "parentObjectName": "crm_opportunity_stage_history"
     },
     {
       "definition": {
@@ -4938,8 +4603,7 @@
       },
       "objectName": "crm_opportunity_stage_history.crm_opportunity_stage_history_pkey",
       "objectType": "constraint",
-      "parentObjectName": "crm_opportunity_stage_history",
-      "objectChecksum": "sha256:36171639da5d0c7fccba0953869b678488978cf1ec55c99f1efdec077e3983f6"
+      "parentObjectName": "crm_opportunity_stage_history"
     },
     {
       "definition": {
@@ -4948,8 +4612,7 @@
       },
       "objectName": "crm_outbox_events.crm_outbox_events_contract_version_n1_chk",
       "objectType": "constraint",
-      "parentObjectName": "crm_outbox_events",
-      "objectChecksum": "sha256:c97d58c1838494f221f021eacd81841e83ef89f33cd1c68b6f1207fe4ec9a49e"
+      "parentObjectName": "crm_outbox_events"
     },
     {
       "definition": {
@@ -4961,8 +4624,7 @@
       },
       "objectName": "crm_outbox_events.crm_outbox_events_event_type_causation_id_n1_uq",
       "objectType": "constraint",
-      "parentObjectName": "crm_outbox_events",
-      "objectChecksum": "sha256:83e9f73b75dfd4eafddc77852cfb286cb3b7949d67a899325c78c0f4c8234a56"
+      "parentObjectName": "crm_outbox_events"
     },
     {
       "definition": {
@@ -4973,8 +4635,7 @@
       },
       "objectName": "crm_outbox_events.crm_outbox_events_pkey",
       "objectType": "constraint",
-      "parentObjectName": "crm_outbox_events",
-      "objectChecksum": "sha256:854840285ed5a5261d6862c0d88d8a8a24f99ef23ae4acee5df5f4fb468b6b17"
+      "parentObjectName": "crm_outbox_events"
     },
     {
       "definition": {
@@ -4983,8 +4644,7 @@
       },
       "objectName": "crm_outbox_events.crm_outbox_events_status_n2_chk",
       "objectType": "constraint",
-      "parentObjectName": "crm_outbox_events",
-      "objectChecksum": "sha256:3dfc300da7e2ab0ad0c539b01b0c6be155c541d36149a0c345e87fa8e019f52b"
+      "parentObjectName": "crm_outbox_events"
     },
     {
       "definition": {
@@ -4993,8 +4653,7 @@
       },
       "objectName": "crm_pipeline_stages.crm_pipeline_stages_default_probability_n1_chk",
       "objectType": "constraint",
-      "parentObjectName": "crm_pipeline_stages",
-      "objectChecksum": "sha256:a9a4afabe46a5d5f521ba0831fbb843a96a034dd248701410531c2f0c770e0a3"
+      "parentObjectName": "crm_pipeline_stages"
     },
     {
       "definition": {
@@ -5012,8 +4671,7 @@
       },
       "objectName": "crm_pipeline_stages.crm_pipeline_stages_pipeline_id_n1_fk",
       "objectType": "constraint",
-      "parentObjectName": "crm_pipeline_stages",
-      "objectChecksum": "sha256:d5eb57ab2cb83a1000864cec9867df94898ea9295b3876898f25c1ee2a597039"
+      "parentObjectName": "crm_pipeline_stages"
     },
     {
       "definition": {
@@ -5025,8 +4683,7 @@
       },
       "objectName": "crm_pipeline_stages.crm_pipeline_stages_pipeline_id_position_n2_uq",
       "objectType": "constraint",
-      "parentObjectName": "crm_pipeline_stages",
-      "objectChecksum": "sha256:4fe03b96e1daf1175edd895c06915fa3a0a1b6632ab919836b34c5e60249e6aa"
+      "parentObjectName": "crm_pipeline_stages"
     },
     {
       "definition": {
@@ -5038,8 +4695,7 @@
       },
       "objectName": "crm_pipeline_stages.crm_pipeline_stages_pipeline_id_stage_key_n1_uq",
       "objectType": "constraint",
-      "parentObjectName": "crm_pipeline_stages",
-      "objectChecksum": "sha256:ad0503c4483c0333d744e1db53eb7217ef80bfdfb8b2ec364c37b15922297347"
+      "parentObjectName": "crm_pipeline_stages"
     },
     {
       "definition": {
@@ -5050,8 +4706,7 @@
       },
       "objectName": "crm_pipeline_stages.crm_pipeline_stages_pkey",
       "objectType": "constraint",
-      "parentObjectName": "crm_pipeline_stages",
-      "objectChecksum": "sha256:462b40c2941f5d0abef885e895655ab617d04e9e95f6069af9019cfa0a3ac18c"
+      "parentObjectName": "crm_pipeline_stages"
     },
     {
       "definition": {
@@ -5060,8 +4715,7 @@
       },
       "objectName": "crm_pipeline_stages.crm_pipeline_stages_terminal_kind_n2_chk",
       "objectType": "constraint",
-      "parentObjectName": "crm_pipeline_stages",
-      "objectChecksum": "sha256:ebcf3ab3045d4acb5be48467316ec34385fa74bfcdd35eaea7bcab61ffeb29f7"
+      "parentObjectName": "crm_pipeline_stages"
     },
     {
       "definition": {
@@ -5072,8 +4726,7 @@
       },
       "objectName": "crm_pipelines.crm_pipelines_pkey",
       "objectType": "constraint",
-      "parentObjectName": "crm_pipelines",
-      "objectChecksum": "sha256:fccf4aac098e679fe41d190bd406cd23170319ad8513ae9dd70885425d1a06bb"
+      "parentObjectName": "crm_pipelines"
     },
     {
       "definition": {
@@ -5082,8 +4735,7 @@
       },
       "objectName": "crm_pipelines.crm_pipelines_status_n1_chk",
       "objectType": "constraint",
-      "parentObjectName": "crm_pipelines",
-      "objectChecksum": "sha256:f4521e22ef521ef3b42b00310f3edf0701db29c98973b57b6c92acaa65db3207"
+      "parentObjectName": "crm_pipelines"
     },
     {
       "definition": {
@@ -5092,8 +4744,7 @@
       },
       "objectName": "crm_pipelines.crm_pipelines_version_n2_chk",
       "objectType": "constraint",
-      "parentObjectName": "crm_pipelines",
-      "objectChecksum": "sha256:d91dd93d9e9974d52cc841d5f1d48cf37d99e97d2f2cc2f2bb2268ecaf143cca"
+      "parentObjectName": "crm_pipelines"
     },
     {
       "definition": {
@@ -5104,8 +4755,7 @@
       },
       "objectName": "crm_platform_links.crm_platform_links_pkey",
       "objectType": "constraint",
-      "parentObjectName": "crm_platform_links",
-      "objectChecksum": "sha256:60c1376b73b69da5bab45186ec8a2146f9c35190119174cc37161561862c38d2"
+      "parentObjectName": "crm_platform_links"
     },
     {
       "definition": {
@@ -5118,8 +4768,7 @@
       },
       "objectName": "crm_platform_links.crm_platform_links_service_slug_external_ref_purpose_key",
       "objectType": "constraint",
-      "parentObjectName": "crm_platform_links",
-      "objectChecksum": "sha256:dc48f156b2d3ca19c9884a231c57c3eef1002b28f0b45c9f8d3e9e201ba152c4"
+      "parentObjectName": "crm_platform_links"
     },
     {
       "definition": {
@@ -5130,8 +4779,7 @@
       },
       "objectName": "crm_schema_migrations.crm_schema_migrations_pkey",
       "objectType": "constraint",
-      "parentObjectName": "crm_schema_migrations",
-      "objectChecksum": "sha256:eec32534930da036853cf96f47247241a52a7c1422c3dd7b3c5d5b38fdd9100c"
+      "parentObjectName": "crm_schema_migrations"
     },
     {
       "definition": {
@@ -5142,8 +4790,7 @@
       },
       "objectName": "crm_tenant_configuration.crm_tenant_configuration_pkey",
       "objectType": "constraint",
-      "parentObjectName": "crm_tenant_configuration",
-      "objectChecksum": "sha256:d9d775860e59c50c111375d46d4e4a6c5746714dbcc640c6354c76c232405f14"
+      "parentObjectName": "crm_tenant_configuration"
     },
     {
       "definition": {
@@ -5152,8 +4799,7 @@
       },
       "objectName": "crm_tenant_configuration.crm_tenant_configuration_singleton_key_n1_chk",
       "objectType": "constraint",
-      "parentObjectName": "crm_tenant_configuration",
-      "objectChecksum": "sha256:f9f10ac705964ac98367cdeb9508e860b33234e925a2b4a35339c48a29d814b6"
+      "parentObjectName": "crm_tenant_configuration"
     },
     {
       "definition": {
@@ -5162,8 +4808,7 @@
       },
       "objectName": "crm_tenant_configuration.crm_tenant_configuration_version_n3_chk",
       "objectType": "constraint",
-      "parentObjectName": "crm_tenant_configuration",
-      "objectChecksum": "sha256:96e0eab12bcfb328e14ce871b90304dd9f6df0c61653311bd46a419a4f6e3d6d"
+      "parentObjectName": "crm_tenant_configuration"
     },
     {
       "definition": {
@@ -5177,8 +4822,7 @@
       },
       "objectName": "crm_account_contact_links.crm_account_contact_links_account_id_contact_id_role_47fb949898",
       "objectType": "index",
-      "parentObjectName": "crm_account_contact_links",
-      "objectChecksum": "sha256:0f737801b8632316b1ce3e8cfd187a28636e8139841fe0f67e4af25748450a5b"
+      "parentObjectName": "crm_account_contact_links"
     },
     {
       "definition": {
@@ -5189,8 +4833,7 @@
       },
       "objectName": "crm_account_contact_links.crm_account_contact_links_pkey",
       "objectType": "index",
-      "parentObjectName": "crm_account_contact_links",
-      "objectChecksum": "sha256:c62aa58ec1d549c117f3d25ffb07d617bd28c9724f35efd66e819f384494ea6a"
+      "parentObjectName": "crm_account_contact_links"
     },
     {
       "definition": {
@@ -5202,8 +4845,7 @@
       },
       "objectName": "crm_accounts.crm_accounts_account_type_status_n2_idx",
       "objectType": "index",
-      "parentObjectName": "crm_accounts",
-      "objectChecksum": "sha256:0418664bdcae8fda6d4615777ad3b26fd7e8804aac9d5f359a71cc87879daca8"
+      "parentObjectName": "crm_accounts"
     },
     {
       "definition": {
@@ -5215,8 +4857,7 @@
       },
       "objectName": "crm_accounts.crm_accounts_external_ref_archived_at_n1_uq",
       "objectType": "index",
-      "parentObjectName": "crm_accounts",
-      "objectChecksum": "sha256:6011fb909c391ff2c581485b65f15c8eecb51aafac9fb9aa02ad819d6c793b49"
+      "parentObjectName": "crm_accounts"
     },
     {
       "definition": {
@@ -5227,8 +4868,7 @@
       },
       "objectName": "crm_accounts.crm_accounts_pkey",
       "objectType": "index",
-      "parentObjectName": "crm_accounts",
-      "objectChecksum": "sha256:99ddb2026002e25ca000af4b0b7cb9b663441262ca509a687d704f982225057c"
+      "parentObjectName": "crm_accounts"
     },
     {
       "definition": {
@@ -5241,8 +4881,7 @@
       },
       "objectName": "crm_accounts.crm_accounts_status_owner_id_updated_at_n1_idx",
       "objectType": "index",
-      "parentObjectName": "crm_accounts",
-      "objectChecksum": "sha256:2774e791b5bf2bd472e02516acba1101da88c04d41a0e04910273bec63499323"
+      "parentObjectName": "crm_accounts"
     },
     {
       "definition": {
@@ -5254,8 +4893,7 @@
       },
       "objectName": "crm_activities.crm_activities_case_id_created_at_n1_idx",
       "objectType": "index",
-      "parentObjectName": "crm_activities",
-      "objectChecksum": "sha256:a4b67edcd86e69fb9ae7ca3035b6bd8d95b67e32c528ece4a145768674cbf3ac"
+      "parentObjectName": "crm_activities"
     },
     {
       "definition": {
@@ -5268,8 +4906,7 @@
       },
       "objectName": "crm_activities.crm_activities_owner_id_status_due_at_n2_idx",
       "objectType": "index",
-      "parentObjectName": "crm_activities",
-      "objectChecksum": "sha256:2321f5662e1a3ee06e1d3a749272ac2e3805070e3d00437e6df0723523971e00"
+      "parentObjectName": "crm_activities"
     },
     {
       "definition": {
@@ -5280,8 +4917,7 @@
       },
       "objectName": "crm_activities.crm_activities_pkey",
       "objectType": "index",
-      "parentObjectName": "crm_activities",
-      "objectChecksum": "sha256:217dd631d0a97e26510f6577505f61aa092b136b2bb909f114f871857e324223"
+      "parentObjectName": "crm_activities"
     },
     {
       "definition": {
@@ -5295,8 +4931,7 @@
       },
       "objectName": "crm_appointment_participants.crm_appointment_participants_appointment_id_particip_e074f7fc69",
       "objectType": "index",
-      "parentObjectName": "crm_appointment_participants",
-      "objectChecksum": "sha256:99472caad8f4f7a625bf560c786f933341af6edc3353cef7195057e64287d982"
+      "parentObjectName": "crm_appointment_participants"
     },
     {
       "definition": {
@@ -5307,8 +4942,7 @@
       },
       "objectName": "crm_appointment_participants.crm_appointment_participants_pkey",
       "objectType": "index",
-      "parentObjectName": "crm_appointment_participants",
-      "objectChecksum": "sha256:762f1d4db99efa33b8a4c29964ed1408c8106711903e2d5e3aae01ce6a17cb81"
+      "parentObjectName": "crm_appointment_participants"
     },
     {
       "definition": {
@@ -5320,8 +4954,7 @@
       },
       "objectName": "crm_appointment_status_history.crm_appointment_status_history_appointment_id_aggreg_5c52a32e5b",
       "objectType": "index",
-      "parentObjectName": "crm_appointment_status_history",
-      "objectChecksum": "sha256:2be347514eb9401fed98081b953020fde8e050032d53cdb654fefdde12844ed0"
+      "parentObjectName": "crm_appointment_status_history"
     },
     {
       "definition": {
@@ -5332,8 +4965,7 @@
       },
       "objectName": "crm_appointment_status_history.crm_appointment_status_history_pkey",
       "objectType": "index",
-      "parentObjectName": "crm_appointment_status_history",
-      "objectChecksum": "sha256:5e45129963da03c5d636d1af9492f34f39db41c86aebbbde898f84e1e9d2b2eb"
+      "parentObjectName": "crm_appointment_status_history"
     },
     {
       "definition": {
@@ -5344,8 +4976,7 @@
       },
       "objectName": "crm_appointments.crm_appointments_pkey",
       "objectType": "index",
-      "parentObjectName": "crm_appointments",
-      "objectChecksum": "sha256:615a8989ede8cfdb2f3af9c18418272a23127f9153e68b1783a82444215230d1"
+      "parentObjectName": "crm_appointments"
     },
     {
       "definition": {
@@ -5358,8 +4989,7 @@
       },
       "objectName": "crm_appointments.crm_appointments_resource_id_start_at_end_at_n1_idx",
       "objectType": "index",
-      "parentObjectName": "crm_appointments",
-      "objectChecksum": "sha256:4f2118e88db7fa1d380a722dd6642d4657c0c1951a3c5533089a7c9d4b277fc0"
+      "parentObjectName": "crm_appointments"
     },
     {
       "definition": {
@@ -5371,8 +5001,7 @@
       },
       "objectName": "crm_appointments.crm_appointments_status_start_at_n2_idx",
       "objectType": "index",
-      "parentObjectName": "crm_appointments",
-      "objectChecksum": "sha256:c3e7c1b5fe6fbfef4597b2a6f3456d52fe31f320584edf48e4f44d2e5f58bd3e"
+      "parentObjectName": "crm_appointments"
     },
     {
       "definition": {
@@ -5384,8 +5013,7 @@
       },
       "objectName": "crm_audit_events.crm_audit_events_actor_occurred_idx",
       "objectType": "index",
-      "parentObjectName": "crm_audit_events",
-      "objectChecksum": "sha256:7d3a1309c2c8b601076bae8a5a2192498337061c8842a9b3c97bd93d78f39d73"
+      "parentObjectName": "crm_audit_events"
     },
     {
       "definition": {
@@ -5399,8 +5027,7 @@
       },
       "objectName": "crm_audit_events.crm_audit_events_context_created_idx",
       "objectType": "index",
-      "parentObjectName": "crm_audit_events",
-      "objectChecksum": "sha256:d9e88a184df3672a575b9fd4a0bb33b49dd1312dee6751596bda630fdb1ea9a1"
+      "parentObjectName": "crm_audit_events"
     },
     {
       "definition": {
@@ -5414,8 +5041,7 @@
       },
       "objectName": "crm_audit_events.crm_audit_events_entity_idx",
       "objectType": "index",
-      "parentObjectName": "crm_audit_events",
-      "objectChecksum": "sha256:92e09566f54b52a03e474900f13f47965f9ba77f326621c5439ee6705dfa685d"
+      "parentObjectName": "crm_audit_events"
     },
     {
       "definition": {
@@ -5428,8 +5054,7 @@
       },
       "objectName": "crm_audit_events.crm_audit_events_entity_occurred_idx",
       "objectType": "index",
-      "parentObjectName": "crm_audit_events",
-      "objectChecksum": "sha256:c6bb402fc7eabb6cd4a9976ddcb5ee3c058d603527af628a368a17e80f06ba61"
+      "parentObjectName": "crm_audit_events"
     },
     {
       "definition": {
@@ -5440,8 +5065,7 @@
       },
       "objectName": "crm_audit_events.crm_audit_events_id_uq",
       "objectType": "index",
-      "parentObjectName": "crm_audit_events",
-      "objectChecksum": "sha256:99e9467342d7444fced7c78ccc843dda5d22d0885c02b10d7f2d8f9ccc36eb14"
+      "parentObjectName": "crm_audit_events"
     },
     {
       "definition": {
@@ -5454,8 +5078,7 @@
       },
       "objectName": "crm_audit_events.crm_audit_events_pkey",
       "objectType": "index",
-      "parentObjectName": "crm_audit_events",
-      "objectChecksum": "sha256:ad1015888b45561a5e1fc6bc46ec843a2948bde658efa06e4cf9d45e2a68ceba"
+      "parentObjectName": "crm_audit_events"
     },
     {
       "definition": {
@@ -5470,8 +5093,7 @@
       },
       "objectName": "crm_case_parties.crm_case_parties_case_id_party_type_party_id_role_ke_f0574c804f",
       "objectType": "index",
-      "parentObjectName": "crm_case_parties",
-      "objectChecksum": "sha256:728fab9802d6825e4bccde87c43ce63930fb1b418aeb5a85c7519a3bb2496e8a"
+      "parentObjectName": "crm_case_parties"
     },
     {
       "definition": {
@@ -5482,8 +5104,7 @@
       },
       "objectName": "crm_case_parties.crm_case_parties_pkey",
       "objectType": "index",
-      "parentObjectName": "crm_case_parties",
-      "objectChecksum": "sha256:aa25d72a6a4fca86175f4939350e9784194f6dfdd91f85fd7c73b203bebb7fb1"
+      "parentObjectName": "crm_case_parties"
     },
     {
       "definition": {
@@ -5495,8 +5116,7 @@
       },
       "objectName": "crm_case_status_history.crm_case_status_history_case_id_aggregate_version_n1_uq",
       "objectType": "index",
-      "parentObjectName": "crm_case_status_history",
-      "objectChecksum": "sha256:568225c4592e93f4d68d787d1ab0d035e872e6e7eb108e4fd0b757b80b77743f"
+      "parentObjectName": "crm_case_status_history"
     },
     {
       "definition": {
@@ -5507,8 +5127,7 @@
       },
       "objectName": "crm_case_status_history.crm_case_status_history_pkey",
       "objectType": "index",
-      "parentObjectName": "crm_case_status_history",
-      "objectChecksum": "sha256:143b261ff1d8632aea18c236b92d9d2a55f46603000b4423444524ea42d4752c"
+      "parentObjectName": "crm_case_status_history"
     },
     {
       "definition": {
@@ -5519,8 +5138,7 @@
       },
       "objectName": "crm_cases.crm_cases_pkey",
       "objectType": "index",
-      "parentObjectName": "crm_cases",
-      "objectChecksum": "sha256:eb45b3cb5e46493c217b2e256be0970cd5ba747854cba41dff5df9760b22e48c"
+      "parentObjectName": "crm_cases"
     },
     {
       "definition": {
@@ -5533,8 +5151,7 @@
       },
       "objectName": "crm_cases.crm_cases_queue_id_owner_id_status_n2_idx",
       "objectType": "index",
-      "parentObjectName": "crm_cases",
-      "objectChecksum": "sha256:2720f6398d92dac425892341d4908acb6d48d074ba578d3fb984cf04feb20eda"
+      "parentObjectName": "crm_cases"
     },
     {
       "definition": {
@@ -5547,8 +5164,7 @@
       },
       "objectName": "crm_cases.crm_cases_status_priority_sla_due_at_n1_idx",
       "objectType": "index",
-      "parentObjectName": "crm_cases",
-      "objectChecksum": "sha256:ccbef6e08f727448f1b9b446c72d7f29dc477e90ba2b9eeb29fc5570cf08a571"
+      "parentObjectName": "crm_cases"
     },
     {
       "definition": {
@@ -5560,8 +5176,7 @@
       },
       "objectName": "crm_contact_preferences.crm_contact_preferences_pkey",
       "objectType": "index",
-      "parentObjectName": "crm_contact_preferences",
-      "objectChecksum": "sha256:be835f1cc6767b99b7de23ef0489c749cb6b05866560a18a6a220d8d13dd6ad8"
+      "parentObjectName": "crm_contact_preferences"
     },
     {
       "definition": {
@@ -5573,8 +5188,7 @@
       },
       "objectName": "crm_contacts.crm_contacts_contact_role_status_n2_idx",
       "objectType": "index",
-      "parentObjectName": "crm_contacts",
-      "objectChecksum": "sha256:989ab3b7ed18ea7a75d8a4c7118a29f0c47864e95eb98c0c4b8a6c41af6ef994"
+      "parentObjectName": "crm_contacts"
     },
     {
       "definition": {
@@ -5585,8 +5199,7 @@
       },
       "objectName": "crm_contacts.crm_contacts_pkey",
       "objectType": "index",
-      "parentObjectName": "crm_contacts",
-      "objectChecksum": "sha256:641c8136275dc40110921f4738039ba806c2a1fbeffa3f05a5bb45c4076f50b0"
+      "parentObjectName": "crm_contacts"
     },
     {
       "definition": {
@@ -5598,8 +5211,7 @@
       },
       "objectName": "crm_contacts.crm_contacts_primary_account_id_status_n1_idx",
       "objectType": "index",
-      "parentObjectName": "crm_contacts",
-      "objectChecksum": "sha256:fbdda53e357ce3ed54ec21bf123a2b95a7564bda2aa560b6f26166a4e8a661ca"
+      "parentObjectName": "crm_contacts"
     },
     {
       "definition": {
@@ -5610,8 +5222,7 @@
       },
       "objectName": "crm_idempotency_results.crm_idempotency_results_pkey",
       "objectType": "index",
-      "parentObjectName": "crm_idempotency_results",
-      "objectChecksum": "sha256:486bdc8b92f7bdeb69d399cf9d87f6e43663596066d6269f3323178bfc2667e7"
+      "parentObjectName": "crm_idempotency_results"
     },
     {
       "definition": {
@@ -5622,8 +5233,7 @@
       },
       "objectName": "crm_import_batches.crm_import_batches_pkey",
       "objectType": "index",
-      "parentObjectName": "crm_import_batches",
-      "objectChecksum": "sha256:cb395d2645e1d215516b210c5a01e5c3fa0b6cd1ff2b1a8cff981199a4d502b5"
+      "parentObjectName": "crm_import_batches"
     },
     {
       "definition": {
@@ -5634,8 +5244,7 @@
       },
       "objectName": "crm_import_batches.crm_import_batches_source_fingerprint_n1_uq",
       "objectType": "index",
-      "parentObjectName": "crm_import_batches",
-      "objectChecksum": "sha256:cfc91f6207b17af2cf3bc6877da6d664e0953bd3e7ac12a7673e3580c7b69dca"
+      "parentObjectName": "crm_import_batches"
     },
     {
       "definition": {
@@ -5647,8 +5256,7 @@
       },
       "objectName": "crm_import_records.crm_import_records_pkey",
       "objectType": "index",
-      "parentObjectName": "crm_import_records",
-      "objectChecksum": "sha256:f30036199c7b26e6f411e3ee664fce1312b6a511d22c0b5b7a0320ed60849f74"
+      "parentObjectName": "crm_import_records"
     },
     {
       "definition": {
@@ -5659,8 +5267,7 @@
       },
       "objectName": "crm_jobs.crm_jobs_pkey",
       "objectType": "index",
-      "parentObjectName": "crm_jobs",
-      "objectChecksum": "sha256:0813797c1f09f9850c4531464e167964fe247ead398aa39575acb46bb69fd4f0"
+      "parentObjectName": "crm_jobs"
     },
     {
       "definition": {
@@ -5673,8 +5280,7 @@
       },
       "objectName": "crm_operating_contexts.crm_operating_contexts_pkey",
       "objectType": "index",
-      "parentObjectName": "crm_operating_contexts",
-      "objectChecksum": "sha256:514196769ced954e3c3b119cb7f328d5f4251079358633f8d00cab9a7b2146cf"
+      "parentObjectName": "crm_operating_contexts"
     },
     {
       "definition": {
@@ -5688,8 +5294,7 @@
       },
       "objectName": "crm_operating_contexts.crm_operating_contexts_platform_tenant_id_accounts_organiza_key",
       "objectType": "index",
-      "parentObjectName": "crm_operating_contexts",
-      "objectChecksum": "sha256:af9938e17db71885051ed7b11d61fbd833c208b026b2891a4680e8f7ce7329f6"
+      "parentObjectName": "crm_operating_contexts"
     },
     {
       "definition": {
@@ -5702,8 +5307,7 @@
       },
       "objectName": "crm_opportunities.crm_opportunities_owner_id_status_updated_at_n2_idx",
       "objectType": "index",
-      "parentObjectName": "crm_opportunities",
-      "objectChecksum": "sha256:92f7fab41c7f82af68f57a719fc34749616313385d49ab55b9b222268452769d"
+      "parentObjectName": "crm_opportunities"
     },
     {
       "definition": {
@@ -5716,8 +5320,7 @@
       },
       "objectName": "crm_opportunities.crm_opportunities_pipeline_id_stage_id_status_n1_idx",
       "objectType": "index",
-      "parentObjectName": "crm_opportunities",
-      "objectChecksum": "sha256:4654f60a7b0282dde156af22ec6b9015cbc3c76f8a0254cc84f15b2da3afb802"
+      "parentObjectName": "crm_opportunities"
     },
     {
       "definition": {
@@ -5728,8 +5331,7 @@
       },
       "objectName": "crm_opportunities.crm_opportunities_pkey",
       "objectType": "index",
-      "parentObjectName": "crm_opportunities",
-      "objectChecksum": "sha256:372913dff38d6d7bbbc11d896bca87fbdbc4f7f4a7b61fd6fa2059ff5d707e0f"
+      "parentObjectName": "crm_opportunities"
     },
     {
       "definition": {
@@ -5741,8 +5343,7 @@
       },
       "objectName": "crm_opportunity_stage_history.crm_opportunity_stage_history_opportunity_id_aggrega_d14c78e306",
       "objectType": "index",
-      "parentObjectName": "crm_opportunity_stage_history",
-      "objectChecksum": "sha256:792623b1a1d45ad8ba183591f4734218b97df7eea33ccb885568b55426273914"
+      "parentObjectName": "crm_opportunity_stage_history"
     },
     {
       "definition": {
@@ -5753,8 +5354,7 @@
       },
       "objectName": "crm_opportunity_stage_history.crm_opportunity_stage_history_pkey",
       "objectType": "index",
-      "parentObjectName": "crm_opportunity_stage_history",
-      "objectChecksum": "sha256:e6a4d5e66ce0032cf7aab463b14607bf496ba12b4bfd5aed48b81017efaa7481"
+      "parentObjectName": "crm_opportunity_stage_history"
     },
     {
       "definition": {
@@ -5766,8 +5366,7 @@
       },
       "objectName": "crm_outbox_events.crm_outbox_events_event_type_causation_id_n1_uq",
       "objectType": "index",
-      "parentObjectName": "crm_outbox_events",
-      "objectChecksum": "sha256:c8df7735adde75939474a96c65da4fe0ff5dd29edebf6cbef74a95875dfd8925"
+      "parentObjectName": "crm_outbox_events"
     },
     {
       "definition": {
@@ -5778,8 +5377,7 @@
       },
       "objectName": "crm_outbox_events.crm_outbox_events_pkey",
       "objectType": "index",
-      "parentObjectName": "crm_outbox_events",
-      "objectChecksum": "sha256:ade4b0bf695b6e1374b06228b3192fd2f6598456a72f241eaf9a18e7ae778130"
+      "parentObjectName": "crm_outbox_events"
     },
     {
       "definition": {
@@ -5791,8 +5389,7 @@
       },
       "objectName": "crm_outbox_events.crm_outbox_events_status_available_at_n1_idx",
       "objectType": "index",
-      "parentObjectName": "crm_outbox_events",
-      "objectChecksum": "sha256:d0b90ef2341a16b79cac56aeaafa2ebca182fd7b20ed7b6342da75d1869409ef"
+      "parentObjectName": "crm_outbox_events"
     },
     {
       "definition": {
@@ -5804,8 +5401,7 @@
       },
       "objectName": "crm_pipeline_stages.crm_pipeline_stages_pipeline_id_position_n2_uq",
       "objectType": "index",
-      "parentObjectName": "crm_pipeline_stages",
-      "objectChecksum": "sha256:2a57991b7e8fa6fbe13a11949987e4c149d3f9bae127b944b4eee81fdd194973"
+      "parentObjectName": "crm_pipeline_stages"
     },
     {
       "definition": {
@@ -5817,8 +5413,7 @@
       },
       "objectName": "crm_pipeline_stages.crm_pipeline_stages_pipeline_id_stage_key_n1_uq",
       "objectType": "index",
-      "parentObjectName": "crm_pipeline_stages",
-      "objectChecksum": "sha256:a6f72d1c7441d948b7793919b42292fa2c3ccf3af9a66fe63cbdf959d30f0355"
+      "parentObjectName": "crm_pipeline_stages"
     },
     {
       "definition": {
@@ -5829,8 +5424,7 @@
       },
       "objectName": "crm_pipeline_stages.crm_pipeline_stages_pkey",
       "objectType": "index",
-      "parentObjectName": "crm_pipeline_stages",
-      "objectChecksum": "sha256:cc7c740e2c8d9b2d73abf123ce96edd241c2f0718e664a9fdf1fac9693da9a2f"
+      "parentObjectName": "crm_pipeline_stages"
     },
     {
       "definition": {
@@ -5841,8 +5435,7 @@
       },
       "objectName": "crm_pipelines.crm_pipelines_pkey",
       "objectType": "index",
-      "parentObjectName": "crm_pipelines",
-      "objectChecksum": "sha256:1315795cb93e91b1e7acf9f39922399c3f5394cb6f463e9eb79664e9f82184e2"
+      "parentObjectName": "crm_pipelines"
     },
     {
       "definition": {
@@ -5855,8 +5448,7 @@
       },
       "objectName": "crm_platform_links.crm_platform_links_pkey",
       "objectType": "index",
-      "parentObjectName": "crm_platform_links",
-      "objectChecksum": "sha256:eecf062f053f082503e1b4f1ec180925039b450de15e3131a830b6c40e582f45"
+      "parentObjectName": "crm_platform_links"
     },
     {
       "definition": {
@@ -5871,8 +5463,7 @@
       },
       "objectName": "crm_platform_links.crm_platform_links_service_slug_external_ref_purpose_key",
       "objectType": "index",
-      "parentObjectName": "crm_platform_links",
-      "objectChecksum": "sha256:2d03cc4171f39ee20718ef5f4582677d72804ebc4dfa1622c275e84f86da1cd4"
+      "parentObjectName": "crm_platform_links"
     },
     {
       "definition": {
@@ -5885,8 +5476,7 @@
       },
       "objectName": "crm_schema_migrations.crm_schema_migrations_pkey",
       "objectType": "index",
-      "parentObjectName": "crm_schema_migrations",
-      "objectChecksum": "sha256:00c071d6f4569ea7486b5d9193fdc09c88cd0a3d6bd8bd34ceb52efa15e321e0"
+      "parentObjectName": "crm_schema_migrations"
     },
     {
       "definition": {
@@ -5897,20 +5487,7 @@
       },
       "objectName": "crm_tenant_configuration.crm_tenant_configuration_pkey",
       "objectType": "index",
-      "parentObjectName": "crm_tenant_configuration",
-      "objectChecksum": "sha256:6a98da09e9d2532378a049b1d87f615dd8ed812f2c89c399c1e4ccef2a93ecfe"
+      "parentObjectName": "crm_tenant_configuration"
     }
-  ],
-  "owner": "pyrosa-democrm",
-  "ownerDecisions": [],
-  "predecessors": [],
-  "productFamily": "pyrosa-crm-v2607",
-  "release": {
-    "checksum": "sha256:3d5ec69603de089bf4ee1430ba7f425993669d131ff99981bceb25a88a804732",
-    "checksumScheme": "dictionary-content-v2",
-    "version": "2026.07.17.0"
-  },
-  "schemaVersion": "pyrosa-platform-dictionary-owner-candidate-v2",
-  "scopeType": "tenant-product",
-  "version": "2026.07.17.0"
+  ]
 }
