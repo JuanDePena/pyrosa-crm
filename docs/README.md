@@ -42,11 +42,15 @@ Recommended reading order:
 
 Diccionarios owner v2 en source:
 
-- [global-app](../database/dictionaries/pyrosa-democrm-global.owner-v2.json)
-- [tenant-product](../database/dictionaries/pyrosa-democrm-tenant-product.owner-v2.json)
+- DemoCRM [global-app](../database/dictionaries/pyrosa-democrm-global.owner-v2.json)
+  y [tenant-product](../database/dictionaries/pyrosa-democrm-tenant-product.owner-v2.json)
+- CRM [global-app](../database/dictionaries/pyrosa-crm-global-app.owner-v2.json)
+  y [tenant-product](../database/dictionaries/pyrosa-crm-tenant-product.owner-v2.json)
 
-Ambos candidatos usan `2026.07.16.0`; su publicacion Git no sustituye la
-catalogacion, promocion ni aplicacion gobernada en Platform.
+Los candidatos globales se reproducen desde una unica fuente target-neutral
+`2026.07.18.0`; los candidatos tenant conservan la fuente target-neutral
+`2026.07.17.0`. Su publicacion Git no sustituye la catalogacion, promocion ni
+aplicacion gobernada en Platform.
 
 Baseline historica:
 

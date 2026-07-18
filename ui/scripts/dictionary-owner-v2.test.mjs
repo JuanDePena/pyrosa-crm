@@ -9,11 +9,12 @@ const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
 const expected = [
   {
     "appSlug": "pyrosa-democrm",
-    "genesis": false,
+    "genesis": true,
+    "logicalSchema": "pyrosa_democrm",
     "objectCount": 90,
     "path": "database/dictionaries/pyrosa-democrm-global.owner-v2.json",
     "scopeType": "global-app",
-    "version": "2026.07.16.0"
+    "version": "2026.07.18.0"
   },
   {
     "appSlug": "pyrosa-democrm",
@@ -22,6 +23,15 @@ const expected = [
     "path": "database/dictionaries/pyrosa-democrm-tenant-product.owner-v2.json",
     "scopeType": "tenant-product",
     "version": "2026.07.17.0"
+  },
+  {
+    "appSlug": "pyrosa-crm",
+    "genesis": true,
+    "logicalSchema": "pyrosa_crm",
+    "objectCount": 90,
+    "path": "database/dictionaries/pyrosa-crm-global-app.owner-v2.json",
+    "scopeType": "global-app",
+    "version": "2026.07.18.0"
   },
   {
     "appSlug": "pyrosa-crm",
@@ -115,6 +125,9 @@ test("owner dictionary v2 manifests are canonical and source-pinned", async () =
       assert.doesNotMatch(serialized, /definitionHash|app_pyrosa_(?:demo)?crm|pyrosa_(?:demo)?crm_[0-9a-f]{12}/i);
       const schemaObjects = manifest.objects.filter((object) => object.objectType === "schema");
       assert.deepEqual(schemaObjects.map((object) => object.objectName), ["tenant_product"]);
+    } else {
+      const schemaObjects = manifest.objects.filter((object) => object.objectType === "schema");
+      assert.deepEqual(schemaObjects.map((object) => object.objectName), [item.logicalSchema]);
     }
     observedScopes.push(manifest.scopeType);
   }

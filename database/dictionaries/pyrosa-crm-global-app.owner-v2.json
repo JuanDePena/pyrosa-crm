@@ -1,10 +1,10 @@
 {
-  "appSlug": "pyrosa-democrm",
+  "appSlug": "pyrosa-crm",
   "artifactKind": "desired-state",
-  "checksum": "sha256:91e47e490c87ecc081353fe6856becc1a6400a3791e4c8b0dab7fc001127fffd",
+  "checksum": "sha256:4eb07f6b718ca49e586d6bcdc7e15502ca64f0de73e51312e684a3ca1e471ba9",
   "checksumScheme": "dictionary-content-v2",
-  "dictionarySlug": "pyrosa-democrm-global",
-  "key": "pyrosa-democrm:pyrosa-democrm-global@2026.07.18.0#global-app",
+  "dictionarySlug": "pyrosa-crm-global-app",
+  "key": "pyrosa-crm:pyrosa-crm-global-app@2026.07.18.0#global-app",
   "objectCount": 90,
   "objects": [
     {
@@ -15,10 +15,10 @@
         "sourceSchemaVersion": "pyrosa-platform-dictionary-definition-v1",
         "sourceScope": "global"
       },
-      "objectName": "pyrosa_democrm",
+      "objectName": "pyrosa_crm",
       "objectType": "schema",
       "parentObjectName": null,
-      "objectChecksum": "sha256:2086e1444adcecb156c391d3fef64877ac792c99f69917444eec71ca5f84a1a7"
+      "objectChecksum": "sha256:21f7fe7501b88a52760702080c223f31d6a77eef54bfc5a9617551a619092162"
     },
     {
       "definition": {
@@ -1233,12 +1233,12 @@
       "objectChecksum": "sha256:00c071d6f4569ea7486b5d9193fdc09c88cd0a3d6bd8bd34ceb52efa15e321e0"
     }
   ],
-  "owner": "pyrosa-democrm",
+  "owner": "pyrosa-crm",
   "ownerDecisions": [],
   "predecessors": [],
   "productFamily": "pyrosa-crm-v2607",
   "release": {
-    "checksum": "sha256:91e47e490c87ecc081353fe6856becc1a6400a3791e4c8b0dab7fc001127fffd",
+    "checksum": "sha256:4eb07f6b718ca49e586d6bcdc7e15502ca64f0de73e51312e684a3ca1e471ba9",
     "checksumScheme": "dictionary-content-v2",
     "version": "2026.07.18.0"
   },
