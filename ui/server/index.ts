@@ -20,6 +20,7 @@ import {
   createRequestContext,
   logAccess,
   sendJson,
+  sendHtml,
   sendText,
   serveStatic
 } from "./http.js";
@@ -35,9 +36,14 @@ import {
   publicReleaseIdentity,
   type CrmRuntimeRelease
 } from "./release.js";
+import {
+  createCrmStandaloneLandingRenderer,
+  type CrmStandaloneLandingRenderer
+} from "./applicationState.js";
 
 export function createCrmServer(release: CrmRuntimeRelease, config: CrmServerConfig = loadConfig()) {
   assertReleaseMatchesConfig(release, config);
+  const landingRenderer = createCrmStandaloneLandingRenderer(config);
   const server = createServer((req, res) => {
     void handleRequest(req, res, config, release).catch((error) => {
       if (res.headersSent) {
@@ -46,14 +52,27 @@ export function createCrmServer(release: CrmRuntimeRelease, config: CrmServerCon
       }
       if (error instanceof CrmArtifactConsistencyError) {
         const requestId = runtimeRequestId(res);
+        const occurredAt = new Date().toISOString();
         console.error(
           `[crm_artifact_inconsistent] request_id=${requestId} code=${error.code} release_id=${release.releaseId}`
         );
+        if (isDocumentNavigation(req, config)) {
+          sendStandaloneErrorLanding(res, landingRenderer, {
+            code: "crm.artifact.inconsistent",
+            message: "DemoCRM detectó una mezcla de artefactos. No se mostraron datos locales ni una vista de respaldo.",
+            occurredAt,
+            release: `${release.version}+${release.commit.slice(0, 12)}`,
+            requestId,
+            retryable: false,
+            status: 503
+          });
+          return;
+        }
         sendJson(res, 503, {
           error: {
             code: "crm.artifact.inconsistent",
-            message: "PYROSA CRM detecto una mezcla de artefactos y detuvo la solicitud.",
-            occurredAt: new Date().toISOString(),
+            message: "PYROSA CRM detectó una mezcla de artefactos y detuvo la solicitud.",
+            occurredAt,
             requestId,
             retryable: false
           },
@@ -74,6 +93,18 @@ export function createCrmServer(release: CrmRuntimeRelease, config: CrmServerCon
             },
             new CrmV1Error(error.status, error.code, error.message, error.status >= 500)
           );
+          return;
+        }
+        if (error.status >= 500 && isDocumentNavigation(req, config)) {
+          sendStandaloneErrorLanding(res, landingRenderer, {
+            code: error.code,
+            message: "No fue posible verificar la sesión de forma segura. No se mostraron datos locales ni una vista de respaldo.",
+            occurredAt: new Date().toISOString(),
+            release: `${release.version}+${release.commit.slice(0, 12)}`,
+            requestId: runtimeRequestId(res),
+            retryable: true,
+            status: error.status
+          });
           return;
         }
         sendJson(res, error.status, {
@@ -98,6 +129,18 @@ export function createCrmServer(release: CrmRuntimeRelease, config: CrmServerCon
         return;
       }
       console.error(`[crm_runtime_error] request_id=${requestId}`, error);
+      if (isDocumentNavigation(req, config)) {
+        sendStandaloneErrorLanding(res, landingRenderer, {
+          code: "crm.internal.error",
+          message: "DemoCRM encontró un problema interno. No se mostraron datos locales ni una vista de respaldo.",
+          occurredAt: new Date().toISOString(),
+          release: `${release.version}+${release.commit.slice(0, 12)}`,
+          requestId,
+          retryable: true,
+          status: 500
+        });
+        return;
+      }
       sendJson(res, 500, {
         error: {
           code: "crm.internal.error",
@@ -115,6 +158,67 @@ export function createCrmServer(release: CrmRuntimeRelease, config: CrmServerCon
   server.keepAliveTimeout = 5000;
 
   return server;
+}
+
+function isDocumentNavigation(req: IncomingMessage, config: CrmServerConfig): boolean {
+  const method = String(req.method ?? "GET").toUpperCase();
+  if (method !== "GET" && method !== "HEAD") return false;
+  const pathname = new URL(req.url || "/", `http://${req.headers.host || "127.0.0.1"}`).pathname;
+  if (
+    pathname === config.healthPath ||
+    pathname === "/api" ||
+    pathname.startsWith("/api/") ||
+    pathname === "/internal" ||
+    pathname.startsWith("/internal/")
+  ) {
+    return false;
+  }
+  const fetchDestination = String(req.headers["sec-fetch-dest"] ?? "").toLowerCase();
+  const accept = String(req.headers.accept ?? "").toLowerCase();
+  return fetchDestination === "document" || accept.includes("text/html");
+}
+
+function sendStandaloneErrorLanding(
+  res: ServerResponse,
+  renderer: CrmStandaloneLandingRenderer,
+  issue: {
+    code: string;
+    message: string;
+    occurredAt: string;
+    release: string;
+    requestId: string;
+    retryable: boolean;
+    status: number;
+  }
+): void {
+  const document = renderer.renderInternalError({
+    appName: "PYROSA CRM",
+    title: "DemoCRM no está disponible",
+    subtitle: "La aplicación no puede iniciar de forma segura en este momento.",
+    message: issue.message,
+    primaryAction: {
+      actionId: "retry",
+      href: "/",
+      label: "Intentar nuevamente"
+    },
+    supportHint: "Si el problema continúa, comparte solamente el código y el Request ID con soporte.",
+    technicalDetails: {
+      code: issue.code,
+      httpStatus: issue.status,
+      operation: "crm.runtime.verify",
+      requestId: issue.requestId,
+      occurredAt: issue.occurredAt,
+      release: issue.release,
+      retryable: issue.retryable
+    }
+  });
+  sendHtml(
+    res,
+    issue.status,
+    document.html,
+    String(res.req?.method ?? "GET").toUpperCase() === "HEAD",
+    { "Content-Security-Policy": document.csp }
+  );
 }
 
 function runtimeRequestId(res: ServerResponse): string {

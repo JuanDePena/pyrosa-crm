@@ -1,6 +1,6 @@
 # Coherencia De Artefacto Frontend Y BFF
 
-Fecha: `2026-07-16`
+Fecha: `2026-07-19`
 
 Estado: `control observado en runtime v2607 canary`
 
@@ -43,6 +43,28 @@ Después del arranque, cada solicitud comprueba que el manifiesto sigue siendo
 el mismo que cargó el proceso. Cada archivo estático se valida contra su hash
 antes de servirse. Por tanto, un build ejecutado mientras el BFF anterior sigue
 en memoria produce `503 crm.artifact.inconsistent` en vez de mezclar releases.
+
+### Presentacion Segura Del Fallo
+
+El BFF conserva en memoria, desde su propio arranque verificado, el HTML, CSS y
+logo necesarios para renderizar `InternalErrorLanding` de `@pyrosa/ui-templates`
+sin depender de la SPA que acaba de declarar inconsistente. El contrato de
+negociacion es estricto:
+
+- una navegacion `GET|HEAD` de documento, identificada por
+  `Sec-Fetch-Dest: document` o `Accept: text/html`, recibe la landing publica y
+  el status real `503`;
+- `/api/*`, `/internal/*` y el health conservan JSON machine-safe aunque el
+  cliente envie `Accept: text/html`;
+- la landing solo publica codigo estable, HTTP, operacion allowlisted,
+  `Request ID`, fecha y release abreviado; nunca paths, hashes internos,
+  cookies, trazas ni el mensaje crudo de la excepcion;
+- el documento usa `Cache-Control: no-store` y CSP por nonce.
+
+Una falla inesperada o una degradacion de introspeccion IAM sigue el mismo
+contrato para navegaciones. DemoCRM no conserva una sesion local como respaldo
+cuando IAM no puede verificarla; el BFF responde fail-closed y las APIs
+mantienen su envelope JSON.
 
 ## Health Y Bootstrap
 

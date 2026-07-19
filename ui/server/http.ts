@@ -93,6 +93,23 @@ export function sendText(
   res.end(body);
 }
 
+export function sendHtml(
+  res: ServerResponse,
+  status: number,
+  body: string,
+  headOnly = false,
+  extraHeaders: OutgoingHttpHeaders = {}
+): void {
+  res.statusCode = status;
+  setHeaders(res, {
+    "Content-Type": "text/html; charset=utf-8",
+    "Content-Length": String(Buffer.byteLength(body)),
+    "Cache-Control": "no-store",
+    ...extraHeaders
+  });
+  res.end(headOnly ? undefined : body);
+}
+
 export function serveStatic(
   req: IncomingMessage,
   res: ServerResponse,

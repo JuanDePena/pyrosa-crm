@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
-import { mkdtempSync, readFileSync, rmSync } from "node:fs";
+import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import test from "node:test";
 import type { IncomingMessage } from "node:http";
 import type { AddressInfo } from "node:net";
@@ -277,6 +277,50 @@ test("health exposes the verified release even when an independent dependency is
     });
   } finally {
     await closePostgres();
+    rmSync(distDir, { recursive: true, force: true });
+  }
+});
+
+test("artifact drift renders the shared public landing for documents and preserves JSON for APIs", async () => {
+  const distDir = mkdtempSync(resolve(tmpdir(), "pyrosa-crm-artifact-landing-"));
+  const manifestPath = resolve(distDir, "release-manifest.json");
+  writeFileSync(manifestPath, "verified-release\n");
+  const configured = { ...config(), accessLog: false, distDir };
+  const release = {
+    ...testRelease(configured),
+    manifestPath,
+    manifestSha256: createHash("sha256").update(readFileSync(manifestPath)).digest("hex")
+  };
+  const server = createCrmServer(release, configured);
+  await new Promise<void>((resolveListen, reject) => {
+    server.once("error", reject);
+    server.listen(0, "127.0.0.1", resolveListen);
+  });
+  const address = server.address() as AddressInfo;
+
+  try {
+    writeFileSync(manifestPath, "changed-release\n");
+    const documentResponse = await fetch(`http://127.0.0.1:${address.port}/`, {
+      headers: { Accept: "text/html" }
+    });
+    const documentBody = await documentResponse.text();
+    assert.equal(documentResponse.status, 503);
+    assert.match(String(documentResponse.headers.get("content-type")), /^text\/html/u);
+    assert.match(String(documentResponse.headers.get("content-security-policy")), /default-src 'none'/u);
+    assert.match(documentBody, /data-py-internal-error-landing="true"/u);
+    assert.match(documentBody, /DemoCRM no está disponible/u);
+    assert.match(documentBody, /crm\.artifact\.inconsistent/u);
+    assert.doesNotMatch(documentBody, /changed-release|release-manifest\.json/u);
+
+    const apiResponse = await fetch(`http://127.0.0.1:${address.port}/api/crm/bootstrap`, {
+      headers: { Accept: "text/html" }
+    });
+    const apiPayload = await apiResponse.json() as { error?: { code?: unknown } };
+    assert.equal(apiResponse.status, 503);
+    assert.match(String(apiResponse.headers.get("content-type")), /^application\/json/u);
+    assert.equal(apiPayload.error?.code, "crm.artifact.inconsistent");
+  } finally {
+    await new Promise<void>((resolveClose, reject) => server.close((error) => error ? reject(error) : resolveClose()));
     rmSync(distDir, { recursive: true, force: true });
   }
 });

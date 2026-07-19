@@ -185,12 +185,19 @@ export async function loadCrmSession(
     return refreshed;
   } catch (error) {
     if (error instanceof CrmAuthError) {
+      if (error.status >= 500) {
+        throw error;
+      }
       if (res) {
         clearSessionCookie(req, res);
       }
       return null;
     }
-    return session;
+    throw new CrmAuthError(
+      503,
+      "crm.auth.introspection_unavailable",
+      "IAM no pudo verificar la sesión de DemoCRM."
+    );
   }
 }
 

@@ -80,6 +80,19 @@ test("signed legacy cookies without a canonical IAM identity fail closed", async
   assert.equal(introspected, false);
 });
 
+test("session introspection transport failures fail closed instead of retaining the local session", async () => {
+  const configured = config();
+  const session = sessionFixture({ uiAuthLastCheckedAt: new Date(0).toISOString() });
+  globalThis.fetch = async () => {
+    throw new Error("synthetic IAM outage");
+  };
+
+  await assert.rejects(
+    () => loadCrmSession(cookieRequest(session, configured), null, configured),
+    { code: "crm.auth.introspection_unavailable", status: 503 }
+  );
+});
+
 for (const [label, identity] of [
   ["missing identity", undefined],
   ["invalid issuer", { issuer: "https://accounts.pyrosa.test", subject: "1" }]
@@ -92,9 +105,10 @@ for (const [label, identity] of [
       ...exchangePayload(identity)
     });
 
-    const loaded = await loadCrmSession(cookieRequest(session, configured), null, configured);
-
-    assert.equal(loaded, null);
+    await assert.rejects(
+      () => loadCrmSession(cookieRequest(session, configured), null, configured),
+      { code: "ui_auth_identity_invalid", status: 502 }
+    );
   });
 }
 
