@@ -118,6 +118,9 @@ async function fetchJson<T>(url: string, init: RequestInit): Promise<T> {
   if (!response.ok) {
     const envelope = isObject(payload) ? payload as CrmErrorEnvelope : {};
     const apiError = envelope.error;
+    if (response.status === 401 && typeof window !== "undefined") {
+      window.location.assign(crmLoginHref(window.location));
+    }
     throw new CrmApiError(apiError?.message || publicStatusMessage(response.status), {
       code: apiError?.code || `crm.http.${response.status}`,
       occurredAt: apiError?.occurredAt,
@@ -128,6 +131,15 @@ async function fetchJson<T>(url: string, init: RequestInit): Promise<T> {
   }
 
   return payload as T;
+}
+
+export function crmLoginHref(location: Pick<Location, "hash" | "pathname" | "search">): string {
+  const returnTo = safeBrowserReturnTo(`${location.pathname}${location.search}${location.hash}`);
+  return `/auth/login?return_to=${encodeURIComponent(returnTo)}`;
+}
+
+function safeBrowserReturnTo(value: string): string {
+  return value.startsWith("/") && !value.startsWith("//") ? value : "/ui";
 }
 
 export function technicalIssueFrom(error: unknown): TechnicalIssue {
