@@ -1,7 +1,7 @@
 {
   "appSlug": "pyrosa-democrm",
   "artifactKind": "desired-state",
-  "checksum": "sha256:3d5ec69603de089bf4ee1430ba7f425993669d131ff99981bceb25a88a804732",
+  "checksum": "sha256:77352e59ba5d888362ccd7189dca4ecc7f5c6bae9ff59f7fd32e79b6192c3149",
   "checksumScheme": "dictionary-content-v2",
   "dictionarySlug": "pyrosa-democrm-tenant-product",
   "key": "pyrosa-democrm:pyrosa-democrm-tenant-product@2026.07.17.0#tenant-product",
@@ -470,15 +470,22 @@
     {
       "definition": {
         "columns": [
+          "action",
           "actor_source",
           "actor_subject",
           "audit_event_id",
+          "authorization_decision_id",
           "context_id",
           "created_at",
           "entity_id",
           "entity_type",
           "event_type",
-          "payload"
+          "id",
+          "occurred_at",
+          "outcome",
+          "payload",
+          "reason_code",
+          "request_id"
         ],
         "primaryKey": [
           "audit_event_id"
@@ -487,7 +494,7 @@
       "objectName": "crm_audit_events",
       "objectType": "table",
       "parentObjectName": null,
-      "objectChecksum": "sha256:505fa9da39fe94f88ae523fa31f448defc924a861b4b345d4d9bf1cd316c4f42"
+      "objectChecksum": "sha256:3aec1a43a606efb56991f2a982aa28883cfd2b90cf4d5b8bc94f92c83a98e626"
     },
     {
       "definition": {
@@ -5906,7 +5913,7 @@
   "predecessors": [],
   "productFamily": "pyrosa-crm-v2607",
   "release": {
-    "checksum": "sha256:3d5ec69603de089bf4ee1430ba7f425993669d131ff99981bceb25a88a804732",
+    "checksum": "sha256:77352e59ba5d888362ccd7189dca4ecc7f5c6bae9ff59f7fd32e79b6192c3149",
     "checksumScheme": "dictionary-content-v2",
     "version": "2026.07.17.0"
   },
