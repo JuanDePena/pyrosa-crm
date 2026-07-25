@@ -2,11 +2,11 @@
 
 Fecha de evidencia: `2026-07-25`
 
-Estado: decisiones owner browser E2E `3/3 allow`; bearer e introspección del
-productor inbound promovidos; binding tenant para principal service pendiente.
+Estado: decisiones owner browser E2E `3/3 allow`; bearer, binding tenant para
+principal service y matriz de lifecycle/degradación aceptados en development.
 
 El plan transversal y su matriz de consumidores se mantienen en
-[OAuth2 API auth](https://github.com/JuanDePena/pyrosa-docs/blob/main/plans/plan-oauth2-api-auth.md).
+[OAuth2 API auth](https://github.com/JuanDePena/pyrosa-docs/blob/main/plans-completed/plan-oauth2-api-auth.md).
 
 CRM conserva el login browser delegado, consume tres decisiones owner mediante
 clientes confidenciales propios y mantiene un resource server opt-in para sus
@@ -45,9 +45,11 @@ El catálogo IAM `2607.25.0` congela
 inbound inicial, principal `service`, sin reutilizar `client-crm` ni ninguno de
 los tres clientes owner salientes. El apply del `2026-07-25` materializó el
 cliente, el introspector y el grant, sin conceder un tenant por inferencia. La
-[evidencia live](../evidence/oauth-api-inbound-live-2026-07-25.md) demuestra que
-el bearer llega a la frontera owner y falla cerrado por membership service
-ausente.
+[evidencia live](../evidence/oauth-api-inbound-live-2026-07-25.md) demuestra
+el positivo tenant-aware, expiración, revocación, indisponibilidad de
+introspección, recuperación y rollback del flag. Todos los rechazos permanecen
+en el carril bearer y nunca caen a cookie, datos locales o un usuario humano
+fabricado.
 
 La API CRM v1 ya expone dominio tenant-aware y escrituras en source. Antes de
 ampliar su acceso runtime mas alla del tenant canario debe resolver el contexto
@@ -70,10 +72,11 @@ asignacion activa: Directory, Store y Platform devolvieron `3/3 allow` para el
 schema `pyrosa_democrm_8ef427da9f0e`, diccionario `2.0.1`, perfil `core` y
 capability `crm.cases.read`. La evidencia no conserva ni expone el subject.
 
-Este canario saliente no implica habilitar el resource server bearer entrante
-ni la promocion general. Ademas, el SLO movil de 24 horas de Store permanece
-`critical` y `/canaryz` responde `503`, por lo que la cohorte general y VOIX
-siguen bloqueadas.
+El canario saliente permanece separado del resource server bearer entrante. El
+inbound queda aceptado solo en development; no certifica preproducción ni
+amplía por sí mismo la cohorte comercial o VOIX. La degradación global de Store
+por observaciones históricas sigue siendo un gate comercial independiente, no
+un blocker del contrato OAuth de CRM.
 
 La evolucion concreta se define en el
 [contrato API CRM v1](../api/crm-v1.md) y el
