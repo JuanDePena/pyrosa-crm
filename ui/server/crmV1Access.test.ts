@@ -18,8 +18,10 @@ afterEach(() => {
 });
 
 const identity: CrmIdentity = {
+  clientId: "synthetic-test",
   kind: "oauth-api",
   issuer: "https://iam.pyrosa.test",
+  principalType: "service",
   subject: "client:synthetic-test",
   roles: ["supervisor"],
   scopes: ["crm.cases.read", "crm.dashboard.read"]
@@ -105,9 +107,11 @@ test("uses exact snake_case v1 requests and three isolated client_credentials gr
       "request_id", "requested_capability", "tenant_id"
     ]);
     assert.deepEqual(entry.body.identity, {
+      client_id: "synthetic-test",
       issuer: "https://iam.pyrosa.test",
-      subject: "synthetic-test",
-      kind: "oauth-api"
+      subject: "client:synthetic-test",
+      kind: "oauth-api",
+      principal_type: "service"
     });
     assert.equal(entry.body.contract_version, "1.0.0");
     assert.equal(entry.body.request_id, "request-crm-access-001");
@@ -345,8 +349,10 @@ test("normalizes browser identity to the IAM HTTPS issuer and a stable opaque su
     iamIdentity: { issuer: "https://iam.pyrosa.test", subject: "1" }
   } as unknown as CrmSession;
   assert.deepEqual(identityFromPrincipal(session, config()), {
+    clientId: null,
     kind: "browser",
     issuer: "https://iam.pyrosa.test",
+    principalType: "human",
     subject: "1",
     roles: ["tenant_admin"],
     scopes: []
@@ -378,12 +384,19 @@ test("owner decisions accept a one-character IAM subject and reject empty, white
     return decisionResponse(ownerForHost(url.hostname), body);
   };
 
-  await resolveAccess(request(), config(), { ...identity, subject: "1" }, "crm.cases.read");
+  const humanIdentity: CrmIdentity = {
+    ...identity,
+    clientId: null,
+    kind: "browser",
+    principalType: "human",
+    subject: "1"
+  };
+  await resolveAccess(request(), config(), humanIdentity, "crm.cases.read");
   assert.deepEqual(observed.map((body) => (body.identity as Record<string, unknown>).subject), ["1", "1", "1"]);
 
-  for (const subject of ["", " ", "subject:extra", "a".repeat(201)]) {
+  for (const subject of ["", " ", "subject\u0000extra", "a".repeat(201)]) {
     await assert.rejects(
-      resolveAccess(request(), config(), { ...identity, subject }, "crm.cases.read"),
+      resolveAccess(request(), config(), { ...humanIdentity, subject }, "crm.cases.read"),
       hasCode("crm.identity.invalid")
     );
   }

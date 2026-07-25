@@ -13,6 +13,8 @@ export type CrmIdentity = {
   kind: "browser" | "oauth-api";
   issuer: string;
   subject: string;
+  principalType: "human" | "service";
+  clientId: string | null;
   roles: string[];
   scopes: string[];
 };

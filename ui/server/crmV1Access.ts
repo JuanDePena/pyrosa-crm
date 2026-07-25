@@ -27,7 +27,13 @@ type DecisionRequest = {
   correlation_id: string;
   tenant_id: string;
   application_slug: typeof applicationSlug;
-  identity: { issuer: string; subject: string; kind: "browser" | "oauth-api" };
+  identity: {
+    issuer: string;
+    subject: string;
+    kind: "browser" | "oauth-api";
+    principal_type: "human" | "service";
+    client_id: string | null;
+  };
   requested_capability: string;
 };
 
@@ -132,6 +138,8 @@ export function identityFromPrincipal(
       kind: "oauth-api",
       issuer: normalizeHttpsIssuer(api.issuer),
       subject: api.subject,
+      principalType: api.principalType,
+      clientId: api.clientId,
       roles: api.roles,
       scopes: api.scopes
     };
@@ -148,6 +156,8 @@ export function identityFromPrincipal(
     kind: "browser",
     issuer,
     subject: browserIdentitySubject(session.iamIdentity?.subject),
+    principalType: "human",
+    clientId: null,
     roles: [session.user.role],
     scopes: []
   };
@@ -176,8 +186,10 @@ export async function resolveCrmAccess(
     application_slug: applicationSlug,
     identity: {
       issuer: identityIssuer,
-      subject: ownerIdentitySubject(identity.subject),
-      kind: identity.kind
+      subject: ownerIdentitySubject(identity.subject, identity.principalType),
+      kind: identity.kind,
+      principal_type: identity.principalType,
+      client_id: identity.clientId
     },
     requested_capability: requiredCapability
   };
@@ -578,12 +590,14 @@ function browserIdentitySubject(value: unknown): string {
   return value;
 }
 
-function ownerIdentitySubject(value: string): string {
-  const subject = value.startsWith("client:") ? value.slice("client:".length) : value;
-  if (!/^[A-Za-z0-9._~-][A-Za-z0-9._~-]{0,199}$/u.test(subject)) {
+function ownerIdentitySubject(value: string, principalType: "human" | "service"): string {
+  const pattern = principalType === "service"
+    ? /^client:[A-Za-z0-9._~-][A-Za-z0-9._~-]{0,192}$/u
+    : /^[A-Za-z0-9._~-][A-Za-z0-9._~-]{0,199}$/u;
+  if (!pattern.test(value)) {
     throw responseError("crm.identity.invalid", "El subject IAM no es un identificador opaco valido.");
   }
-  return subject;
+  return value;
 }
 
 function ownerUrl(baseUrl: string, pathname: string, owner: Owner): URL {

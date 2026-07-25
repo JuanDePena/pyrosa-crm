@@ -19,8 +19,10 @@ const seedContract = "pyrosa-democrm-synthetic-seed-v1";
 const evidenceBasename = "democrm-v2607-synthetic-pilot-2026-07-15";
 
 const actor: CrmIdentity = {
+  clientId: null,
   kind: "browser",
   issuer: "https://iam.synthetic.invalid",
+  principalType: "human",
   subject: "subject:synthetic-pilot",
   roles: ["supervisor"],
   scopes: []

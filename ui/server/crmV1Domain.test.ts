@@ -13,7 +13,15 @@ import {
 import { MemoryCrmV1Store, commandPatch, fingerprintSyntheticSeed } from "./crmV1Store.js";
 import type { CrmAccessContext, CrmIdentity, CrmMutationContext, CrmRecord } from "./crmV1Types.js";
 
-const actor: CrmIdentity = { kind: "browser", issuer: "test-iam", subject: "user:test", roles: ["supervisor"], scopes: [] };
+const actor: CrmIdentity = {
+  clientId: null,
+  kind: "browser",
+  issuer: "test-iam",
+  principalType: "human",
+  subject: "user:test",
+  roles: ["supervisor"],
+  scopes: []
+};
 const fullCapabilities = [
   "crm.accounts.read", "crm.accounts.write", "crm.contacts.read", "crm.contacts.write",
   "crm.cases.read", "crm.cases.write", "crm.cases.assign", "crm.activities.read", "crm.activities.write",
