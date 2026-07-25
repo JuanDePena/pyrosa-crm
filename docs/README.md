@@ -39,6 +39,7 @@ Recommended reading order:
 23. [SharedShell Visual Convergence — completed pilot](plans-completed/plan-democrm-shared-shell-visual-convergence.md)
 24. [Architecture Decision Records](design/adr/)
 25. [OAuth2 API consumer contract](design/oauth-api-consumer.md)
+26. [Evidencia OAuth inbound live](evidence/oauth-api-inbound-live-2026-07-25.md)
 
 Diccionarios owner v2 en source:
 

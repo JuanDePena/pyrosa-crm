@@ -13,6 +13,7 @@ depender de artefactos efímeros de runtime.
 - [Piloto sintético reproducible — 2026-07-15](democrm-v2607-synthetic-pilot-2026-07-15.md)
 - [Resultado machine-readable saneado](democrm-v2607-synthetic-pilot-2026-07-15.json)
 - [Canario owner v2607 — 2026-07-16](democrm-v2607-owner-canary-2026-07-16.md)
+- [Promoción parcial OAuth inbound — 2026-07-25](oauth-api-inbound-live-2026-07-25.md)
 
 Los screenshots y manifiestos completos del smoke visual permanecen bajo
 `ui/tmp/qa-visual` y no se versionan. Cada evidencia resume comandos,
