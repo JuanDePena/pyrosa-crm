@@ -2,8 +2,8 @@
 
 Fecha de evidencia: `2026-07-16`
 
-Estado: decisiones owner E2E `3/3 allow` para tenant canary; resource server
-bearer y promocion general permanecen separados.
+Estado: decisiones owner E2E `3/3 allow` para tenant canary; productor inbound
+canary gobernado en source; secretos, apply y promocion general pendientes.
 
 El plan transversal y su matriz de consumidores se mantienen en
 [OAuth2 API auth](https://github.com/JuanDePena/pyrosa-docs/blob/main/plans/plan-oauth2-api-auth.md).
@@ -39,6 +39,13 @@ revocado o IAM degradado fallan cerrado y nunca caen a cookie. El rollback con
 flag `0` vuelve a UI-session-only.
 El secret Basic sólo se envía a un endpoint HTTPS sin userinfo, query ni
 fragment y del mismo origin que el issuer IAM.
+
+El catálogo IAM `2607.25.0` congela
+`client-pyrosa-crm-api-canary`/`pyrosa-crm-api-canary` como único productor
+inbound inicial, principal `service`, sin reutilizar `client-crm` ni ninguno de
+los tres clientes owner salientes. El registro source no crea el secreto, no
+activa el grant y no concede tenant. La promoción debe materializar el cliente,
+el introspector y la asignación tenant del canario de forma coordinada.
 
 La API CRM v1 ya expone dominio tenant-aware y escrituras en source. Antes de
 ampliar su acceso runtime mas alla del tenant canario debe resolver el contexto

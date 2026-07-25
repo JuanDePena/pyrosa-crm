@@ -83,6 +83,14 @@ Tambien se valida el resource server CRM (`pyrosa-crm`, scope compatibility
 carriles separados; ningun fallo OAuth cae a cookie, bearer estatico o headers
 de confianza.
 
+El productor inbound inicial es exclusivamente
+`client-pyrosa-crm-api-canary`, principal service y slug
+`pyrosa-crm-api-canary`. No se reutiliza `client-crm`,
+`client-pyrosa-democrm`, `client-pyrosa-democrm-store-entitlements` ni
+`client-pyrosa-crm`, porque corresponden al browser o a decisiones owner
+salientes. Su estado source `ready_for_secret` exige todavía secreto, apply,
+membership/seat/entitlement/readiness y canarios positivos/negativos live.
+
 ### 3. Endpoints Owner Y Feature Flags
 
 Desplegar primero los productores y probarlos con sus flags apagados. Luego
