@@ -9,6 +9,8 @@ Templates para instalar `pyrosa-democrm` como carril demo del nuevo
   `/etc/containers/systemd/app-pyrosa-democrm.container`
 - `env/app-pyrosa-democrm.env.example` ->
   `/etc/containers/systemd/env/app-pyrosa-democrm.env`
+- secret OAuth del introspector API ->
+  `/etc/pyrosa-democrm/secrets/oauth-api.env` (`0600 root:root`, fuera de Git)
 - `httpd/pyrosa-democrm.conf` ->
   `/etc/httpd/conf.d/pyrosa-democrm.conf`
 
@@ -20,6 +22,9 @@ Templates para instalar `pyrosa-democrm` como carril demo del nuevo
   `127.0.0.1:10166:10166`.
 - Apache es el unico punto publico para `democrm.pyrosa.com.do`.
 - Las variables propias del CRM usan `PYROSA_CRM_*`.
+- El secreto `PYROSA_CRM_OAUTH_API_CLIENT_SECRET` se carga desde el segundo
+  `EnvironmentFile` del Quadlet y permanece separado de las tres credenciales
+  owner salientes y del login browser.
 - El logo de marca vive en
   `ui/public/public/assets/brand/crm-logo.png` y se sirve como
   `/public/assets/brand/crm-logo.png` despues del build.
