@@ -1,0 +1,149 @@
+{
+  "schemaVersion": "pyrosa.tenant-context.conformance-fixtures.v1",
+  "switch": [
+    {
+      "id": "switch-success",
+      "request": {
+        "schemaVersion": "pyrosa.tenant-context.switch.request.v1",
+        "idempotencyKey": "switch:fixture:0001",
+        "tenantKey": "0123456789ab",
+        "expectedContextVersion": "ctx.fixture.previous.0001"
+      },
+      "expected": {
+        "status": 200,
+        "code": null,
+        "replayed": false
+      }
+    },
+    {
+      "id": "switch-replay",
+      "request": {
+        "schemaVersion": "pyrosa.tenant-context.switch.request.v1",
+        "idempotencyKey": "switch:fixture:0001",
+        "tenantKey": "0123456789ab",
+        "expectedContextVersion": "ctx.fixture.previous.0001"
+      },
+      "expected": {
+        "status": 200,
+        "code": null,
+        "replayed": true
+      }
+    },
+    {
+      "id": "switch-idempotency-conflict",
+      "request": {
+        "schemaVersion": "pyrosa.tenant-context.switch.request.v1",
+        "idempotencyKey": "switch:fixture:0001",
+        "tenantKey": "abcdef012345",
+        "expectedContextVersion": "ctx.fixture.previous.0001"
+      },
+      "expected": {
+        "status": 409,
+        "code": "tenant_context_idempotency_conflict",
+        "replayed": false
+      }
+    },
+    {
+      "id": "switch-stale",
+      "request": {
+        "schemaVersion": "pyrosa.tenant-context.switch.request.v1",
+        "idempotencyKey": "switch:fixture:0002",
+        "tenantKey": "abcdef012345",
+        "expectedContextVersion": "ctx.fixture.stale.0000001"
+      },
+      "expected": {
+        "status": 409,
+        "code": "tenant_context_stale",
+        "replayed": false
+      }
+    },
+    {
+      "id": "switch-not-eligible",
+      "request": {
+        "schemaVersion": "pyrosa.tenant-context.switch.request.v1",
+        "idempotencyKey": "switch:fixture:0003",
+        "tenantKey": "fedcba987654",
+        "expectedContextVersion": "ctx.fixture.previous.0001"
+      },
+      "expected": {
+        "status": 403,
+        "code": "tenant_context_not_eligible",
+        "replayed": false
+      }
+    },
+    {
+      "id": "switch-owner-unavailable",
+      "request": {
+        "schemaVersion": "pyrosa.tenant-context.switch.request.v1",
+        "idempotencyKey": "switch:fixture:0004",
+        "tenantKey": "abcdef012345",
+        "expectedContextVersion": "ctx.fixture.previous.0001"
+      },
+      "expected": {
+        "status": 503,
+        "code": "tenant_context_owner_unavailable",
+        "replayed": false
+      }
+    }
+  ],
+  "interactiveContext": {
+    "valid": {
+      "schemaVersion": "pyrosa.interactive-tenant-context.v1",
+      "application": "pyrosa-newsync",
+      "sessionId": "session.fixture.0000001",
+      "issuer": "https://iam.pyrosa.com.do",
+      "subject": "subject-fixture-1",
+      "tenantId": "tenant-fixture-1",
+      "tenantKey": "0123456789ab",
+      "contextVersion": "ctx.fixture.current.00001",
+      "decisions": {
+        "iam": {
+          "reference": "iam-decision-fixture",
+          "version": "iam-v1",
+          "expiresAt": "2026-07-27T12:05:00Z"
+        },
+        "directory": {
+          "reference": "directory-decision-fixture",
+          "version": "directory-v1",
+          "expiresAt": "2026-07-27T12:05:00Z"
+        },
+        "store": {
+          "reference": "store-decision-fixture",
+          "version": "store-v1",
+          "expiresAt": "2026-07-27T12:05:00Z"
+        },
+        "platform": {
+          "reference": "platform-decision-fixture",
+          "version": "platform-v1",
+          "expiresAt": "2026-07-27T12:05:00Z"
+        },
+        "application": {
+          "reference": "application-decision-fixture",
+          "version": "application-v1",
+          "expiresAt": "2026-07-27T12:05:00Z"
+        }
+      },
+      "placement": {
+        "reference": "placement-fixture-1",
+        "fingerprint": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "readinessVersion": "ready-v1"
+      },
+      "issuedAt": "2026-07-27T12:00:00Z",
+      "refreshedAt": "2026-07-27T12:00:00Z"
+    }
+  },
+  "workContext": {
+    "valid": {
+      "schemaVersion": "pyrosa.tenant-work-context.v1",
+      "application": "pyrosa-newsync",
+      "tenantId": "tenant-fixture-1",
+      "tenantKey": "0123456789ab",
+      "operation": "workflow.runner.execute",
+      "decisionReference": "decision-bundle-fixture-1",
+      "placementFingerprint": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "correlationId": "correlation-fixture-1",
+      "idempotencyKey": "job:fixture:0000001",
+      "enqueuedAt": "2026-07-27T12:00:00Z"
+    }
+  }
+}
