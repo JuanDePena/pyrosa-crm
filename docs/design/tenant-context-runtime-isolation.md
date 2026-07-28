@@ -2,7 +2,7 @@
 
 Fecha: `2026-07-26`
 
-Estado: `definido para adopcion posterior al piloto NewSync`
+Estado: `completed-accepted-development`
 
 ## Canonico Adoptado
 
@@ -31,10 +31,10 @@ AND CRM functional permission
 ```
 
 La API valida que Platform entregue un schema cuyo sufijo coincida con el
-`tenantKey` resuelto por Directory. Sin embargo, el contrato local aun no
-define de extremo a extremo una sesion interactiva versionada, el switch
-idempotente comun, el binding de cada request ni el aislamiento de workers,
-caches y archivos.
+`tenantKey` resuelto por Directory. El corte del `2026-07-28` cerró la sesión
+interactiva versionada, el switch idempotente común, el binding por request y
+el aislamiento de las superficies implementadas. Las superficies asíncronas
+todavía no materializadas permanecen deshabilitadas y no operan sin contexto.
 
 El tenant canario historico no puede convertirse en default, fallback o
 autoridad para nuevas sesiones.
@@ -78,41 +78,41 @@ contratos.
 
 ### C1 — Inventario Y Contrato
 
-- inventariar routes, queries, pool, imports, outbox, reports, jobs y storage;
-- clasificar global/tenant;
-- adoptar fixtures y codigos transversales;
-- sellar baseline sin mutaciones live.
+- [x] inventariar routes, queries, pool, imports, outbox, reports, jobs y storage;
+- [x] clasificar global/tenant;
+- [x] adoptar fixtures y codigos transversales;
+- [x] sellar baseline sin mutaciones live.
 
 ### C2 — Contexto Interactivo
 
-- implementar sesion, bootstrap, selector y switch;
-- agregar binding y stale context;
-- resolver schema por transaccion;
-- retirar cualquier default canario.
+- [x] implementar sesion, bootstrap, selector y switch;
+- [x] agregar binding y stale context;
+- [x] resolver schema por transaccion;
+- [x] retirar cualquier default canario.
 
 ### C3 — Dominio Y Background
 
-- ligar API CRM v1 al contexto;
-- propagar `TenantWorkContext` a imports, reportes y outbox;
-- separar cache, locks, archivos e idempotencia;
-- probar revocacion durante trabajo.
+- [x] ligar API CRM v1 al contexto;
+- [x] propagar `TenantWorkContext` a imports, reportes y outbox implementados;
+- [x] separar cache, locks, archivos e idempotencia implementados;
+- [x] probar revocacion durante trabajo.
 
 ### C4 — Cambios Fisicos Gobernados
 
-- crear diccionarios sucesores solo si el inventario los exige;
-- usar `migration.execute` para schemas existentes;
-- preparar recovery, preview, backfill, rollback y residuales;
-- no aplicar DDL desde CRM.
+- [x] demostrar que el inventario no exige un sucesor físico para este corte;
+- [x] conservar `migration.execute` como única vía para schemas existentes;
+- [x] acreditar rollback lógico y residuales vacíos;
+- [x] no aplicar DDL desde CRM.
 
 ### C5 — Canary Y Promocion
 
-- dos tenants y dos subjects;
-- A -> B -> A sobre el pool;
-- stale tabs, switch concurrente, replay/conflict;
-- tenant manipulado y owner outage;
-- suspension, entitlement y readiness;
-- jobs, archivos y caches sin fuga;
-- logout, revocacion y rollback.
+- [x] dos tenants y subjects owner exactos;
+- [x] A -> B -> A sobre el pool;
+- [x] stale tabs, switch concurrente, replay/conflict;
+- [x] tenant manipulado y owner outage;
+- [x] suspension, entitlement y readiness;
+- [x] jobs, archivos y caches implementados sin fuga;
+- [x] logout, revocacion y rollback.
 
 ## Gate De Cierre
 
@@ -122,3 +122,11 @@ contratos.
 - canary de dos tenants aceptado;
 - drift cero, `public=0` y rollback probado;
 - evidencia no incluye datos VOIX ni secretos.
+
+## Cierre Transversal
+
+La matriz live PYROSA→CMT→PYROSA quedó aceptada con blockers vacíos, rollback
+de sentinels y cero fallback global o al tenant anterior. El Corte 8 volvió a
+validar el fixture transversal byte-exacto (`1/1`) y `public=0`. La aceptación
+es exclusiva de `development`; DemoCRM y CRM conservan slugs, manifests y
+promociones separados.
