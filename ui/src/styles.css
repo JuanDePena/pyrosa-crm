@@ -203,6 +203,25 @@ dl {
   width: 1rem;
 }
 
+.crm-tenant-scope-selector {
+  align-items: center;
+  display: flex;
+  gap: var(--py-space-2);
+  min-width: min(22rem, 38vw);
+}
+
+.crm-tenant-scope-selector__icon {
+  align-items: center;
+  color: var(--py-color-brand);
+  display: inline-flex;
+  flex: 0 0 auto;
+}
+
+.crm-tenant-scope-selector__select {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
 @media (max-width: 760px) {
   .crm-detail-list,
   .crm-editor__grid,
@@ -222,6 +241,11 @@ dl {
   .crm-pagination > *,
   .crm-editor__actions > * {
     flex: 1 1 auto;
+  }
+
+  .crm-tenant-scope-selector {
+    min-width: 12rem;
+    width: min(17rem, 52vw);
   }
 
 }

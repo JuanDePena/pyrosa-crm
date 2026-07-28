@@ -21,6 +21,7 @@ import type { CrmV1Store } from "./crmV1Store.js";
 import { crmResources, type CrmAccessContext, type CrmIdentity, type CrmResource } from "./crmV1Types.js";
 import { sendJson, type RequestContext } from "./http.js";
 import type { CrmApiPrincipal } from "./oauthApiAuth.js";
+import { resolveBoundBrowserCrmAccess } from "./tenantContextService.js";
 
 let runtimeStore: CrmV1Store | null = null;
 
@@ -41,67 +42,75 @@ export async function handleCrmV1(
       method: req.method
     });
     const identity = identityFromPrincipal(principal, config);
-    await dispatch(req, res, config, context, identity, store);
+    const resolveAccess = "csrf" in principal
+      ? (requiredCapability: string) =>
+          resolveBoundBrowserCrmAccess({
+            req,
+            session: principal,
+            config,
+            context,
+            requiredCapability
+          })
+      : (requiredCapability: string) =>
+          resolveCrmAccess(
+            context,
+            config,
+            identity,
+            requiredCapability,
+            serviceTenantId(req)
+          );
+    await dispatch(req, res, context, identity, store, resolveAccess);
   } catch (error) {
     sendCrmV1Error(res, context, error);
   }
 }
 
-export async function resolveBootstrapContext(
-  req: IncomingMessage,
-  context: RequestContext,
-  config: CrmServerConfig,
-  session: CrmSession
-): Promise<CrmAccessContext> {
-  return resolveCrmAccess(req, context, config, identityFromPrincipal(session, config), "crm.dashboard.read");
-}
-
 async function dispatch(
   req: IncomingMessage,
   res: ServerResponse,
-  config: CrmServerConfig,
   context: RequestContext,
   identity: CrmIdentity,
-  store: CrmV1Store
+  store: CrmV1Store,
+  resolveAccess: (requiredCapability: string) => Promise<CrmAccessContext>
 ): Promise<void> {
   const path = context.url.pathname.slice("/api/crm/v1".length).replace(/^\/+|\/+$/g, "");
   const segments = path ? path.split("/") : [];
   const method = String(req.method ?? "GET").toUpperCase();
 
   if (segments.length === 0) {
-    const access = await resolveCrmAccess(req, context, config, identity, "crm.dashboard.read");
+    const access = await resolveAccess("crm.dashboard.read");
     sendData(res, context, access, { contractVersion: "crm-api-v1", resources: [...crmResources], context: publicContext(access) });
     return;
   }
 
   if (segments[0] === "context" && method === "GET") {
-    const access = await resolveCrmAccess(req, context, config, identity, "crm.dashboard.read");
+    const access = await resolveAccess("crm.dashboard.read");
     sendData(res, context, access, publicContext(access));
     return;
   }
 
   if (segments[0] === "dashboard-summary" && method === "GET") {
-    const access = await resolveCrmAccess(req, context, config, identity, "crm.dashboard.read");
+    const access = await resolveAccess("crm.dashboard.read");
     const period = parsePeriod(context.url, access.timezone);
     sendData(res, context, access, await store.dashboard(access, period));
     return;
   }
 
   if (segments[0] === "profiles" && method === "GET" && segments.length === 1) {
-    const access = await resolveCrmAccess(req, context, config, identity, "crm.config.read");
+    const access = await resolveAccess("crm.config.read");
     sendList(res, context, access, await store.profiles());
     return;
   }
 
   if (segments[0] === "profile" && segments[1] === "effective" && method === "GET") {
-    const access = await resolveCrmAccess(req, context, config, identity, "crm.config.read");
+    const access = await resolveAccess("crm.config.read");
     sendData(res, context, access, await store.effectiveProfile(access));
     return;
   }
 
   if (segments[0] === "config") {
     const capability = method === "GET" ? "crm.config.read" : "crm.config.manage";
-    const access = await resolveCrmAccess(req, context, config, identity, capability);
+    const access = await resolveAccess(capability);
     if (method === "GET") {
       const configRecord = await store.getConfiguration(access);
       sendData(res, context, access, configRecord, 200, { ETag: `"${configRecord.version}"` });
@@ -119,7 +128,7 @@ async function dispatch(
   }
 
   if (segments[0] === "reports" && method === "GET") {
-    const access = await resolveCrmAccess(req, context, config, identity, "crm.reports.read");
+    const access = await resolveAccess("crm.reports.read");
     const reports = await store.reports(access);
     if (segments.length === 1) {
       const query = String(context.url.searchParams.get("q") ?? "").trim().toLocaleLowerCase();
@@ -138,7 +147,7 @@ async function dispatch(
   }
 
   if (segments[0] === "report-runs" && method === "POST") {
-    const access = await resolveCrmAccess(req, context, config, identity, "crm.reports.read");
+    const access = await resolveAccess("crm.reports.read");
     const body = normalizeReportRunRequest(await readJson(req));
     const reports = await store.reports(access);
     if (!reports.some((report) => report.key === body.reportKey)) {
@@ -150,7 +159,7 @@ async function dispatch(
   }
 
   if (segments[0] === "exports") {
-    const access = await resolveCrmAccess(req, context, config, identity, method === "POST" ? "crm.exports.create" : "crm.reports.read");
+    const access = await resolveAccess(method === "POST" ? "crm.exports.create" : "crm.reports.read");
     if (method === "POST" && segments.length === 1) {
       const body = normalizeExportRequest(await readJson(req));
       if (body.reportKey) {
@@ -173,7 +182,7 @@ async function dispatch(
   }
 
   if (segments[0] === "imports") {
-    const access = await resolveCrmAccess(req, context, config, identity, method === "GET" ? "crm.imports.read" : "crm.imports.manage");
+    const access = await resolveAccess(method === "GET" ? "crm.imports.read" : "crm.imports.manage");
     if (method === "POST" && segments[1] === "preflight") {
       const body = await readJson(req, 2_000_000);
       const result = await store.importPreflight(body, mutationContext(req, context, identity, access, body));
@@ -196,7 +205,17 @@ async function dispatch(
   }
 
   if (isResource(segments[0])) {
-    await handleResource(req, res, config, context, identity, store, segments[0], segments.slice(1), method);
+    await handleResource(
+      req,
+      res,
+      context,
+      identity,
+      store,
+      resolveAccess,
+      segments[0],
+      segments.slice(1),
+      method
+    );
     return;
   }
   notFound("crm.route.not_found", "Ruta CRM v1 no encontrada.");
@@ -205,10 +224,10 @@ async function dispatch(
 async function handleResource(
   req: IncomingMessage,
   res: ServerResponse,
-  config: CrmServerConfig,
   context: RequestContext,
   identity: CrmIdentity,
   store: CrmV1Store,
+  resolveAccess: (requiredCapability: string) => Promise<CrmAccessContext>,
   resource: CrmResource,
   rest: string[],
   method: string
@@ -216,7 +235,7 @@ async function handleResource(
   const command = rest[1] ?? null;
   const write = method === "POST" || method === "PATCH";
   const required = command === "assign" && resource === "cases" ? "crm.cases.assign" : write ? resourceCapabilities[resource].write : resourceCapabilities[resource].read;
-  const access = await resolveCrmAccess(req, context, config, identity, required);
+  const access = await resolveAccess(required);
   if (rest.length === 0 && method === "GET") {
     const page = await store.list(access, resource, parseListQuery(resource, context.url));
     sendJson(res, 200, { data: page.data, page: { limit: Number(context.url.searchParams.get("limit") ?? 25), nextCursor: page.nextCursor, total: page.total }, meta: meta(context, access) }, context.headOnly);
@@ -297,6 +316,17 @@ function sendList(res: ServerResponse, context: RequestContext, access: CrmAcces
 function meta(context: RequestContext, access: CrmAccessContext) { return { requestId: context.requestId, tenantId: access.tenantId, asOf: new Date().toISOString() }; }
 function publicContext(access: CrmAccessContext) { return { activeTenantId: access.tenantId, tenantKey: access.tenantKey, displayName: access.displayName, profileKey: access.profileKey, profileVersion: access.profileVersion, timezone: access.timezone, locale: access.locale, dictionaryVersion: access.dictionaryVersion, capabilities: access.capabilities }; }
 function header(req: IncomingMessage, name: string): string | undefined { const value = req.headers[name]; return Array.isArray(value) ? value[0] : value; }
+function serviceTenantId(req: IncomingMessage): string {
+  const value = header(req, "x-pyrosa-tenant-id");
+  if (!value || !/^[A-Za-z0-9][A-Za-z0-9_.:@/-]{0,127}$/u.test(value)) {
+    throw new CrmV1Error(
+      400,
+      "crm.tenant.required",
+      "La llamada OAuth API requiere un tenant explícito."
+    );
+  }
+  return value;
+}
 function isResource(value: string | undefined): value is CrmResource { return crmResources.includes(value as CrmResource); }
 function isCommand(resource: CrmResource, value: string | null): value is string { return Boolean(value && ((resource === "cases" && ["assign", "transition"].includes(value)) || (resource === "appointments" && ["schedule", "confirm", "reschedule", "cancel", "complete", "no-show"].includes(value)) || (resource === "opportunities" && value === "transition"))); }
 function parsePeriod(url: URL, _timezone: string): { from: string; to: string } { const to = parseDate(url.searchParams.get("to")) ?? new Date(); const from = parseDate(url.searchParams.get("from")) ?? new Date(to.valueOf() - 30 * 86_400_000); if (from >= to) throw new CrmV1Error(400, "crm.period.invalid", "El periodo solicitado no es valido."); return { from: from.toISOString(), to: to.toISOString() }; }

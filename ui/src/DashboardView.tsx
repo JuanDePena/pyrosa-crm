@@ -59,8 +59,7 @@ export function useDashboardSummary(tenantId: string | undefined) {
     const controller = new AbortController();
     setState({ kind: "loading" });
     void fetchCrmJson<DashboardSummaryResponse>("/api/crm/v1/dashboard-summary", {
-      signal: controller.signal,
-      tenantId
+      signal: controller.signal
     }).then((response) => {
       if (!isDashboardSummary(response?.data)) {
         throw new CrmApiError("El resumen ejecutivo no cumple el contrato v1.", {

@@ -1,6 +1,56 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
+import { crmTenantSearchPath } from "./db.js";
 import { listFilterSql, recordPersistenceFields } from "./crmV1Postgres.js";
+import type { CrmAccessContext } from "./crmV1Types.js";
+
+function tenantAccess(tenantKey: string): CrmAccessContext {
+  return {
+    tenantId: `tenant:${tenantKey}`,
+    tenantKey,
+    displayName: `Tenant ${tenantKey}`,
+    schemaName: `pyrosa_democrm_${tenantKey}`,
+    dictionaryVersion: "2026.07.27.0",
+    profileKey: "core",
+    profileVersion: "1",
+    timezone: "America/Santo_Domingo",
+    locale: "es-DO",
+    capabilities: ["crm.dashboard.read"],
+    authorizationDecisionId: `decision:${tenantKey}`,
+    physicalFingerprint: `sha256:${"a".repeat(64)}`,
+    contextVersion: `ctxv1.${"b".repeat(43)}`,
+    decisionReferences: {
+      directory: `directory:${tenantKey}`,
+      store: `store:${tenantKey}`,
+      platform: `platform:${tenantKey}`
+    }
+  };
+}
+
+test("PostgreSQL binds every CRM transaction to an exact tenant-local search_path", () => {
+  assert.equal(
+    crmTenantSearchPath(tenantAccess("8ef427da9f0e")),
+    'pg_catalog,"pyrosa_democrm_8ef427da9f0e","pyrosa_democrm"'
+  );
+  assert.equal(
+    crmTenantSearchPath(tenantAccess("62645c2f125c")),
+    'pg_catalog,"pyrosa_democrm_62645c2f125c","pyrosa_democrm"'
+  );
+  assert.throws(
+    () =>
+      crmTenantSearchPath({
+        ...tenantAccess("8ef427da9f0e"),
+        schemaName: "pyrosa_democrm_62645c2f125c"
+      }),
+    (error: unknown) =>
+      Boolean(
+        error &&
+          typeof error === "object" &&
+          "code" in error &&
+          error.code === "crm.schema.invalid"
+      )
+  );
+});
 
 test("PostgreSQL writes every physical CRM v2607 domain column", () => {
   const cases: Array<{

@@ -1,5 +1,7 @@
 import pg from "pg";
 import type { CrmServerConfig } from "./config.js";
+import type { CrmAccessContext } from "./crmV1Types.js";
+import { CrmV1Error } from "./crmV1Domain.js";
 
 const { Pool } = pg;
 
@@ -40,6 +42,35 @@ export async function withPostgresTransaction<T>(
   } finally {
     client.release();
   }
+}
+
+export async function withCrmTenantTransaction<T>(
+  config: CrmServerConfig,
+  access: CrmAccessContext,
+  work: (client: pg.PoolClient) => Promise<T>
+): Promise<T> {
+  const searchPath = crmTenantSearchPath(access);
+  return withPostgresTransaction(config, async (client) => {
+    await client.query(
+      "SELECT set_config('search_path', $1, true)",
+      [searchPath]
+    );
+    const observed = await client.query<{ search_path: string }>(
+      "SELECT current_setting('search_path') AS search_path"
+    );
+    if (observed.rows[0]?.search_path !== searchPath) {
+      throw new CrmV1Error(
+        500,
+        "crm.database.tenant_binding_failed",
+        "PostgreSQL no confirmó el contexto tenant de la transacción."
+      );
+    }
+    return work(client);
+  });
+}
+
+export function crmTenantSearchPath(access: CrmAccessContext): string {
+  return `pg_catalog,"${tenantSchema(access)}","pyrosa_democrm"`;
 }
 
 export async function closePostgres(): Promise<void> {
@@ -91,4 +122,18 @@ function resolvePgConfig(config: CrmServerConfig): pg.PoolConfig {
     user: config.dbUser,
     password: config.dbPassword
   };
+}
+
+function tenantSchema(access: CrmAccessContext): string {
+  if (
+    !/^pyrosa_(?:demo)?crm_[a-f0-9]{12}$/u.test(access.schemaName) ||
+    !access.schemaName.endsWith(`_${access.tenantKey}`)
+  ) {
+    throw new CrmV1Error(
+      500,
+      "crm.schema.invalid",
+      "El contexto CRM no contiene un schema tenant válido."
+    );
+  }
+  return access.schemaName;
 }

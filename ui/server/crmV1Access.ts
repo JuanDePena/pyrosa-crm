@@ -1,4 +1,3 @@
-import type { IncomingMessage } from "node:http";
 import type { CrmSession } from "./auth.js";
 import type { CrmServerConfig } from "./config.js";
 import { CrmV1Error, assertCapability } from "./crmV1Domain.js";
@@ -93,7 +92,7 @@ type PlatformDecision = {
   tenant_id: string;
 };
 
-type Owner = "directory" | "store" | "platform";
+type Owner = "directory" | "directoryCatalog" | "store" | "platform";
 type OwnerOauthConfig = {
   audience: string;
   clientId: string;
@@ -109,6 +108,11 @@ const ownerContract = {
     audience: "pyrosa-directory",
     clientId: "client-pyrosa-democrm",
     scope: "directory:crm-access:decide"
+  },
+  directoryCatalog: {
+    audience: "pyrosa-directory",
+    clientId: "client-pyrosa-democrm",
+    scope: "directory:tenant-access-catalog:read"
   },
   store: {
     audience: "pyrosa-store",
@@ -164,13 +168,14 @@ export function identityFromPrincipal(
 }
 
 export async function resolveCrmAccess(
-  req: IncomingMessage,
   context: RequestContext,
   config: CrmServerConfig,
   identity: CrmIdentity,
-  requiredCapability: string
+  requiredCapability: string,
+  tenantId: string,
+  contextVersion = "oauth-api:owner-revalidated"
 ): Promise<CrmAccessContext> {
-  const tenantId = requestedTenant(req, config);
+  tenantId = requestedTenant(tenantId);
   if (!/^crm\.[a-z0-9]+(?:[._:-][a-z0-9]+)*$/u.test(requiredCapability) || requiredCapability.includes("*")) {
     throw responseError("crm.capability.invalid", "La capacidad CRM solicitada no es valida.");
   }
@@ -240,25 +245,127 @@ export async function resolveCrmAccess(
     tenantKey,
     displayName: directoryDecision.display_name,
     schemaName,
+    physicalFingerprint: fingerprintValue(
+      platformDecision.physical_fingerprint
+    ),
     dictionaryVersion: opaque(platformDecision.dictionary_version, "dictionary_version"),
     profileKey: directoryDecision.profile_key ?? "core",
     profileVersion: directoryDecision.profile_version ?? "1",
     timezone: directoryDecision.timezone ?? "America/Santo_Domingo",
     locale: directoryDecision.locale ?? "es-DO",
     capabilities,
-    authorizationDecisionId: directoryDecision.authorization_decision_id
+    authorizationDecisionId: directoryDecision.authorization_decision_id,
+    contextVersion,
+    decisionReferences: {
+      directory: directoryDecision.authorization_decision_id,
+      store: storeDecision.authorization_decision_id,
+      platform: platformDecision.authorization_decision_id
+    }
   };
 }
 
-function requestedTenant(req: IncomingMessage, config: CrmServerConfig): string {
-  const header = Array.isArray(req.headers["x-pyrosa-tenant-id"])
-    ? req.headers["x-pyrosa-tenant-id"][0]
-    : req.headers["x-pyrosa-tenant-id"];
-  const value = String(header ?? config.defaultTenantId ?? "").trim();
+function requestedTenant(input: unknown): string {
+  const value = String(input ?? "").trim();
   if (!/^[A-Za-z0-9][A-Za-z0-9_.:@/-]{0,127}$/.test(value)) {
     throw new CrmV1Error(400, "crm.tenant.required", "No se pudo resolver un tenant autorizado para la solicitud.");
   }
   return value;
+}
+
+export type CrmTenantCatalogCandidate = {
+  tenantId: string;
+  tenantKey: string;
+  displayName: string;
+  decisionReference: string;
+  decisionVersion: string;
+  expiresAt: string;
+};
+
+export async function listCrmTenantCatalog(
+  context: RequestContext,
+  config: CrmServerConfig,
+  identity: CrmIdentity
+): Promise<CrmTenantCatalogCandidate[]> {
+  if (identity.kind !== "browser") {
+    throw new CrmV1Error(
+      403,
+      "crm.tenant_context.browser_required",
+      "El catálogo interactivo solo está disponible para sesiones humanas."
+    );
+  }
+  const body = {
+    contract_version: contractVersion,
+    request_id: context.requestId,
+    correlation_id: context.correlationId,
+    application_slug: applicationSlug,
+    identity: {
+      issuer: normalizeHttpsIssuer(identity.issuer),
+      subject: ownerIdentitySubject(identity.subject, identity.principalType)
+    }
+  };
+  const payload = await postDecision(
+    config,
+    "directoryCatalog",
+    config.directoryInternalBaseUrl,
+    "/internal/directory/v1/tenant-access-catalog",
+    body
+  );
+  if (
+    !isRecord(payload) ||
+    payload.contract_version !== contractVersion ||
+    payload.request_id !== context.requestId ||
+    payload.correlation_id !== context.correlationId ||
+    payload.application_slug !== applicationSlug ||
+    payload.authority !== "pyrosa-directory" ||
+    !Array.isArray(payload.tenants)
+  ) {
+    throw responseError(
+      "crm.directory.catalog_invalid",
+      "Directory devolvió un catálogo tenant inválido."
+    );
+  }
+  const expiresAt = futureIso(payload.expires_at, "expires_at");
+  const seen = new Set<string>();
+  return payload.tenants.map((entry) => {
+    if (!isRecord(entry)) {
+      throw responseError(
+        "crm.directory.catalog_invalid",
+        "Directory devolvió una opción tenant inválida."
+      );
+    }
+    const tenantKey = tenantKeyValue(entry.tenant_key);
+    if (seen.has(tenantKey)) {
+      throw responseError(
+        "crm.directory.catalog_invalid",
+        "Directory devolvió una opción tenant duplicada."
+      );
+    }
+    seen.add(tenantKey);
+    if (
+      entry.membership_active !== true ||
+      entry.application_projected !== true ||
+      entry.seat_active !== true
+    ) {
+      throw responseError(
+        "crm.directory.catalog_invalid",
+        "Directory incluyó una opción tenant no elegible."
+      );
+    }
+    return {
+      tenantId: opaque(entry.tenant_id, "tenant_id"),
+      tenantKey,
+      displayName: boundedText(entry.display_name, "display_name", 180),
+      decisionReference: catalogDecisionReference(
+        entry.decision_reference,
+        "dirdec"
+      ),
+      decisionVersion: catalogDecisionReference(
+        entry.decision_version,
+        "sha256"
+      ),
+      expiresAt
+    };
+  });
 }
 
 async function postDecision(
@@ -266,7 +373,7 @@ async function postDecision(
   owner: Owner,
   baseUrl: string,
   pathname: string,
-  body: DecisionRequest
+  body: unknown
 ): Promise<unknown> {
   const url = ownerUrl(baseUrl, pathname, owner);
   const provider = tokenProvider(config, owner);
@@ -392,13 +499,15 @@ function createOwnerTokenProvider(config: CrmServerConfig, oauth: OwnerOauthConf
 }
 
 function ownerOauthConfig(config: CrmServerConfig, owner: Owner): OwnerOauthConfig {
-  const values = owner === "directory"
+  const values = owner === "directory" || owner === "directoryCatalog"
     ? {
         tokenUrl: config.directoryOauthTokenUrl,
         clientId: config.directoryOauthClientId,
         clientSecret: config.directoryOauthClientSecret,
         audience: config.directoryOauthAudience,
-        scope: config.directoryOauthScope
+        scope: owner === "directoryCatalog"
+          ? ownerContract.directoryCatalog.scope
+          : config.directoryOauthScope
       }
     : owner === "store"
       ? {
@@ -631,6 +740,46 @@ function schemaValue(value: unknown, tenantKey: string): string {
     throw responseError("crm.platform.schema_invalid", "Platform devolvio un schema CRM invalido.");
   }
   return schema;
+}
+
+function fingerprintValue(value: unknown): string {
+  const fingerprint = String(value ?? "").trim().toLowerCase();
+  if (!/^sha256:[a-f0-9]{64}$/u.test(fingerprint)) {
+    throw responseError(
+      "crm.platform.response_invalid",
+      "Platform no devolvió un fingerprint físico válido."
+    );
+  }
+  return fingerprint;
+}
+
+function futureIso(value: unknown, field: string): string {
+  const normalized = String(value ?? "").trim();
+  const epoch = Date.parse(normalized);
+  if (!Number.isFinite(epoch) || epoch <= Date.now()) {
+    throw responseError(
+      "crm.directory.catalog_invalid",
+      `Directory devolvió ${field} inválido o vencido.`
+    );
+  }
+  return new Date(epoch).toISOString();
+}
+
+function catalogDecisionReference(
+  value: unknown,
+  prefix: "dirdec" | "sha256"
+): string {
+  const normalized = String(value ?? "").trim();
+  const pattern = prefix === "dirdec"
+    ? /^dirdec:[0-9a-f]{64}$/u
+    : /^sha256:[0-9a-f]{64}$/u;
+  if (!pattern.test(normalized)) {
+    throw responseError(
+      "crm.directory.catalog_invalid",
+      "Directory devolvió una referencia de decisión inválida."
+    );
+  }
+  return normalized;
 }
 
 function exactRecord(value: unknown, fields: string[]): Record<string, unknown> {

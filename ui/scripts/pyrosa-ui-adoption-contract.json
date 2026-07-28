@@ -133,7 +133,7 @@
   },
   "api": {
     "basePath": "/api/crm/v1",
-    "tenantHeader": "X-Pyrosa-Tenant-Id",
+    "tenantHeader": "X-Pyrosa-Tenant-Context-Version",
     "requiredHeaders": ["Idempotency-Key", "If-Match", "X-CSRF-Token"],
     "forbiddenFragments": ["Promise.allSettled", "fallback-preview", "ui-contract-v0", "scaffold", "Atlas Retail Group", "Nova Servicios"]
   },
@@ -145,7 +145,7 @@
   },
   "css": {
     "classification": {
-      "keep": ["crm-dashboard", "crm-detail", "crm-editor", "crm-command", "crm-config", "crm-overview", "crm-notification"],
+      "keep": ["crm-dashboard", "crm-detail", "crm-editor", "crm-command", "crm-config", "crm-overview", "crm-notification", "crm-tenant-scope-selector"],
       "shim": ["crm-workspace", "crm-bootstrap", "crm-filter", "crm-panel", "crm-field", "crm-input", "crm-pagination", "crm-regional"],
       "cleanup": [],
       "blocker": []

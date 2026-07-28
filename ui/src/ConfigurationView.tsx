@@ -40,8 +40,8 @@ export function ConfigurationView({ tenantId, tenantLabel }: { tenantId: string;
     setState({ kind: "loading" });
     setFeedback({});
     void Promise.all([
-      fetchCrmJson<ApiDetailResponse<ProfileDefinition>>("/api/crm/v1/profile/effective", { signal: controller.signal, tenantId }),
-      fetchCrmJson<ApiDetailResponse<TenantConfiguration>>("/api/crm/v1/config", { signal: controller.signal, tenantId })
+      fetchCrmJson<ApiDetailResponse<ProfileDefinition>>("/api/crm/v1/profile/effective", { signal: controller.signal }),
+      fetchCrmJson<ApiDetailResponse<TenantConfiguration>>("/api/crm/v1/config", { signal: controller.signal })
     ]).then(([profileResponse, configResponse]) => {
       if (!isProfile(profileResponse.data) || !isConfiguration(configResponse.data)) {
         throw new CrmApiError("La configuracion no cumple el contrato CRM v1.", {
@@ -76,8 +76,7 @@ export function ConfigurationView({ tenantId, tenantLabel }: { tenantId: string;
         body: form,
         etag: entityEtag(state.config.version),
         idempotencyKey,
-        method: "PATCH",
-        tenantId
+        method: "PATCH"
       });
       if (!isConfiguration(response.data)) {
         throw new CrmApiError("La configuracion actualizada no cumple el contrato CRM v1.", {

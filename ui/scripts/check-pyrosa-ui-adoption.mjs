@@ -258,7 +258,8 @@ check("render failures are contained by the fatal error boundary", () =>
 
 check("API client applies server-resolved tenant context", () =>
   sources.api.includes(contract.api.tenantHeader) &&
-  sources.app.includes("bootstrap.context?.activeTenantId") &&
+  sources.app.includes("bootstrap.tenantContext?.contextVersion") &&
+  sources.app.includes("bootstrap.tenantContext?.selected?.tenantKey") &&
   !sources.app.includes("setTenantId")
 );
 for (const header of contract.api.requiredHeaders) {

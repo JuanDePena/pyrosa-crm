@@ -56,6 +56,7 @@ export type CrmServerConfig = {
   platformOauthScope: string;
   accessTimeoutMs: number;
   defaultTenantId: string | null;
+  tenantContextSealSecret: string | null;
 };
 
 export const mimeTypes: Record<string, string> = {
@@ -177,7 +178,10 @@ export function loadConfig(): CrmServerConfig {
       normalizeOptionalString(process.env.PYROSA_CRM_PLATFORM_OAUTH_SCOPE) ??
       "platform.provisioning.readiness.consume",
     accessTimeoutMs: parsePositiveInteger(process.env.PYROSA_CRM_ACCESS_TIMEOUT_MS, 4000),
-    defaultTenantId: normalizeOptionalString(process.env.PYROSA_CRM_DEFAULT_TENANT_ID)
+    defaultTenantId: normalizeOptionalString(process.env.PYROSA_CRM_DEFAULT_TENANT_ID),
+    tenantContextSealSecret: normalizeOptionalString(
+      process.env.PYROSA_CRM_TENANT_CONTEXT_SEAL_SECRET
+    )
   };
 }
 

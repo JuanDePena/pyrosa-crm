@@ -1,6 +1,7 @@
 import React from "react";
 import {
   Bell,
+  Building2,
   LogOut,
   MonitorSmartphone,
   Settings,
@@ -11,6 +12,7 @@ import {
   DetailDrawer,
   EmptyState,
   LoadingState,
+  SelectField,
   StatusBadge,
   UserDrawer
 } from "@pyrosa/ui";
@@ -22,7 +24,16 @@ import { ConfigurationView } from "./ConfigurationView";
 import { DashboardView, useDashboardSummary } from "./DashboardView";
 import { FatalErrorLanding } from "./FatalErrorLanding";
 import { ResourceView } from "./ResourceViews";
-import { CrmApiError, fetchAppJson, publicMessageFrom, setCrmCsrfToken, technicalIssueFrom } from "./crmApi";
+import {
+  CrmApiError,
+  fetchAppJson,
+  newIdempotencyKey,
+  publicMessageFrom,
+  setCrmCsrfToken,
+  setCrmTenantContextVersion,
+  switchCrmTenant,
+  technicalIssueFrom
+} from "./crmApi";
 import type { BootstrapResponse, ClientSession, CrmLocation, SessionResponse } from "./crmTypes";
 import { isResourceRoute, locationFromHash, navigateToLocation } from "./crmRouting";
 import {
@@ -50,10 +61,13 @@ export function CrmApp() {
   const [location, setLocation] = React.useState<CrmLocation>(() => currentLocation());
   const [openDrawer, setOpenDrawer] = React.useState<OpenDrawer>(null);
   const [themeMode, setThemeMode] = React.useState<PyrosaThemeMode>(readStoredThemeMode);
+  const [tenantSwitching, setTenantSwitching] = React.useState(false);
+  const tenantSwitchRequest = React.useRef<AbortController | null>(null);
 
   React.useEffect(() => {
     const controller = new AbortController();
     setCrmCsrfToken(undefined);
+    setCrmTenantContextVersion(undefined);
     setBootstrapState({ kind: "loading" });
     void Promise.all([
       fetchAppJson<SessionResponse>("/api/crm/session", controller.signal),
@@ -72,7 +86,6 @@ export function CrmApp() {
           retryable: false
         });
       }
-      setCrmCsrfToken(session.csrfToken);
       const tenantId = bootstrap.context?.activeTenantId ?? session.tenant?.id;
       if (!tenantId) {
         throw new CrmApiError("No hay un tenant autorizado activo para DemoCRM.", {
@@ -86,6 +99,23 @@ export function CrmApp() {
           retryable: true
         });
       }
+      const contextVersion =
+        bootstrap.tenantContext?.contextVersion ??
+        bootstrap.context?.contextVersion;
+      if (
+        !contextVersion ||
+        !bootstrap.tenantContext?.selected?.tenantKey
+      ) {
+        throw new CrmApiError(
+          "No hay un contexto tenant elegible activo para DemoCRM.",
+          {
+            code: "crm.bootstrap.tenant_context_missing",
+            retryable: false
+          }
+        );
+      }
+      setCrmCsrfToken(session.csrfToken);
+      setCrmTenantContextVersion(contextVersion);
       setBootstrapState({
         bootstrap,
         kind: "ready",
@@ -99,6 +129,11 @@ export function CrmApp() {
     });
     return () => controller.abort();
   }, [bootstrapKey]);
+
+  React.useEffect(
+    () => () => tenantSwitchRequest.current?.abort(),
+    []
+  );
 
   React.useEffect(() => {
     if (typeof window === "undefined") return undefined;
@@ -171,6 +206,54 @@ export function CrmApp() {
     statusByRoute: navigationStatuses(dashboard.state, bootstrap.context?.profileVersion)
   });
   const canGoBack = location.routeId !== "dashboard";
+  const tenantContext = bootstrap.tenantContext;
+  const tenantAction = tenantContext ? (
+    <CrmTenantScopeSelector
+      disabled={tenantSwitching}
+      onChange={(tenantKey) => {
+        if (
+          !session.csrfToken ||
+          !tenantContext.contextVersion ||
+          tenantKey === tenantContext.selected?.tenantKey
+        ) {
+          return;
+        }
+        tenantSwitchRequest.current?.abort();
+        const controller = new AbortController();
+        tenantSwitchRequest.current = controller;
+        setTenantSwitching(true);
+        void switchCrmTenant({
+          csrfToken: session.csrfToken,
+          expectedContextVersion: tenantContext.contextVersion,
+          idempotencyKey: newIdempotencyKey(),
+          tenantKey,
+          signal: controller.signal
+        })
+          .then((response) => {
+            setCrmTenantContextVersion(response.contextVersion);
+            setOpenDrawer(null);
+            navigateToLocation("dashboard");
+            setBootstrapKey((value) => value + 1);
+          })
+          .catch((error: unknown) => {
+            if (
+              error instanceof DOMException &&
+              error.name === "AbortError"
+            ) {
+              return;
+            }
+            setBootstrapState({ error, kind: "error" });
+          })
+          .finally(() => {
+            if (tenantSwitchRequest.current === controller) {
+              tenantSwitchRequest.current = null;
+              setTenantSwitching(false);
+            }
+          });
+      }}
+      tenantContext={tenantContext}
+    />
+  ) : undefined;
 
   function navigateBack() {
     if (location.mode === "detail" || location.mode === "edit" || location.mode === "new") {
@@ -184,6 +267,7 @@ export function CrmApp() {
     <>
       <style>{themeCss}</style>
       <BusinessOpsShellTemplate<ShellRoute>
+        actions={tenantAction}
         alertsCount={0}
         alertsExpanded={openDrawer === "alerts"}
         alertsLabel="Notificaciones"
@@ -289,6 +373,60 @@ export function CrmApp() {
         {renderView(location, tenantId, tenantLabel, dashboard)}
       </BusinessOpsShellTemplate>
     </>
+  );
+}
+
+function CrmTenantScopeSelector({
+  disabled,
+  onChange,
+  tenantContext
+}: {
+  disabled: boolean;
+  onChange: (tenantKey: string) => void;
+  tenantContext: NonNullable<BootstrapResponse["tenantContext"]>;
+}) {
+  const options = (tenantContext.options ?? []).map((tenant) => ({
+    value: tenant.tenantKey ?? "",
+    label: tenant.label ?? tenant.tenantKey ?? "Tenant",
+    keywords: [
+      tenant.tenantId ?? "",
+      tenant.tenantKey ?? "",
+      tenant.status ?? ""
+    ],
+    disabled:
+      tenant.status !== "ready" ||
+      !/^[0-9a-f]{12}$/u.test(tenant.tenantKey ?? "")
+  }));
+  return (
+    <div className="crm-tenant-scope-selector">
+      <span
+        aria-hidden="true"
+        className="crm-tenant-scope-selector__icon"
+      >
+        <Building2 size={15} strokeWidth={2.1} />
+      </span>
+      <SelectField
+        ariaLabel="Cambiar tenant CRM"
+        className="crm-tenant-scope-selector__select"
+        disabled={disabled || options.length === 0}
+        hideLabel
+        label="Tenant"
+        onValueChange={onChange}
+        options={
+          options.length > 0
+            ? options
+            : [
+                {
+                  value: "",
+                  label: "Sin tenants disponibles",
+                  disabled: true
+                }
+              ]
+        }
+        searchThreshold={6}
+        value={tenantContext.selected?.tenantKey ?? ""}
+      />
+    </div>
   );
 }
 

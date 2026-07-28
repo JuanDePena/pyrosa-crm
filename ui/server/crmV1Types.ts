@@ -24,6 +24,7 @@ export type CrmAccessContext = {
   tenantKey: string;
   displayName: string;
   schemaName: string;
+  physicalFingerprint: string;
   dictionaryVersion: string;
   profileKey: string;
   profileVersion: string;
@@ -31,6 +32,12 @@ export type CrmAccessContext = {
   locale: string;
   capabilities: string[];
   authorizationDecisionId: string;
+  contextVersion: string;
+  decisionReferences: {
+    directory: string;
+    store: string;
+    platform: string;
+  };
 };
 
 export type CrmRecord = {

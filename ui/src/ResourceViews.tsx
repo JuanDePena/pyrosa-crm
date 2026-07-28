@@ -124,8 +124,7 @@ function ResourceList({ config, initialAttention, initialDirection, initialSort,
     if (cursor) parameters.set("cursor", cursor);
     setState({ kind: "loading" });
     void fetchCrmJson<ApiListResponse<CrmEntity>>(`${config.endpoint}?${parameters.toString()}`, {
-      signal: controller.signal,
-      tenantId
+      signal: controller.signal
     }).then((response) => {
       if (!isEntityListResponse(response)) {
         throw new CrmApiError("El inventario no cumple el contrato CRM v1.", {
@@ -289,8 +288,7 @@ function ResourceDetail({
     const controller = new AbortController();
     setState({ kind: "loading" });
     void fetchCrmJson<ApiDetailResponse<CrmEntity>>(`${config.endpoint}/${encodeURIComponent(recordId)}`, {
-      signal: controller.signal,
-      tenantId
+      signal: controller.signal
     }).then((response) => {
       if (!isEntity(response?.data)) {
         throw new CrmApiError("El detalle no cumple el contrato CRM v1.", {
@@ -389,8 +387,7 @@ function ResourceEditor({
     setLoading(true);
     setError(null);
     void fetchCrmJson<ApiDetailResponse<CrmEntity>>(`${config.endpoint}/${encodeURIComponent(recordId)}`, {
-      signal: controller.signal,
-      tenantId
+      signal: controller.signal
     }).then((response) => {
       if (!isEntity(response?.data)) {
         throw new CrmApiError("El recurso no cumple el contrato CRM v1.", {
@@ -433,8 +430,7 @@ function ResourceEditor({
           body,
           etag: isEdit ? entityEtag(entity?.version) : undefined,
           idempotencyKey,
-          method: isEdit ? "PATCH" : "POST",
-          tenantId
+          method: isEdit ? "PATCH" : "POST"
         }
       );
       if (!isEntity(response?.data)) {
@@ -573,8 +569,7 @@ function ResourceCommands({
         body: command.body,
         etag: entityEtag(entity.version),
         idempotencyKey,
-        method: "POST",
-        tenantId
+        method: "POST"
       });
       setAttempt({ key: newIdempotencyKey(), signature: "" });
       setFeedback({ message: "Comando aceptado y auditado." });

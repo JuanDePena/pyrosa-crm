@@ -23,7 +23,7 @@
     "test:dictionary-owner-v2": "node ./scripts/generate-crm-global-genesis-owner-v2.mjs --check && node ./scripts/generate-crm-genesis-owner-v2.mjs --check && node --test ./scripts/dictionary-owner-v2.test.mjs",
     "test:oauth-api": "rm -rf build/oauth-api-test && tsc -p tsconfig.oauth-api-test.json && node --test build/oauth-api-test/auth.test.js build/oauth-api-test/oauthApiAuth.test.js",
     "test:tenant-context-contract": "node --test ./scripts/tenant-context-conformance-fixtures.test.mjs",
-    "test:crm-v1": "rm -rf build/crm-v1-test && tsc -p tsconfig.crm-v1-test.json && node --test build/crm-v1-test/crmV1Access.test.js build/crm-v1-test/crmV1Dictionary.test.js build/crm-v1-test/crmV1Domain.test.js build/crm-v1-test/crmV1Postgres.test.js build/crm-v1-test/crmV1SyntheticPilot.test.js && npm run test:tenant-context-contract",
+    "test:crm-v1": "rm -rf build/crm-v1-test && tsc -p tsconfig.crm-v1-test.json && node --test build/crm-v1-test/crmV1Access.test.js build/crm-v1-test/crmV1Dictionary.test.js build/crm-v1-test/crmV1Domain.test.js build/crm-v1-test/crmV1Postgres.test.js build/crm-v1-test/crmV1SyntheticPilot.test.js build/crm-v1-test/tenantContext.test.js && npm run test:tenant-context-contract",
     "pilot:synthetic": "rm -rf build/crm-v2607-pilot && tsc -p tsconfig.crm-v2607-pilot.json && node build/crm-v2607-pilot/crmV1SyntheticPilot.js",
     "test:pilot:synthetic": "rm -rf build/crm-v2607-pilot && tsc -p tsconfig.crm-v2607-pilot.json && node --test build/crm-v2607-pilot/crmV1SyntheticPilot.test.js",
     "build": "npm run typecheck && npm run build:client && npm run build:server && npm run build:manifest",

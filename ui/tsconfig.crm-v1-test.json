@@ -18,6 +18,8 @@
     "server/crmV1Domain.test.ts",
     "server/crmV1Access.test.ts",
     "server/crmV1Dictionary.test.ts",
+    "server/tenantContext.ts",
+    "server/tenantContext.test.ts",
     "server/oauthApiAuth.ts"
   ],
   "exclude": []

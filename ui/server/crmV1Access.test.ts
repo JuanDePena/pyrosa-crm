@@ -5,6 +5,7 @@ import type { CrmSession } from "./auth.js";
 import { loadConfig, type CrmServerConfig } from "./config.js";
 import {
   identityFromPrincipal,
+  listCrmTenantCatalog,
   resetCrmOwnerTokenProvidersForTests,
   resolveCrmAccess
 } from "./crmV1Access.js";
@@ -63,9 +64,16 @@ function resolveAccess(
   req: IncomingMessage,
   configured: CrmServerConfig,
   principal: CrmIdentity,
-  capability: string
+  capability: string,
+  requestedTenantId = tenantId
 ) {
-  return resolveCrmAccess(req, createRequestContext(req), configured, principal, capability);
+  return resolveCrmAccess(
+    createRequestContext(req),
+    configured,
+    principal,
+    capability,
+    requestedTenantId
+  );
 }
 
 test("uses exact snake_case v1 requests and three isolated client_credentials grants", async () => {
@@ -86,7 +94,13 @@ test("uses exact snake_case v1 requests and three isolated client_credentials gr
 
   const req = request();
   const context = createRequestContext(req);
-  const result = await resolveCrmAccess(req, context, config(), identity, "crm.cases.read");
+  const result = await resolveCrmAccess(
+    context,
+    config(),
+    identity,
+    "crm.cases.read",
+    tenantId
+  );
 
   assert.equal(result.schemaName, `pyrosa_democrm_${tenantKey}`);
   assert.deepEqual(result.capabilities, ["crm.cases.read", "crm.dashboard.read"]);
@@ -139,10 +153,74 @@ test("accepts the fixed single-character tenant id only as a candidate for owner
     }
   } as unknown as IncomingMessage;
 
-  const result = await resolveAccess(req, config({ defaultTenantId: "1" }), identity, "crm.cases.read");
+  const result = await resolveAccess(
+    req,
+    config({ defaultTenantId: "1" }),
+    identity,
+    "crm.cases.read",
+    "1"
+  );
 
   assert.equal(result.tenantId, "1");
   assert.deepEqual(observedTenantIds, ["1", "1", "1"]);
+});
+
+test("uses the dedicated Directory catalog scope and validates tenant options", async () => {
+  const oauthBodies: string[] = [];
+  globalThis.fetch = async (input, init) => {
+    const url = new URL(String(input));
+    if (url.pathname === "/oauth/token") {
+      const body = String(init?.body);
+      oauthBodies.push(body);
+      return json({
+        access_token: "oauth-directory-catalog-token-0123456789abcdef",
+        token_type: "Bearer",
+        expires_in: 300,
+        scope: "directory:tenant-access-catalog:read"
+      });
+    }
+    const body = JSON.parse(String(init?.body)) as Record<string, unknown>;
+    return json({
+      contract_version: "1.0.0",
+      request_id: body.request_id,
+      correlation_id: body.correlation_id,
+      application_slug: "pyrosa-democrm",
+      authority: "pyrosa-directory",
+      expires_at: "2099-07-27T01:06:00.000Z",
+      tenants: [
+        {
+          tenant_id: tenantId,
+          tenant_key: tenantKey,
+          display_name: "Tenant sintetico",
+          membership_active: true,
+          application_projected: true,
+          seat_active: true,
+          decision_reference: `dirdec:${"a".repeat(64)}`,
+          decision_version: `sha256:${"b".repeat(64)}`
+        }
+      ]
+    });
+  };
+  const req = request();
+  const browserIdentity: CrmIdentity = {
+    ...identity,
+    clientId: null,
+    kind: "browser",
+    principalType: "human",
+    subject: "3",
+    scopes: []
+  };
+  const options = await listCrmTenantCatalog(
+    createRequestContext(req),
+    config(),
+    browserIdentity
+  );
+
+  assert.equal(options.length, 1);
+  assert.equal(options[0]?.tenantKey, tenantKey);
+  assert.deepEqual(oauthBodies, [
+    "audience=pyrosa-directory&grant_type=client_credentials&scope=directory%3Atenant-access-catalog%3Aread"
+  ]);
 });
 
 test("reuses the generated RequestContext identifiers for every owner decision", async () => {
@@ -157,7 +235,13 @@ test("reuses the generated RequestContext identifiers for every owner decision",
   const req = request({ "x-request-id": "bad", "x-correlation-id": "bad" });
   const context = createRequestContext(req);
 
-  await resolveCrmAccess(req, context, config(), identity, "crm.cases.read");
+  await resolveCrmAccess(
+    context,
+    config(),
+    identity,
+    "crm.cases.read",
+    tenantId
+  );
 
   assert.match(context.requestId, /^[0-9a-f-]{36}$/u);
   assert.equal(context.correlationId, context.requestId);

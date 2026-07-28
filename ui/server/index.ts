@@ -26,7 +26,7 @@ import {
 } from "./http.js";
 import { buildActionPreview, buildCrmContracts } from "./contracts.js";
 import { authenticateCrmApiBearer, hasApiAuthorization, type CrmApiPrincipal } from "./oauthApiAuth.js";
-import { handleCrmV1, resolveBootstrapContext, sendCrmV1Error } from "./crmV1Http.js";
+import { handleCrmV1, sendCrmV1Error } from "./crmV1Http.js";
 import { CrmV1Error } from "./crmV1Domain.js";
 import {
   assertReleaseFresh,
@@ -40,6 +40,18 @@ import {
   createCrmStandaloneLandingRenderer,
   type CrmStandaloneLandingRenderer
 } from "./applicationState.js";
+import {
+  assertTenantContextCsrf,
+  deleteCrmTenantSession,
+  loadCrmTenantSession,
+  parseTenantContextSwitchRequest,
+  type CrmTenantSessionState
+} from "./tenantContext.js";
+import {
+  publicTenantContext,
+  refreshCrmTenantSession,
+  switchCrmTenantContext
+} from "./tenantContextService.js";
 
 export function createCrmServer(release: CrmRuntimeRelease, config: CrmServerConfig = loadConfig()) {
   assertReleaseMatchesConfig(release, config);
@@ -331,6 +343,8 @@ async function handleRequest(
     if (!allowGetOrHead(req, res)) {
       return;
     }
+    const session = await loadCrmSession(req, null, config);
+    if (session) deleteCrmTenantSession(session.sid);
     clearSessionCookie(req, res);
     sendRedirect(res, 302, buildLogoutRedirect(req, config), context.headOnly);
     return;
@@ -361,7 +375,7 @@ async function handleRequest(
         ok: true,
         session: publicSession(
           session,
-          config.defaultTenantId ? { id: config.defaultTenantId } : null
+          tenantFromState(loadCrmTenantSession(session))
         )
       },
       context.headOnly
@@ -378,7 +392,12 @@ async function handleRequest(
     if (!session) {
       return;
     }
-    const crmContext = await resolveBootstrapContext(req, context, config, session);
+    const snapshot = await refreshCrmTenantSession({
+      session,
+      config,
+      context
+    });
+    const crmContext = snapshot.access;
     sendJson(
       res,
       200,
@@ -393,22 +412,31 @@ async function handleRequest(
         platform: buildPlatformContracts(config),
         auth: {
           mode: "delegated-ui-auth",
-          session: publicSession(session, {
-            id: crmContext.tenantId,
-            label: crmContext.displayName
-          })
+          session: publicSession(
+            session,
+            crmContext
+              ? {
+                  id: crmContext.tenantId,
+                  label: crmContext.displayName
+                }
+              : null
+          )
         },
-        context: {
-          activeTenantId: crmContext.tenantId,
-          tenantKey: crmContext.tenantKey,
-          displayName: crmContext.displayName,
-          profileKey: crmContext.profileKey,
-          profileVersion: crmContext.profileVersion,
-          timezone: crmContext.timezone,
-          locale: crmContext.locale,
-          dictionaryVersion: crmContext.dictionaryVersion,
-          capabilities: crmContext.capabilities
-        },
+        tenantContext: publicTenantContext(snapshot.state),
+        context: crmContext
+          ? {
+              activeTenantId: crmContext.tenantId,
+              tenantKey: crmContext.tenantKey,
+              displayName: crmContext.displayName,
+              profileKey: crmContext.profileKey,
+              profileVersion: crmContext.profileVersion,
+              timezone: crmContext.timezone,
+              locale: crmContext.locale,
+              dictionaryVersion: crmContext.dictionaryVersion,
+              capabilities: crmContext.capabilities,
+              contextVersion: crmContext.contextVersion
+            }
+          : null,
         modules: [
           { key: "accounts", label: "Cuentas", status: "canary" },
           { key: "contacts", label: "Contactos", status: "canary" },
@@ -421,6 +449,36 @@ async function handleRequest(
       },
       context.headOnly
     );
+    return;
+  }
+
+  if (
+    context.url.pathname ===
+    "/api/ui/v1/tenant-context/switch"
+  ) {
+    if (req.method !== "POST") {
+      res.setHeader("allow", "POST");
+      sendText(res, 405, "Method Not Allowed");
+      return;
+    }
+    const session = await requireCrmSession(
+      req,
+      res,
+      config,
+      context.headOnly
+    );
+    if (!session) return;
+    assertTenantContextCsrf(session, req);
+    const request = parseTenantContextSwitchRequest(
+      await readRequestJson(req)
+    );
+    const switched = await switchCrmTenantContext({
+      session,
+      config,
+      context,
+      request
+    });
+    sendJson(res, 200, switched.response, false);
     return;
   }
 
@@ -601,6 +659,55 @@ function isCrmV1Request(req: IncomingMessage): boolean {
 
 function withQuery(url: URL): string {
   return `${url.pathname}${url.search}`;
+}
+
+function tenantFromState(
+  state: CrmTenantSessionState | null
+): { id: string; label?: string } | null {
+  if (!state?.interactive) return null;
+  return {
+    id: state.interactive.tenantId,
+    label:
+      state.options.find(
+        (option) => option.tenantKey === state.interactive?.tenantKey
+      )?.label ?? "Tenant activo"
+  };
+}
+
+async function readRequestJson(
+  req: IncomingMessage,
+  maxBytes = 65_536
+): Promise<unknown> {
+  const chunks: Buffer[] = [];
+  let size = 0;
+  for await (const chunk of req) {
+    const value = Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk);
+    size += value.length;
+    if (size > maxBytes) {
+      throw new CrmV1Error(
+        413,
+        "crm.request.too_large",
+        "El cuerpo excede el límite permitido."
+      );
+    }
+    chunks.push(value);
+  }
+  if (chunks.length === 0) {
+    throw new CrmV1Error(
+      400,
+      "crm.request.json_required",
+      "La solicitud requiere un cuerpo JSON."
+    );
+  }
+  try {
+    return JSON.parse(Buffer.concat(chunks).toString("utf8")) as unknown;
+  } catch {
+    throw new CrmV1Error(
+      400,
+      "crm.request.json_invalid",
+      "El cuerpo JSON no es válido."
+    );
+  }
 }
 
 export function publicSession(

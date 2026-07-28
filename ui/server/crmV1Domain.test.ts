@@ -36,7 +36,14 @@ function access(tenantId: string, capabilities = fullCapabilities): CrmAccessCon
     tenantId, tenantKey, displayName: `Tenant ${tenantId}`, schemaName: `pyrosa_democrm_${tenantKey}`,
     dictionaryVersion: "2.0.1", profileKey: "healthcare-call-center", profileVersion: "1",
     timezone: "America/Santo_Domingo", locale: "es-DO", capabilities,
-    authorizationDecisionId: `decision:${tenantId}`
+    authorizationDecisionId: `decision:${tenantId}`,
+    physicalFingerprint: `placement:${tenantKey}`,
+    contextVersion: `context:${tenantKey}`,
+    decisionReferences: {
+      directory: `directory:${tenantId}`,
+      store: `store:${tenantId}`,
+      platform: `platform:${tenantId}`
+    }
   };
 }
 

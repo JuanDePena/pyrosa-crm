@@ -448,7 +448,14 @@ function access(tenantId: string, capabilities = fullCapabilities): CrmAccessCon
     timezone: "America/Santo_Domingo",
     locale: "es-DO",
     capabilities,
-    authorizationDecisionId: `synthetic-decision:${tenantId}`
+    authorizationDecisionId: `synthetic-decision:${tenantId}`,
+    physicalFingerprint: `synthetic-placement:${tenantKey}`,
+    contextVersion: `synthetic-context:${tenantKey}`,
+    decisionReferences: {
+      directory: `synthetic-directory:${tenantId}`,
+      store: `synthetic-store:${tenantId}`,
+      platform: `synthetic-platform:${tenantId}`
+    }
   };
 }
 

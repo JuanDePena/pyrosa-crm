@@ -1,6 +1,12 @@
 import type pg from "pg";
 import type { CrmServerConfig } from "./config.js";
-import { withPostgresTransaction } from "./db.js";
+import {
+  withCrmTenantTransaction
+} from "./db.js";
+import {
+  createTenantWorkContext,
+  tenantNamespace
+} from "./tenantContext.js";
 import { CrmV1Error, defaultTenantConfiguration, deriveLifecycleFields, opaqueId, resolveIndustryProfile } from "./crmV1Domain.js";
 import { commandPatch, reportCatalog, type CrmCommand, type CrmV1Store } from "./crmV1Store.js";
 import type {
@@ -80,6 +86,7 @@ export class PostgresCrmV1Store implements CrmV1Store {
     values.push(query.limit, offset);
     const order = sortExpressions[resource][query.sort];
     const result = await this.query<RecordRow & { full_count: string | number }>(
+      access,
       `SELECT ${recordProjection(resource)},
               count(*) OVER() AS full_count
          FROM ${schema}.${table}
@@ -95,6 +102,7 @@ export class PostgresCrmV1Store implements CrmV1Store {
 
   async get(access: CrmAccessContext, resource: CrmResource, id: string): Promise<CrmRecord | null> {
     const result = await this.query<RecordRow>(
+      access,
       `SELECT ${recordProjection(resource)}
          FROM ${schemaIdent(access)}.${tables[resource]} WHERE id = $1 AND archived_at IS NULL LIMIT 1`,
       [id]
@@ -174,7 +182,7 @@ export class PostgresCrmV1Store implements CrmV1Store {
     } catch (error) {
       if (error instanceof CrmV1Error) {
         try {
-          await withPostgresTransaction(this.config, async (client) => {
+          await withCrmTenantTransaction(this.config, mutation.access, async (client) => {
             await appendRejectedAudit(client, schemaIdent(mutation.access), mutation, `${resource}.${command.name}`, resource, id, error.code);
           });
         } catch {
@@ -193,7 +201,7 @@ export class PostgresCrmV1Store implements CrmV1Store {
       accounts: string; contacts: string; cases: string; cases_open: string; cases_overdue: string;
       activities: string; activities_open: string; appointments: string; appointments_stock: string; appointment_exceptions: string;
       opportunities: string; opportunities_open: string; stock_total: string;
-    }>(`SELECT
+    }>(access, `SELECT
       (SELECT count(*) FROM ${schema}.crm_accounts WHERE archived_at IS NULL AND updated_at >= $1::timestamptz AND updated_at < $2::timestamptz)::text AS accounts,
       (SELECT count(*) FROM ${schema}.crm_contacts WHERE archived_at IS NULL AND updated_at >= $1::timestamptz AND updated_at < $2::timestamptz)::text AS contacts,
       (SELECT count(*) FROM ${schema}.crm_cases WHERE archived_at IS NULL AND updated_at >= $1::timestamptz AND updated_at < $2::timestamptz)::text AS cases,
@@ -226,6 +234,7 @@ export class PostgresCrmV1Store implements CrmV1Store {
 
   async getConfiguration(access: CrmAccessContext): Promise<TenantConfiguration> {
     const result = await this.query<{ configuration_json: TenantConfiguration; version: string | number; updated_at: Date | string }>(
+      access,
       `SELECT configuration_json, version, updated_at FROM ${schemaIdent(access)}.crm_tenant_configuration WHERE singleton_key = 'effective' LIMIT 1`
     );
     if (!result.rows[0]) return { ...defaultTenantConfiguration(access.profileKey, access.profileVersion), timezone: access.timezone, locale: access.locale };
@@ -265,13 +274,25 @@ export class PostgresCrmV1Store implements CrmV1Store {
     return this.mutate(mutation, `job:${kind}`, async (client, schema) => {
       const now = new Date(); const id = opaqueId(kind === "export" ? "export" : "report");
       const expiresAt = kind === "export" ? new Date(now.valueOf() + 86_400_000).toISOString() : null;
+      const tenantWorkContext = createTenantWorkContext({
+        access: mutation.access,
+        operation: `crm.job.${kind}`,
+        correlationId: mutation.correlationId,
+        idempotencyKey: mutation.idempotencyKey,
+        now
+      });
       const result = await client.query<RecordRow>(
         `INSERT INTO ${schema}.crm_jobs (id, kind, status, expires_at, record_json, version, created_at, updated_at)
          VALUES ($1,$2,'accepted',$3,$4::jsonb,1,NOW(),NOW())
          RETURNING id, status, NULL::text AS owner_id, record_json, version, created_at, updated_at, NULL::timestamptz AS archived_at`,
-        [id, kind, expiresAt, JSON.stringify({ ...input, kind, expiresAt })]
+        [
+          id,
+          kind,
+          expiresAt,
+          JSON.stringify({ ...input, kind, expiresAt, tenantWorkContext })
+        ]
       );
-      const job = { ...rowToRecord(mutation.access, result.rows[0]), kind, expiresAt } as CrmJob;
+      const job = { ...publicJobRecord(mutation.access, result.rows[0]), kind, expiresAt } as CrmJob;
       await appendAuditAndOutbox(client, schema, mutation, `${kind}.accepted`, kind, id, { id, status: "accepted" });
       return { job, replayed: false };
     });
@@ -279,10 +300,11 @@ export class PostgresCrmV1Store implements CrmV1Store {
 
   async getJob(access: CrmAccessContext, id: string): Promise<CrmJob | null> {
     const result = await this.query<RecordRow & { kind: "report-run" | "export"; expires_at: Date | string | null }>(
+      access,
       `SELECT id, kind, status, NULL::text AS owner_id, record_json, version, created_at, updated_at, NULL::timestamptz AS archived_at, expires_at
        FROM ${schemaIdent(access)}.crm_jobs WHERE id=$1 LIMIT 1`, [id]
     );
-    return result.rows[0] ? { ...rowToRecord(access, result.rows[0]), kind: result.rows[0].kind, expiresAt: result.rows[0].expires_at ? isoDate(result.rows[0].expires_at) : null } as CrmJob : null;
+    return result.rows[0] ? { ...publicJobRecord(access, result.rows[0]), kind: result.rows[0].kind, expiresAt: result.rows[0].expires_at ? isoDate(result.rows[0].expires_at) : null } as CrmJob : null;
   }
 
   async importPreflight(input: Record<string, unknown>, mutation: CrmMutationContext): Promise<{ batch: ImportBatch; replayed: boolean }> {
@@ -298,8 +320,14 @@ export class PostgresCrmV1Store implements CrmV1Store {
       for (const record of records) { const id = String(record.externalId ?? ""); if (seen.has(id) && id) duplicates.add(id); seen.add(id); }
       const quarantine = records.flatMap((record, index) => { const fields = [!record.externalId ? "externalId" : "", !record.caseSubject ? "caseSubject" : "", duplicates.has(String(record.externalId)) ? "externalId" : ""].filter(Boolean); return fields.length ? [{ sourceRow: index + 1, code: duplicates.has(String(record.externalId)) ? "duplicate" : "required", fields: [...new Set(fields)] }] : []; });
       const id = opaqueId("import"); const acceptedCount = records.length - quarantine.length;
+      const tenantWorkContext = createTenantWorkContext({
+        access: mutation.access,
+        operation: "crm.import.preflight",
+        correlationId: mutation.correlationId,
+        idempotencyKey: mutation.idempotencyKey
+      });
       await client.query(`INSERT INTO ${schema}.crm_import_batches (id,status,source_fingerprint,source_record_count,accepted_count,duplicate_count,quarantine_count,quarantine_json,version,created_at,updated_at) VALUES ($1,'staged',$2,$3,$4,$5,$6,$7::jsonb,1,NOW(),NOW())`, [id,fingerprint,records.length,acceptedCount,quarantine.filter((item)=>item.code==="duplicate").length,quarantine.length,JSON.stringify(quarantine)]);
-      for (const record of records) await client.query(`INSERT INTO ${schema}.crm_import_records (batch_id,source_row,normalized_json,status,created_at) VALUES ($1,$2,$3::jsonb,$4,NOW())`, [id,record.sourceRow,JSON.stringify(record),quarantine.some((item)=>item.sourceRow===record.sourceRow)?"quarantined":"accepted"]);
+      for (const record of records) await client.query(`INSERT INTO ${schema}.crm_import_records (batch_id,source_row,normalized_json,status,created_at) VALUES ($1,$2,$3::jsonb,$4,NOW())`, [id,record.sourceRow,JSON.stringify({ ...record, tenantWorkContext }),quarantine.some((item)=>item.sourceRow===record.sourceRow)?"quarantined":"accepted"]);
       const batch: ImportBatch = { id, tenantId: mutation.access.tenantId, status:"staged",sourceFingerprint:fingerprint,sourceRecordCount:records.length,acceptedCount,duplicateCount:quarantine.filter((item)=>item.code==="duplicate").length,quarantineCount:quarantine.length,quarantine,version:1,createdAt:new Date().toISOString(),updatedAt:new Date().toISOString(),archivedAt:null };
       await appendAuditAndOutbox(client,schema,mutation,"import.staged","import",id,{sourceRecordCount:records.length,quarantineCount:quarantine.length});
       return { batch, replayed:false };
@@ -328,12 +356,12 @@ export class PostgresCrmV1Store implements CrmV1Store {
     });
   }
 
-  async getImport(access:CrmAccessContext,id:string):Promise<ImportBatch|null>{ return withPostgresTransaction(this.config,(client)=>loadImport(client,access,schemaIdent(access),id,false)); }
+  async getImport(access:CrmAccessContext,id:string):Promise<ImportBatch|null>{ return withCrmTenantTransaction(this.config,access,(client)=>loadImport(client,access,schemaIdent(access),id,false)); }
 
-  private async query<T extends pg.QueryResultRow>(text:string,values:unknown[]=[]):Promise<pg.QueryResult<T>>{ return withPostgresTransaction(this.config,(client)=>client.query<T>(text,values)); }
+  private async query<T extends pg.QueryResultRow>(access:CrmAccessContext,text:string,values:unknown[]=[]):Promise<pg.QueryResult<T>>{ return withCrmTenantTransaction(this.config,access,(client)=>client.query<T>(text,values)); }
 
   private async mutate<T extends { replayed:boolean }>(mutation:CrmMutationContext,_operation:string,work:(client:pg.PoolClient,schema:string)=>Promise<T>):Promise<T>{
-    return withPostgresTransaction(this.config,async(client)=>{const schema=schemaIdent(mutation.access);const key=mutation.idempotencyKey;await client.query("SELECT pg_advisory_xact_lock(hashtextextended($1, 0))",[`${schema}:${key}`]);const existing=await client.query<IdempotencyRow>(`SELECT request_checksum,response_json FROM ${schema}.crm_idempotency_results WHERE idempotency_key=$1 FOR UPDATE`,[key]);if(existing.rows[0]){if(existing.rows[0].request_checksum!==mutation.requestChecksum)throw new CrmV1Error(409,"crm.idempotency.conflict","Idempotency-Key ya fue usada con otro contenido.");return {...(existing.rows[0].response_json as T),replayed:true};}const result=await work(client,schema);await client.query(`INSERT INTO ${schema}.crm_idempotency_results (idempotency_key,request_checksum,response_json,created_at,updated_at) VALUES ($1,$2,$3::jsonb,NOW(),NOW())`,[key,mutation.requestChecksum,JSON.stringify(result)]);return result;});
+    return withCrmTenantTransaction(this.config,mutation.access,async(client)=>{const schema=schemaIdent(mutation.access);const key=mutation.idempotencyKey;await client.query("SELECT pg_advisory_xact_lock(hashtextextended($1, 0))",[tenantNamespace(mutation.access,"idempotency",key)]);const existing=await client.query<IdempotencyRow>(`SELECT request_checksum,response_json FROM ${schema}.crm_idempotency_results WHERE idempotency_key=$1 FOR UPDATE`,[key]);if(existing.rows[0]){if(existing.rows[0].request_checksum!==mutation.requestChecksum)throw new CrmV1Error(409,"crm.idempotency.conflict","Idempotency-Key ya fue usada con otro contenido.");return {...(existing.rows[0].response_json as T),replayed:true};}const result=await work(client,schema);await client.query(`INSERT INTO ${schema}.crm_idempotency_results (idempotency_key,request_checksum,response_json,created_at,updated_at) VALUES ($1,$2,$3::jsonb,NOW(),NOW())`,[key,mutation.requestChecksum,JSON.stringify(result)]);return result;});
   }
 }
 
@@ -579,10 +607,11 @@ async function lockRecord(client:pg.PoolClient,access:CrmAccessContext,schema:st
 async function validateReferences(client:pg.PoolClient,schema:string,input:Record<string,unknown>):Promise<void>{const refs:[[unknown,string],...[unknown,string][]]=[[input.accountId,"crm_accounts"],[input.contactId,"crm_contacts"],[input.primaryContactId,"crm_contacts"],[input.caseId,"crm_cases"]];for(const[id,table]of refs){if(!id)continue;const found=await client.query(`SELECT 1 FROM ${schema}.${table} WHERE id=$1 AND archived_at IS NULL`,[id]);if(found.rowCount!==1)throw new CrmV1Error(409,"crm.reference.invalid","Una referencia no existe en el tenant.");}if(input.pipelineId||input.stageId){const catalog=await client.query(`SELECT 1 FROM ${schema}.crm_pipeline_stages WHERE id=$1 AND pipeline_id=$2`,[input.stageId,input.pipelineId]);if(catalog.rowCount!==1)throw new CrmV1Error(409,"crm.pipeline.reference_invalid","El pipeline o la etapa no existe en el tenant.");}}
 async function assertAppointmentAvailable(client:pg.PoolClient,schema:string,input:Record<string,unknown>,excludingId?:string):Promise<void>{if(!input.startAt&&!input.endAt)return;if(!input.startAt||!input.endAt)throw new CrmV1Error(400,"crm.appointment.range_invalid","Inicio y fin deben declararse juntos.");const start=new Date(String(input.startAt));const end=new Date(String(input.endAt));if(Number.isNaN(start.valueOf())||Number.isNaN(end.valueOf())||end<=start)throw new CrmV1Error(400,"crm.appointment.range_invalid","El rango de la cita no es valido.");if(!input.resourceId)return;const result=await client.query(`SELECT 1 FROM ${schema}.crm_appointments WHERE archived_at IS NULL AND id<>COALESCE($1,'') AND status NOT IN ('cancelled','no_show') AND resource_id=$2 AND start_at<$4 AND end_at>$3 LIMIT 1`,[excludingId??null,input.resourceId,start.toISOString(),end.toISOString()]);if(result.rowCount)throw new CrmV1Error(409,"crm.appointment.conflict","El recurso ya tiene una cita en ese rango.");}
 
-async function appendAuditAndOutbox(client:pg.PoolClient,schema:string,mutation:CrmMutationContext,action:string,entityType:string,entityId:string,payload:Record<string,unknown>):Promise<void>{const eventId=opaqueId("event");const reasonCode=typeof payload.reasonCode==="string"&&payload.reasonCode?payload.reasonCode:null;await client.query(`INSERT INTO ${schema}.crm_audit_events (id,request_id,actor_subject,authorization_decision_id,action,event_type,entity_type,entity_id,outcome,reason_code,occurred_at) VALUES ($1,$2,$3,$4,$5,$5,$6,$7,'accepted',$8,NOW())`,[opaqueId("audit"),mutation.requestId,mutation.actor.subject,mutation.access.authorizationDecisionId,action,entityType,entityId,reasonCode]);await client.query(`INSERT INTO ${schema}.crm_outbox_events (event_id,event_type,contract_version,correlation_id,causation_id,actor_subject,payload_json,status,occurred_at) VALUES ($1,$2,'1',$3,$4,$5,$6::jsonb,'pending',NOW())`,[eventId,`crm.${action}`,mutation.correlationId,mutation.idempotencyKey,mutation.actor.subject,JSON.stringify(payload)]);}
+async function appendAuditAndOutbox(client:pg.PoolClient,schema:string,mutation:CrmMutationContext,action:string,entityType:string,entityId:string,payload:Record<string,unknown>):Promise<void>{const eventId=opaqueId("event");const reasonCode=typeof payload.reasonCode==="string"&&payload.reasonCode?payload.reasonCode:null;const tenantWorkContext=createTenantWorkContext({access:mutation.access,operation:`crm.outbox.${action.replace(/[^a-z0-9._:-]+/giu,"_").toLowerCase()}`,correlationId:mutation.correlationId,idempotencyKey:mutation.idempotencyKey});await client.query(`INSERT INTO ${schema}.crm_audit_events (id,request_id,actor_subject,authorization_decision_id,action,event_type,entity_type,entity_id,outcome,reason_code,occurred_at) VALUES ($1,$2,$3,$4,$5,$5,$6,$7,'accepted',$8,NOW())`,[opaqueId("audit"),mutation.requestId,mutation.actor.subject,mutation.access.authorizationDecisionId,action,entityType,entityId,reasonCode]);await client.query(`INSERT INTO ${schema}.crm_outbox_events (event_id,event_type,contract_version,correlation_id,causation_id,actor_subject,payload_json,status,occurred_at) VALUES ($1,$2,'1',$3,$4,$5,$6::jsonb,'pending',NOW())`,[eventId,`crm.${action}`,mutation.correlationId,mutation.idempotencyKey,mutation.actor.subject,JSON.stringify({...payload,tenantWorkContext})]);}
 async function appendRejectedAudit(client:pg.PoolClient,schema:string,mutation:CrmMutationContext,action:string,entityType:string,entityId:string,reasonCode:string):Promise<void>{await client.query(`INSERT INTO ${schema}.crm_audit_events (id,request_id,actor_subject,authorization_decision_id,action,event_type,entity_type,entity_id,outcome,reason_code,occurred_at) VALUES ($1,$2,$3,$4,$5,$5,$6,$7,'rejected',$8,NOW())`,[opaqueId("audit"),mutation.requestId,mutation.actor.subject,mutation.access.authorizationDecisionId,action,entityType,entityId,reasonCode]);}
 
 function rowToRecord(access:CrmAccessContext,row:RecordRow):CrmRecord{const sensitive=row.sensitive_json&&Object.keys(row.sensitive_json).length>0?{sensitive:row.sensitive_json}:{};const completion=row.completed_at===undefined?{}:{completedAt:row.completed_at?isoDate(row.completed_at):null};return{...row.record_json,...sensitive,...completion,id:row.id,tenantId:access.tenantId,status:row.status,ownerId:row.owner_id,version:Number(row.version),createdAt:isoDate(row.created_at),updatedAt:isoDate(row.updated_at),archivedAt:row.archived_at?isoDate(row.archived_at):null};}
+function publicJobRecord(access:CrmAccessContext,row:RecordRow):CrmRecord{const record=rowToRecord(access,row);delete (record as Record<string,unknown>).tenantWorkContext;return record;}
 function project(record:CrmRecord,access:CrmAccessContext):CrmRecord{const copy=structuredClone(record);if(copy.sensitive!==undefined&&!access.capabilities.includes("crm.sensitive.read")){delete copy.sensitive;copy.masked=true;}return copy;}
 function stripBase(resource:CrmResource,input:Record<string,unknown>):Record<string,unknown>{const copy={...input};for(const key of ["id","tenantId","version","createdAt","updatedAt","archivedAt","status","ownerId","completedAt"])delete copy[key];if(resource==="contacts")delete copy.sensitive;return copy;}
 function stripConfigVersion(config:TenantConfiguration):Record<string,unknown>{const copy={...config} as Record<string,unknown>;delete copy.version;delete copy.updatedAt;return copy;}

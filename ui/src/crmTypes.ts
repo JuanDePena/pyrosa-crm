@@ -45,6 +45,23 @@ export type BootstrapResponse = {
     profileVersion?: string;
     tenantKey?: string;
     timezone?: string;
+    contextVersion?: string;
+  };
+  tenantContext?: {
+    schemaVersion?: string;
+    contextVersion?: string;
+    selected?: {
+      tenantId?: string;
+      tenantKey?: string;
+      label?: string;
+    } | null;
+    options?: Array<{
+      tenantId?: string;
+      tenantKey?: string;
+      label?: string;
+      status?: "ready" | "blocked";
+      reason?: string | null;
+    }>;
   };
   platform?: Record<string, unknown>;
 };

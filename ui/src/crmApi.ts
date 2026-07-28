@@ -27,13 +27,19 @@ export type CrmRequestOptions = {
   idempotencyKey?: string;
   method?: "GET" | "POST" | "PATCH";
   signal?: AbortSignal;
-  tenantId: string;
 };
 
 let browserCsrfToken: string | undefined;
+let browserTenantContextVersion: string | undefined;
 
 export function setCrmCsrfToken(token: string | undefined): void {
   browserCsrfToken = token?.trim() || undefined;
+}
+
+export function setCrmTenantContextVersion(
+  version: string | undefined
+): void {
+  browserTenantContextVersion = version?.trim() || undefined;
 }
 
 export async function fetchAppJson<T>(url: string, signal?: AbortSignal): Promise<T> {
@@ -46,9 +52,19 @@ export async function fetchAppJson<T>(url: string, signal?: AbortSignal): Promis
 
 export async function fetchCrmJson<T>(url: string, options: CrmRequestOptions): Promise<T> {
   const method = options.method ?? "GET";
+  if (!browserTenantContextVersion) {
+    throw new CrmApiError(
+      "La sesión no tiene un contexto tenant activo.",
+      {
+        code: "crm.tenant_context.required",
+        retryable: false
+      }
+    );
+  }
   const headers: Record<string, string> = {
     accept: "application/json",
-    "X-Pyrosa-Tenant-Id": options.tenantId
+    "X-Pyrosa-Tenant-Context-Version":
+      browserTenantContextVersion
   };
   if (options.body !== undefined) {
     headers["content-type"] = "application/json";
@@ -75,6 +91,40 @@ export async function fetchCrmJson<T>(url: string, options: CrmRequestOptions): 
     method,
     signal: options.signal
   });
+}
+
+export async function switchCrmTenant(input: {
+  csrfToken: string;
+  expectedContextVersion: string;
+  idempotencyKey: string;
+  tenantKey: string;
+  signal?: AbortSignal;
+}): Promise<{
+  schemaVersion: string;
+  application: string;
+  tenantKey: string;
+  contextVersion: string;
+  replayed: boolean;
+}> {
+  return fetchJson(
+    "/api/ui/v1/tenant-context/switch",
+    {
+      body: JSON.stringify({
+        schemaVersion: "pyrosa.tenant-context.switch.request.v1",
+        idempotencyKey: input.idempotencyKey,
+        tenantKey: input.tenantKey,
+        expectedContextVersion: input.expectedContextVersion
+      }),
+      credentials: "same-origin",
+      headers: {
+        accept: "application/json",
+        "content-type": "application/json",
+        "X-CSRF-Token": input.csrfToken
+      },
+      method: "POST",
+      signal: input.signal
+    }
+  );
 }
 
 async function fetchJson<T>(url: string, init: RequestInit): Promise<T> {
