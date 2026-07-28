@@ -98,9 +98,8 @@ export type TenantWorkContext = {
   application: typeof CRM_APPLICATION;
   tenantId: string;
   tenantKey: string;
-  contextVersion: string;
   operation: string;
-  authorizationDecisionReference: string;
+  decisionReference: string;
   placementFingerprint: string;
   correlationId: string;
   idempotencyKey: string;
@@ -436,9 +435,6 @@ export function createTenantWorkContext(input: {
   idempotencyKey: string;
   now?: Date;
 }): TenantWorkContext {
-  const contextVersion = normalizeContextVersion(
-    input.access.contextVersion
-  );
   const operation = String(input.operation ?? "").trim();
   if (!/^[a-z0-9][a-z0-9._:-]{2,127}$/u.test(operation)) {
     throw new CrmV1Error(
@@ -452,10 +448,8 @@ export function createTenantWorkContext(input: {
     application: CRM_APPLICATION,
     tenantId: input.access.tenantId,
     tenantKey: input.access.tenantKey,
-    contextVersion,
     operation,
-    authorizationDecisionReference:
-      input.access.authorizationDecisionId,
+    decisionReference: input.access.authorizationDecisionId,
     placementFingerprint: input.access.physicalFingerprint,
     correlationId: input.correlationId,
     idempotencyKey: input.idempotencyKey,

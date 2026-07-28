@@ -6,6 +6,8 @@ import test from "node:test";
 import { fileURLToPath } from "node:url";
 
 const EXPECTED_CHECKSUM = "f9a95d3e704d2cf97b09ba0d0a67d4766b4a8c557f6a71142315e3cbdd2998cc";
+const EXPECTED_WORK_CONTEXT_SCHEMA_CHECKSUM =
+  "f877af0f78f4d34107eb8e1bbfd997ca54982f4bfa8e38cb68fd269bfd4be6eb";
 const EXPECTED_SWITCH_CASES = [
   ["switch-success", 200, null, false],
   ["switch-replay", 200, null, true],
@@ -34,10 +36,21 @@ const fixturePath = resolve(
   dirname(fileURLToPath(import.meta.url)),
   "../../contracts/tenant-context/v1/conformance-fixtures.json"
 );
+const workContextSchemaPath = resolve(
+  dirname(fileURLToPath(import.meta.url)),
+  "../../contracts/tenant-context/v1/tenant-work-context.schema.json"
+);
 
 test("tenant context v1 conformance fixtures remain canonical and safe", async () => {
-  const bytes = await readFile(fixturePath);
+  const [bytes, workContextSchemaBytes] = await Promise.all([
+    readFile(fixturePath),
+    readFile(workContextSchemaPath)
+  ]);
   assert.equal(createHash("sha256").update(bytes).digest("hex"), EXPECTED_CHECKSUM);
+  assert.equal(
+    createHash("sha256").update(workContextSchemaBytes).digest("hex"),
+    EXPECTED_WORK_CONTEXT_SCHEMA_CHECKSUM
+  );
 
   const fixture = JSON.parse(bytes.toString("utf8"));
   assert.equal(fixture.schemaVersion, "pyrosa.tenant-context.conformance-fixtures.v1");

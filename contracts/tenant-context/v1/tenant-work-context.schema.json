@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.pyrosa.com.do/tenant-context/v1/tenant-work-context.schema.json",
+  "title": "Tenant work context v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "application",
+    "tenantId",
+    "tenantKey",
+    "operation",
+    "decisionReference",
+    "placementFingerprint",
+    "correlationId",
+    "idempotencyKey",
+    "enqueuedAt"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "pyrosa.tenant-work-context.v1"
+    },
+    "application": {
+      "type": "string",
+      "pattern": "^pyrosa-[a-z0-9-]+$"
+    },
+    "tenantId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160
+    },
+    "tenantKey": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{12}$"
+    },
+    "operation": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[a-z0-9._:-]+$"
+    },
+    "decisionReference": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256
+    },
+    "placementFingerprint": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "correlationId": {
+      "type": "string",
+      "minLength": 8,
+      "maxLength": 160
+    },
+    "idempotencyKey": {
+      "type": "string",
+      "minLength": 16,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9._:-]+$"
+    },
+    "enqueuedAt": {
+      "type": "string",
+      "format": "date-time"
+    }
+  }
+}
