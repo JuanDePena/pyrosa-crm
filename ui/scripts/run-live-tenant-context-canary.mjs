@@ -1,6 +1,8 @@
 #!/usr/bin/env node
 
 import { createHash, randomUUID } from "node:crypto";
+import { chmod, mkdir, writeFile } from "node:fs/promises";
+import { dirname, isAbsolute, resolve } from "node:path";
 import { loadConfig } from "../build/server/config.js";
 import { resolveCrmAccess } from "../build/server/crmV1Access.js";
 import {
@@ -125,6 +127,14 @@ const result = {
     rollbackVerified
   }
 };
+if (args.writeJson) {
+  await mkdir(dirname(args.writeJson), { recursive: true, mode: 0o700 });
+  await writeFile(args.writeJson, `${JSON.stringify(result, null, 2)}\n`, {
+    encoding: "utf8",
+    mode: 0o600
+  });
+  await chmod(args.writeJson, 0o600);
+}
 process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
 
 async function bind(client, access) {
@@ -161,7 +171,7 @@ async function visibleSentinels(client, ids) {
     `
       SELECT id::text
       FROM crm_accounts
-      WHERE id = ANY($1::uuid[])
+      WHERE id = ANY($1::text[])
       ORDER BY id
     `,
     [ids]
@@ -196,7 +206,7 @@ function requiredOpaque(value, field) {
 }
 
 function parseArgs(argv) {
-  const values = { execute: false };
+  const values = { execute: false, writeJson: null };
   for (let index = 0; index < argv.length; index += 1) {
     const token = argv[index];
     if (token === "--execute") {
@@ -211,7 +221,12 @@ function parseArgs(argv) {
     if (!value || value.startsWith("--")) {
       fail(`crm_canary_${key}_missing`);
     }
-    values[key] = value;
+    if (key === "write-json") {
+      if (!isAbsolute(value)) fail("crm_canary_write_json_must_be_absolute");
+      values.writeJson = resolve(value);
+    } else {
+      values[key] = value;
+    }
     index += 1;
   }
   return values;
