@@ -73,6 +73,9 @@ type StoreDecision = {
   entitlement_status: string;
   starts_at: string | null;
   ends_at: string | null;
+  decided_at: string;
+  decision_expires_at: string;
+  decision_version: string;
   reason_code: string;
   authorization_decision_id: string;
 };
@@ -600,7 +603,9 @@ function validateStoreDecision(value: unknown, request: DecisionRequest): StoreD
     "contract_version", "request_id", "correlation_id", "tenant_id", "application_slug",
     "requested_capability", "allowed", "entitlement_active", "seat_active",
     "requires_named_seat", "subscription_kind", "subscription_status", "trial_status",
-    "entitlement_status", "starts_at", "ends_at", "reason_code", "authorization_decision_id"
+    "entitlement_status", "starts_at", "ends_at", "decided_at",
+    "decision_expires_at", "decision_version", "reason_code",
+    "authorization_decision_id"
   ]);
   assertEcho(decision, request);
   if (decision.requested_capability !== request.requested_capability) invalidOwnerResponse();
@@ -623,6 +628,12 @@ function validateStoreDecision(value: unknown, request: DecisionRequest): StoreD
     entitlement_status: boundedText(decision.entitlement_status, "entitlement_status", 64),
     starts_at: nullableIsoDate(decision.starts_at),
     ends_at: nullableIsoDate(decision.ends_at),
+    decided_at: requiredIsoDate(decision.decided_at, "decided_at"),
+    decision_expires_at: futureIso(
+      decision.decision_expires_at,
+      "decision_expires_at"
+    ),
+    decision_version: fingerprintValue(decision.decision_version),
     reason_code: opaque(decision.reason_code, "reason_code"),
     authorization_decision_id: opaque(decision.authorization_decision_id, "authorization_decision_id")
   };
@@ -827,6 +838,14 @@ function nullableIsoDate(value: unknown): string | null {
   const normalized = boundedText(value, "date", 64);
   if (!Number.isFinite(Date.parse(normalized))) invalidOwnerResponse();
   return normalized;
+}
+
+function requiredIsoDate(value: unknown, field: string): string {
+  const parsed = nullableIsoDate(value);
+  if (parsed === null) {
+    invalidOwnerResponse();
+  }
+  return parsed;
 }
 
 function opaque(value: unknown, field: string): string {

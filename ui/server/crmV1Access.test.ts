@@ -565,6 +565,9 @@ function decisionPayload(owner: Owner, body: Record<string, unknown>): Record<st
       entitlement_status: "effective",
       starts_at: "2026-07-15T00:00:00.000Z",
       ends_at: "2026-08-14T00:00:00.000Z",
+      decided_at: "2026-07-27T00:00:00.000Z",
+      decision_expires_at: "2099-07-27T00:00:00.000Z",
+      decision_version: `sha256:${"c".repeat(64)}`,
       reason_code: "allowed",
       authorization_decision_id: "store-decision-synthetic"
     };
