@@ -46,6 +46,7 @@ Recommended reading order:
 26. [Evidencia OAuth inbound live](evidence/oauth-api-inbound-live-2026-07-25.md)
 27. [Contexto tenant y aislamiento de runtime](design/tenant-context-runtime-isolation.md)
 28. [Cierre transversal CRM del Corte 6](https://github.com/JuanDePena/pyrosa-docs/blob/main/ops/tenant-context-runtime-convergence-crm-cut-6-2026-07-28.md)
+29. [Cierre operativo de acceso tenant](evidence/tenant-access-freshness-closure-2026-07-30.md)
 
 Diccionarios owner v2 en source:
 
