@@ -57,6 +57,8 @@ export type InteractiveTenantContext = {
   };
   issuedAt: string;
   refreshedAt: string;
+  expiresAt: string;
+  renewAfter: string;
 };
 
 export type TenantContextSwitchRequest = {
@@ -309,6 +311,13 @@ export function assertBoundBrowserTenantContext(
       "El contexto tenant no pertenece a la identidad activa."
     );
   }
+  if (interactiveTenantContextExpiresAt(interactive) <= Date.now()) {
+    throw new CrmV1Error(
+      409,
+      "crm.tenant_context.expired",
+      "El contexto tenant venció y debe recuperarse antes de consultar datos."
+    );
+  }
   const supplied = normalizeContextVersion(
     singleHeader(req, TENANT_CONTEXT_HEADER.toLowerCase())
   );
@@ -331,16 +340,32 @@ export function composeInteractiveTenantContext(input: {
 }): InteractiveTenantContext {
   const now = input.now ?? new Date();
   const refreshedAt = now.toISOString();
-  const expiresAt = input.session.expiresAt;
+  const ownerDecisions = input.access.ownerDecisions;
   const access = input.access;
   if (
     !/^sha256:[0-9a-f]{64}$/u.test(access.physicalFingerprint) ||
-    Date.parse(expiresAt) <= now.valueOf()
+    !ownerDecisions
   ) {
     throw new CrmV1Error(
       503,
       "crm.tenant_context.placement_unready",
       "Platform no devolvió un placement CRM vigente.",
+      true
+    );
+  }
+  const expiresAt = new Date(
+    Math.min(
+      Date.parse(input.session.expiresAt),
+      ...Object.values(ownerDecisions).map((decision) =>
+        Date.parse(decision.expiresAt)
+      )
+    )
+  ).toISOString();
+  if (Date.parse(expiresAt) <= now.valueOf()) {
+    throw new CrmV1Error(
+      503,
+      "crm.tenant_context.owner_decision_expired",
+      "Una decisión owner venció antes de publicar el contexto tenant.",
       true
     );
   }
@@ -354,31 +379,11 @@ export function composeInteractiveTenantContext(input: {
     tenantKey: access.tenantKey,
     contextVersion: normalizeContextVersion(input.contextVersion),
     decisions: {
-      iam: {
-        reference: `iam-session:${digest(input.session.uiAuthSessionId)}`,
-        version: input.session.uiAuthAuthenticatedAt,
-        expiresAt
-      },
-      directory: {
-        reference: access.decisionReferences.directory,
-        version: access.authorizationDecisionId,
-        expiresAt
-      },
-      store: {
-        reference: access.decisionReferences.store,
-        version: access.decisionReferences.store,
-        expiresAt
-      },
-      platform: {
-        reference: access.decisionReferences.platform,
-        version: access.dictionaryVersion,
-        expiresAt
-      },
-      application: {
-        reference: access.authorizationDecisionId,
-        version: access.dictionaryVersion,
-        expiresAt
-      }
+      iam: ownerDecisions.iam,
+      directory: ownerDecisions.directory,
+      store: ownerDecisions.store,
+      platform: ownerDecisions.platform,
+      application: ownerDecisions.application
     },
     placement: {
       reference: access.schemaName,
@@ -386,8 +391,26 @@ export function composeInteractiveTenantContext(input: {
       readinessVersion: access.dictionaryVersion
     },
     issuedAt: input.previousIssuedAt ?? refreshedAt,
-    refreshedAt
+    refreshedAt,
+    expiresAt,
+    renewAfter: new Date(
+      Math.max(now.valueOf(), Date.parse(expiresAt) - 15_000)
+    ).toISOString()
   };
+}
+
+export function interactiveTenantContextExpiresAt(
+  context: InteractiveTenantContext
+): number {
+  const epoch = Date.parse(context.expiresAt);
+  if (!Number.isFinite(epoch)) {
+    throw new CrmV1Error(
+      500,
+      "crm.tenant_context.expiry_invalid",
+      "El contexto tenant no conserva una expiración válida."
+    );
+  }
+  return epoch;
 }
 
 export function deriveContextVersion(
@@ -625,8 +648,4 @@ function requireRecord(value: unknown): Record<string, unknown> {
     );
   }
   return value as Record<string, unknown>;
-}
-
-function digest(value: string): string {
-  return createHash("sha256").update(value).digest("hex");
 }

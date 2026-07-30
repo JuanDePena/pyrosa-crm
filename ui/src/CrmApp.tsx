@@ -9,11 +9,13 @@ import {
   UserRound
 } from "lucide-react";
 import {
+  Button,
   DetailDrawer,
   EmptyState,
   LoadingState,
   SelectField,
   StatusBadge,
+  TextField,
   UserDrawer
 } from "@pyrosa/ui";
 import type { NavigationRoute } from "@pyrosa/ui";
@@ -27,8 +29,10 @@ import { ResourceView } from "./ResourceViews";
 import {
   CrmApiError,
   fetchAppJson,
+  fetchCrmTenantOptions,
   newIdempotencyKey,
   publicMessageFrom,
+  renewCrmTenant,
   setCrmCsrfToken,
   setCrmTenantContextVersion,
   switchCrmTenant,
@@ -53,6 +57,13 @@ type BootstrapState =
       session: ClientSession;
       tenantId: string;
       tenantLabel: string;
+    }
+  | {
+      bootstrap: BootstrapResponse;
+      error: unknown;
+      kind: "safe";
+      recoveryAttempt: number;
+      session: ClientSession;
     };
 
 export function CrmApp() {
@@ -62,6 +73,7 @@ export function CrmApp() {
   const [openDrawer, setOpenDrawer] = React.useState<OpenDrawer>(null);
   const [themeMode, setThemeMode] = React.useState<PyrosaThemeMode>(readStoredThemeMode);
   const [tenantSwitching, setTenantSwitching] = React.useState(false);
+  const [tenantSwitchError, setTenantSwitchError] = React.useState<string | null>(null);
   const tenantSwitchRequest = React.useRef<AbortController | null>(null);
 
   React.useEffect(() => {
@@ -136,6 +148,128 @@ export function CrmApp() {
   );
 
   React.useEffect(() => {
+    if (bootstrapState.kind !== "ready") return undefined;
+    const expiresAt = Date.parse(
+      bootstrapState.bootstrap.tenantContext?.expiresAt ?? ""
+    );
+    const renewAfter = Date.parse(
+      bootstrapState.bootstrap.tenantContext?.renewAfter ?? ""
+    );
+    if (!Number.isFinite(expiresAt) || !Number.isFinite(renewAfter)) {
+      return undefined;
+    }
+    const controller = new AbortController();
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    let retryMs = 2_000;
+    const renew = async () => {
+      try {
+        const response = await renewCrmTenant({
+          csrfToken: bootstrapState.session.csrfToken ?? "",
+          signal: controller.signal
+        });
+        const contextVersion = response.tenantContext?.contextVersion;
+        const tenantId = response.context?.activeTenantId;
+        if (!contextVersion || !tenantId || !response.tenantContext?.selected) {
+          throw new CrmApiError("DemoCRM no pudo publicar el contexto renovado.", {
+            code: "crm.tenant_context.renew_response_invalid",
+            retryable: true
+          });
+        }
+        setCrmTenantContextVersion(contextVersion);
+        setBootstrapState({
+          ...bootstrapState,
+          bootstrap: {
+            ...bootstrapState.bootstrap,
+            tenantContext: response.tenantContext,
+            context: response.context
+          },
+          tenantId,
+          tenantLabel:
+            response.context?.displayName ??
+            response.tenantContext.selected.label ??
+            "Tenant activo"
+        });
+      } catch (error) {
+        if (error instanceof DOMException && error.name === "AbortError") return;
+        if (Date.now() >= expiresAt) {
+          setCrmTenantContextVersion(undefined);
+          setBootstrapState({
+            bootstrap: bootstrapState.bootstrap,
+            error,
+            kind: "safe",
+            recoveryAttempt: 0,
+            session: bootstrapState.session
+          });
+          return;
+        }
+        const jitter = Math.floor(Math.random() * Math.min(500, retryMs / 4));
+        timer = setTimeout(() => void renew(), retryMs + jitter);
+        retryMs = Math.min(30_000, retryMs * 2);
+      }
+    };
+    timer = setTimeout(
+      () => void renew(),
+      Math.max(0, renewAfter - Date.now())
+    );
+    return () => {
+      controller.abort();
+      if (timer) clearTimeout(timer);
+    };
+  }, [bootstrapState]);
+
+  React.useEffect(() => {
+    if (bootstrapState.kind !== "safe") return undefined;
+    const controller = new AbortController();
+    const delay = Math.min(
+      30_000,
+      2_000 * 2 ** Math.min(bootstrapState.recoveryAttempt, 4)
+    );
+    const jitter = Math.floor(Math.random() * Math.min(1_000, delay / 4));
+    const timer = setTimeout(() => {
+      void renewCrmTenant({
+        csrfToken: bootstrapState.session.csrfToken ?? "",
+        signal: controller.signal
+      }).then((response) => {
+        const contextVersion = response.tenantContext?.contextVersion;
+        const tenantId = response.context?.activeTenantId;
+        if (!contextVersion || !tenantId || !response.tenantContext?.selected) {
+          throw new Error("renew_response_invalid");
+        }
+        setCrmTenantContextVersion(contextVersion);
+        setBootstrapState({
+          bootstrap: {
+            ...bootstrapState.bootstrap,
+            tenantContext: response.tenantContext,
+            context: response.context
+          },
+          kind: "ready",
+          session: bootstrapState.session,
+          tenantId,
+          tenantLabel:
+            response.context?.displayName ??
+            response.tenantContext.selected.label ??
+            "Tenant activo"
+        });
+      }).catch((error: unknown) => {
+        if (error instanceof DOMException && error.name === "AbortError") return;
+        if (error instanceof CrmApiError && error.issue.status === 403) {
+          setBootstrapKey((value) => value + 1);
+          return;
+        }
+        setBootstrapState({
+          ...bootstrapState,
+          error,
+          recoveryAttempt: bootstrapState.recoveryAttempt + 1
+        });
+      });
+    }, delay + jitter);
+    return () => {
+      controller.abort();
+      clearTimeout(timer);
+    };
+  }, [bootstrapState]);
+
+  React.useEffect(() => {
     if (typeof window === "undefined") return undefined;
     const handleHashChange = () => {
       setLocation(currentLocation());
@@ -195,6 +329,28 @@ export function CrmApp() {
     );
   }
 
+  if (bootstrapState.kind === "safe") {
+    return (
+      <>
+        <style>{themeCss}</style>
+        <FatalErrorLanding
+          issue={{
+            ...technicalIssueFrom(bootstrapState.error),
+            code: "crm.tenant_context.safe_state",
+            retryable: true
+          }}
+          message="El contexto tenant venció mientras un owner no estaba disponible. DemoCRM ocultó el shell y los datos, y seguirá intentando recuperarse."
+          onRetry={() =>
+            setBootstrapState({
+              ...bootstrapState,
+              recoveryAttempt: 0
+            })
+          }
+        />
+      </>
+    );
+  }
+
   const { bootstrap, session, tenantId, tenantLabel } = bootstrapState;
   const routeDefinition = routeById[location.routeId];
   const displayName = session.user?.displayName || session.user?.email || "Sesion delegada";
@@ -210,6 +366,7 @@ export function CrmApp() {
   const tenantAction = tenantContext ? (
     <CrmTenantScopeSelector
       disabled={tenantSwitching}
+      error={tenantSwitchError}
       onChange={(tenantKey) => {
         if (
           !session.csrfToken ||
@@ -222,6 +379,7 @@ export function CrmApp() {
         const controller = new AbortController();
         tenantSwitchRequest.current = controller;
         setTenantSwitching(true);
+        setTenantSwitchError(null);
         void switchCrmTenant({
           csrfToken: session.csrfToken,
           expectedContextVersion: tenantContext.contextVersion,
@@ -242,7 +400,7 @@ export function CrmApp() {
             ) {
               return;
             }
-            setBootstrapState({ error, kind: "error" });
+            setTenantSwitchError(publicMessageFrom(error));
           })
           .finally(() => {
             if (tenantSwitchRequest.current === controller) {
@@ -378,14 +536,60 @@ export function CrmApp() {
 
 function CrmTenantScopeSelector({
   disabled,
+  error,
   onChange,
   tenantContext
 }: {
   disabled: boolean;
+  error: string | null;
   onChange: (tenantKey: string) => void;
   tenantContext: NonNullable<BootstrapResponse["tenantContext"]>;
 }) {
-  const options = (tenantContext.options ?? []).map((tenant) => ({
+  const [query, setQuery] = React.useState("");
+  const [remoteOptions, setRemoteOptions] = React.useState<
+    NonNullable<BootstrapResponse["tenantContext"]>["options"]
+  >([]);
+  const [nextCursor, setNextCursor] = React.useState<string | null>(null);
+  const [hasMore, setHasMore] = React.useState(false);
+  const [optionsError, setOptionsError] = React.useState<string | null>(null);
+  const [loadingOptions, setLoadingOptions] = React.useState(false);
+
+  React.useEffect(() => {
+    const normalized = query.trim();
+    if (normalized.length < 2) {
+      setRemoteOptions([]);
+      setNextCursor(null);
+      setHasMore(false);
+      setOptionsError(null);
+      return undefined;
+    }
+    const controller = new AbortController();
+    const timer = setTimeout(() => {
+      setLoadingOptions(true);
+      void fetchCrmTenantOptions({
+        query: normalized,
+        signal: controller.signal
+      }).then((response) => {
+        setRemoteOptions(response.options ?? []);
+        setNextCursor(response.page?.nextCursor ?? null);
+        setHasMore(response.page?.hasMore === true);
+        setOptionsError(null);
+      }).catch((searchError: unknown) => {
+        if (searchError instanceof DOMException && searchError.name === "AbortError") return;
+        setOptionsError(publicMessageFrom(searchError));
+      }).finally(() => setLoadingOptions(false));
+    }, 250);
+    return () => {
+      controller.abort();
+      clearTimeout(timer);
+    };
+  }, [query]);
+
+  const mergedTenants = new Map(
+    [...(tenantContext.options ?? []), ...(remoteOptions ?? [])]
+      .map((tenant) => [tenant.tenantKey ?? "", tenant] as const)
+  );
+  const options = [...mergedTenants.values()].map((tenant) => ({
     value: tenant.tenantKey ?? "",
     label: tenant.label ?? tenant.tenantKey ?? "Tenant",
     keywords: [
@@ -405,6 +609,15 @@ function CrmTenantScopeSelector({
       >
         <Building2 size={15} strokeWidth={2.1} />
       </span>
+      <TextField
+        aria-label="Buscar tenants CRM"
+        className="crm-tenant-scope-selector__search"
+        label="Buscar tenants"
+        onChange={(event) => setQuery(event.currentTarget.value)}
+        placeholder="Buscar tenant"
+        type="search"
+        value={query}
+      />
       <SelectField
         ariaLabel="Cambiar tenant CRM"
         className="crm-tenant-scope-selector__select"
@@ -426,6 +639,35 @@ function CrmTenantScopeSelector({
         searchThreshold={6}
         value={tenantContext.selected?.tenantKey ?? ""}
       />
+      {hasMore && nextCursor ? (
+        <Button
+          disabled={loadingOptions}
+          onClick={() => {
+            const cursor = nextCursor;
+            setLoadingOptions(true);
+            void fetchCrmTenantOptions({
+              query,
+              cursor
+            }).then((response) => {
+              setRemoteOptions((current) => [
+                ...(current ?? []),
+                ...(response.options ?? [])
+              ]);
+              setNextCursor(response.page?.nextCursor ?? null);
+              setHasMore(response.page?.hasMore === true);
+              setOptionsError(null);
+            }).catch((loadError: unknown) => {
+              setOptionsError(publicMessageFrom(loadError));
+            }).finally(() => setLoadingOptions(false));
+          }}
+          type="button"
+          variant="ghost"
+        >
+          Más
+        </Button>
+      ) : null}
+      {error ? <span className="crm-tenant-scope-selector__error" role="alert">{error}</span> : null}
+      {optionsError ? <span className="crm-tenant-scope-selector__error" role="status">{optionsError}</span> : null}
     </div>
   );
 }

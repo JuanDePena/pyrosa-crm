@@ -1,6 +1,6 @@
 # Contrato API Pyrosa CRM v1
 
-Fecha de ultima verificacion: `2026-07-28`
+Fecha de ultima verificacion: `2026-07-30`
 
 Estado: `tenant context y OAuth accepted-development; promocion productiva y VOIX pendientes`
 
@@ -52,6 +52,11 @@ sensible o escritura no se hereda automaticamente desde `crm.read`.
 
 ### Decisiones transversales de acceso
 
+La API bearer y el adaptador historico conservan temporalmente la composicion
+v1 descrita a continuacion. El contexto browser interactivo ya usa el sucesor
+owner-local, documentado en la seccion siguiente; ambos carriles no se mezclan
+dentro de un mismo `InteractiveTenantContext`.
+
 Antes de resolver un schema o ejecutar dominio, CRM compone tres decisiones
 owner `v1.0.0`, todas por `POST`, cuerpo exacto `snake_case` y
 `application_slug=pyrosa-democrm`:
@@ -86,6 +91,39 @@ cerrado `A-Za-z0-9._~-`; rechaza vacio, whitespace, caracteres adicionales e
 issuer distinto al IAM configurado. Una cookie firmada anterior que no incluya
 la identidad canonica falla cerrada y debe reemplazarse mediante login. Los
 payloads publicos de session/bootstrap no exponen issuer ni subject.
+
+### Contexto Browser V2 Y Control Plane Global
+
+Las rutas siguientes son globales respecto al schema tenant: exigen sesion (y
+CSRF en `POST`), pero se ejecutan antes de abrir una transaccion funcional:
+
+| Metodo | Ruta | Uso |
+| --- | --- | --- |
+| `GET` | `/api/crm/bootstrap` | bootstrap seguro y pagina inicial acotada |
+| `GET` | `/api/ui/v1/tenant-context/options?q=&cursor=&limit=` | catalogo visual lazy; `limit` entre `1..50` |
+| `POST` | `/api/ui/v1/tenant-context/switch` | switch idempotente con `expectedContextVersion` |
+| `POST` | `/api/ui/v1/tenant-context/renew` | renovacion o recovery de la seleccion activa |
+
+El switch y la renovacion componen:
+
+| Owner | Contrato | Credencial |
+| --- | --- | --- |
+| IAM | `POST /api/iam/policy/decisions` | token de integracion exclusivo DemoCRM |
+| Directory discovery | `POST /internal/directory/v1/tenant-access-catalog`, `1.1.0` | cliente catalogo y scope `directory:tenant-access-catalog:read` |
+| Directory decision | `POST /internal/directory/v2/application-access-decision`, `2.0.0` | cliente decision y scope `directory:application-access:decide` |
+| Store | `POST /internal/store/v1/entitlement-decision` | cliente Store existente |
+| Platform | `POST /internal/platform/v1/schema-placement/resolve` | cliente Platform y scope `platform.schema.resolve` |
+
+El catalogo no autoriza. Una opcion stale puede seguir visible dentro de su
+ventana visual, pero el switch resuelve el candidato exacto y exige IAM,
+Directory, Store y Platform positivos. Las respuestas publicadas incluyen
+`expiresAt`, `renewAfter` y `state=active|unselected|safe_state`; no incluyen
+issuer, subject, tokens, schema ni respuestas owner crudas.
+
+Todas las rutas `/api/crm/v1/*` browser conservan
+`X-Pyrosa-Tenant-Context-Version`. Si vence el minimo de sesion, IAM,
+Directory, Store, Platform o CRM, el BFF rechaza antes de PostgreSQL y la SPA
+retira shell, contadores, drafts y datos mientras recupera.
 
 ### Baseline Historica Del Canario Owner
 

@@ -1,11 +1,7 @@
 import type { IncomingMessage } from "node:http";
 import type { CrmSession } from "./auth.js";
 import type { CrmServerConfig } from "./config.js";
-import {
-  identityFromPrincipal,
-  listCrmTenantCatalog,
-  resolveCrmAccess
-} from "./crmV1Access.js";
+import { identityFromPrincipal } from "./crmV1Access.js";
 import { CrmV1Error } from "./crmV1Domain.js";
 import type { RequestContext } from "./http.js";
 import {
@@ -28,8 +24,13 @@ import {
   type TenantContextSwitchResponse
 } from "./tenantContext.js";
 import type { CrmAccessContext } from "./crmV1Types.js";
-
-const maxCandidateConcurrency = 4;
+import {
+  loadTenantCatalogPage,
+  resolveInteractiveCrmAccess,
+  resolveTenantCatalogCandidate,
+  type TenantCatalogCandidate,
+  type TenantCatalogPage
+} from "./tenantOwnerAccess.js";
 
 export async function refreshCrmTenantSession(input: {
   session: CrmSession;
@@ -41,19 +42,19 @@ export async function refreshCrmTenantSession(input: {
 }> {
   return withCrmTenantSessionLock(input.session.sid, async () => {
     const identity = identityFromPrincipal(input.session, input.config);
-    const catalog = await listCrmTenantCatalog(
+    const catalog = await loadTenantCatalogPage(
       input.context,
       input.config,
-      identity
+      identity,
+      { limit: 24 }
     );
-    const options = await resolveOptions(
-      catalog.map((candidate) => ({
+    const options = catalog.options.map((candidate) => ({
         tenantId: candidate.tenantId,
         tenantKey: candidate.tenantKey,
-        label: candidate.displayName
-      })),
-      input
-    );
+        label: candidate.displayName,
+        status: "ready" as const,
+        reason: null
+      }));
     const sealSecret = requireSealSecret(input.config);
     let state =
       loadCrmTenantSession(input.session) ??
@@ -73,13 +74,26 @@ export async function refreshCrmTenantSession(input: {
         saveCrmTenantSession(input.session, state);
         return { state, access: null };
       }
-      const access = await resolveCrmAccess(
+      const candidate =
+        catalog.options.find(
+          (entry) => entry.tenantKey === selected.tenantKey
+        ) ??
+        (await resolveTenantCatalogCandidate(
+          input.context,
+          input.config,
+          identity,
+          selected.tenantKey
+        ));
+      if (!candidate) {
+        saveCrmTenantSession(input.session, state);
+        return { state, access: null };
+      }
+      const access = await resolveInteractiveCrmAccess(
         input.context,
         input.config,
         identity,
         "crm.dashboard.read",
-        selected.tenantId,
-        state.initialContextVersion
+        candidate
       );
       const contextVersion = deriveContextVersion(
         sealSecret,
@@ -101,32 +115,34 @@ export async function refreshCrmTenantSession(input: {
       return { state, access };
     }
 
-    const selected = state.options.find(
-      (option) =>
-        option.tenantKey === state.interactive?.tenantKey &&
-        option.status === "ready"
+    const currentInteractive = state.interactive;
+    const candidate = await resolveTenantCatalogCandidate(
+      input.context,
+      input.config,
+      identity,
+      currentInteractive.tenantKey
     );
-    if (!selected) {
+    if (!candidate) {
       state = { ...state, interactive: null };
       saveCrmTenantSession(input.session, state);
       return { state, access: null };
     }
-    const access = await resolveCrmAccess(
+    state = mergeCandidateIntoState(state, candidate);
+    const access = await resolveInteractiveCrmAccess(
       input.context,
       input.config,
       identity,
       "crm.dashboard.read",
-      selected.tenantId,
-      state.interactive.contextVersion
+      candidate
     );
-    assertPlacementStable(state.interactive, access);
+    assertPlacementStable(currentInteractive, access);
     state = {
       ...state,
       interactive: composeInteractiveTenantContext({
         session: input.session,
         access,
-        contextVersion: state.interactive.contextVersion,
-        previousIssuedAt: state.interactive.issuedAt
+        contextVersion: currentInteractive.contextVersion,
+        previousIssuedAt: currentInteractive.issuedAt
       })
     };
     saveCrmTenantSession(input.session, state);
@@ -154,14 +170,37 @@ export async function resolveBoundBrowserCrmAccess(input: {
     input.session,
     state
   );
-  const access = await resolveCrmAccess(
+  const selected = state.options.find(
+    (option) => option.tenantKey === interactive.tenantKey
+  );
+  if (!selected) {
+    throw new CrmV1Error(
+      409,
+      "crm.tenant_context.option_missing",
+      "El tenant activo ya no está presente en el catálogo de sesión."
+    );
+  }
+  const candidate = await resolveTenantCatalogCandidate(
+    input.context,
+    input.config,
+    identityFromPrincipal(input.session, input.config),
+    selected.tenantKey
+  );
+  if (!candidate) {
+    throw new CrmV1Error(
+      403,
+      "crm.tenant_context.not_eligible",
+      "Directory retiró el tenant del catálogo elegible."
+    );
+  }
+  const access = await resolveInteractiveCrmAccess(
     input.context,
     input.config,
     identityFromPrincipal(input.session, input.config),
     input.requiredCapability,
-    interactive.tenantId,
-    interactive.contextVersion
+    candidate
   );
+  access.contextVersion = interactive.contextVersion;
   assertPlacementStable(interactive, access);
   return access;
 }
@@ -206,14 +245,28 @@ export async function switchCrmTenantContext(input: {
           "El receipt pertenece a un contexto que ya no está activo."
         );
       }
-      const access = await resolveCrmAccess(
+      const identity = identityFromPrincipal(input.session, input.config);
+      const candidate = await resolveTenantCatalogCandidate(
         input.context,
         input.config,
-        identityFromPrincipal(input.session, input.config),
-        "crm.dashboard.read",
-        replay.tenantContext.tenantId,
-        replay.tenantContext.contextVersion
+        identity,
+        replay.tenantContext.tenantKey
       );
+      if (!candidate) {
+        throw new CrmV1Error(
+          403,
+          "crm.tenant_context.not_eligible",
+          "Directory retiró el tenant del catálogo elegible."
+        );
+      }
+      const access = await resolveInteractiveCrmAccess(
+        input.context,
+        input.config,
+        identity,
+        "crm.dashboard.read",
+        candidate
+      );
+      access.contextVersion = replay.tenantContext.contextVersion;
       assertPlacementStable(replay.tenantContext, access);
       return {
         state,
@@ -231,38 +284,32 @@ export async function switchCrmTenantContext(input: {
         "La versión esperada del contexto ya no está vigente."
       );
     }
-    const selected = state.options.find(
-      (option) =>
-        option.tenantKey === input.request.tenantKey &&
-        option.status === "ready"
+    const identity = identityFromPrincipal(input.session, input.config);
+    const candidate = await resolveTenantCatalogCandidate(
+      input.context,
+      input.config,
+      identity,
+      input.request.tenantKey
     );
-    if (!selected) {
+    if (!candidate) {
       throw new CrmV1Error(
         403,
         "crm.tenant_context.not_eligible",
         "El tenant solicitado no está disponible para esta identidad."
       );
     }
-    const identity = identityFromPrincipal(input.session, input.config);
-    const access = await resolveCrmAccess(
+    const access = await resolveInteractiveCrmAccess(
       input.context,
       input.config,
       identity,
       "crm.dashboard.read",
-      selected.tenantId
+      candidate
     );
-    if (access.tenantKey !== selected.tenantKey) {
-      throw new CrmV1Error(
-        409,
-        "crm.tenant_context.owner_mismatch",
-        "Los owners discrepan sobre el tenant solicitado."
-      );
-    }
     const now = new Date();
     const contextVersion = deriveContextVersion(
       requireSealSecret(input.config),
       input.session.sid,
-      selected.tenantKey,
+      candidate.tenantKey,
       input.request.idempotencyKey,
       now.toISOString()
     );
@@ -282,8 +329,9 @@ export async function switchCrmTenantContext(input: {
       issuedAt: interactive.issuedAt,
       refreshedAt: interactive.refreshedAt
     };
+    const stateWithCandidate = mergeCandidateIntoState(state, candidate);
     const next: CrmTenantSessionState = {
-      ...state,
+      ...stateWithCandidate,
       interactive,
       switchReceipts: capSwitchReceipts({
         ...state.switchReceipts,
@@ -304,6 +352,9 @@ export function publicTenantContext(
 ): {
   schemaVersion: "pyrosa.interactive-tenant-context.v1";
   contextVersion: string;
+  state: "active" | "unselected" | "safe_state";
+  expiresAt: string | null;
+  renewAfter: string | null;
   selected: {
     tenantId: string;
     tenantKey: string;
@@ -320,6 +371,13 @@ export function publicTenantContext(
     schemaVersion: "pyrosa.interactive-tenant-context.v1",
     contextVersion:
       state.interactive?.contextVersion ?? state.initialContextVersion,
+    state: state.interactive
+      ? Date.parse(state.interactive.expiresAt) > Date.now()
+        ? "active"
+        : "safe_state"
+      : "unselected",
+    expiresAt: state.interactive?.expiresAt ?? null,
+    renewAfter: state.interactive?.renewAfter ?? null,
     selected:
       state.interactive && selected
         ? {
@@ -332,66 +390,126 @@ export function publicTenantContext(
   };
 }
 
-async function resolveOptions(
-  candidates: Array<{
-    tenantId: string;
-    tenantKey: string;
-    label: string;
-  }>,
-  input: {
-    session: CrmSession;
-    config: CrmServerConfig;
-    context: RequestContext;
-  }
-): Promise<CrmTenantOption[]> {
-  const options = new Array<CrmTenantOption>(candidates.length);
-  let cursor = 0;
-  const identity = identityFromPrincipal(input.session, input.config);
-  const workers = Array.from(
+export async function listCrmTenantOptions(input: {
+  session: CrmSession;
+  config: CrmServerConfig;
+  context: RequestContext;
+  query: string | null;
+  cursor: string | null;
+  limit: number;
+}): Promise<{
+  page: TenantCatalogPage;
+  state: CrmTenantSessionState;
+}> {
+  const page = await loadTenantCatalogPage(
+    input.context,
+    input.config,
+    identityFromPrincipal(input.session, input.config),
     {
-      length: Math.min(maxCandidateConcurrency, candidates.length)
-    },
-    async () => {
-      while (cursor < candidates.length) {
-        const index = cursor;
-        cursor += 1;
-        const candidate = candidates[index];
-        if (!candidate) continue;
-        try {
-          const access = await resolveCrmAccess(
-            {
-              ...input.context,
-              requestId: `${input.context.requestId}:${candidate.tenantKey}`
-            },
-            input.config,
-            identity,
-            "crm.dashboard.read",
-            candidate.tenantId
-          );
-          options[index] = {
-            ...candidate,
-            status:
-              access.tenantKey === candidate.tenantKey ? "ready" : "blocked",
-            reason:
-              access.tenantKey === candidate.tenantKey
-                ? null
-                : "owner_tenant_mismatch"
-          };
-        } catch (error) {
-          options[index] = {
-            ...candidate,
-            status: "blocked",
-            reason:
-              error instanceof CrmV1Error
-                ? error.code
-                : "owner_unavailable"
-          };
-        }
-      }
+      query: input.query,
+      cursor: input.cursor,
+      limit: input.limit
     }
   );
-  await Promise.all(workers);
-  return normalizeOptions(options);
+  return withCrmTenantSessionLock(input.session.sid, async () => {
+    const current =
+      loadCrmTenantSession(input.session) ??
+      createInitialTenantState(
+        input.session,
+        requireSealSecret(input.config),
+        []
+      );
+    const next = page.options.reduce(
+      (state, candidate) => mergeCandidateIntoState(state, candidate),
+      current
+    );
+    saveCrmTenantSession(input.session, next);
+    return { page, state: next };
+  });
+}
+
+export async function renewCrmTenantContext(input: {
+  session: CrmSession;
+  config: CrmServerConfig;
+  context: RequestContext;
+}): Promise<{
+  state: CrmTenantSessionState;
+  access: CrmAccessContext;
+}> {
+  return withCrmTenantSessionLock(input.session.sid, async () => {
+    const current = loadCrmTenantSession(input.session);
+    if (!current?.interactive) {
+      throw new CrmV1Error(
+        409,
+        "crm.tenant_context.recovery_selection_required",
+        "No existe una selección tenant que pueda renovarse."
+      );
+    }
+    const identity = identityFromPrincipal(input.session, input.config);
+    const candidate = await resolveTenantCatalogCandidate(
+      input.context,
+      input.config,
+      identity,
+      current.interactive.tenantKey
+    );
+    if (!candidate) {
+      const withdrawn = { ...current, interactive: null };
+      saveCrmTenantSession(input.session, withdrawn);
+      throw new CrmV1Error(
+        403,
+        "crm.tenant_context.not_eligible",
+        "Directory retiró el tenant del catálogo elegible."
+      );
+    }
+    const access = await resolveInteractiveCrmAccess(
+      input.context,
+      input.config,
+      identity,
+      "crm.dashboard.read",
+      candidate
+    );
+    assertPlacementStable(current.interactive, access);
+    const contextVersion = deriveContextVersion(
+      requireSealSecret(input.config),
+      input.session.sid,
+      candidate.tenantKey,
+      "renew",
+      `${input.context.requestId}:${new Date().toISOString()}`
+    );
+    access.contextVersion = contextVersion;
+    const interactive = composeInteractiveTenantContext({
+      session: input.session,
+      access,
+      contextVersion,
+      previousIssuedAt: current.interactive.issuedAt
+    });
+    const next = {
+      ...mergeCandidateIntoState(current, candidate),
+      interactive
+    };
+    saveCrmTenantSession(input.session, next);
+    return { state: next, access };
+  });
+}
+
+function mergeCandidateIntoState(
+  state: CrmTenantSessionState,
+  candidate: TenantCatalogCandidate
+): CrmTenantSessionState {
+  const byKey = new Map(
+    state.options.map((option) => [option.tenantKey, option] as const)
+  );
+  byKey.set(candidate.tenantKey, {
+    tenantId: candidate.tenantId,
+    tenantKey: candidate.tenantKey,
+    label: candidate.displayName,
+    status: "ready",
+    reason: null
+  });
+  return {
+    ...state,
+    options: normalizeOptions([...byKey.values()])
+  };
 }
 
 function assertPlacementStable(

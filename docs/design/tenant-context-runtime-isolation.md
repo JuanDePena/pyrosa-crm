@@ -1,8 +1,8 @@
 # Extension CRM De Contexto Tenant
 
-Fecha: `2026-07-26`
+Fecha: `2026-07-30`
 
-Estado: `completed-accepted-development`
+Estado: `baseline aceptado; convergencia freshness/recovery implementada en source y no promovida`
 
 ## Canonico Adoptado
 
@@ -130,3 +130,53 @@ de sentinels y cero fallback global o al tenant anterior. El Corte 8 volvió a
 validar el fixture transversal byte-exacto (`1/1`) y `public=0`. La aceptación
 es exclusiva de `development`; DemoCRM y CRM conservan slugs, manifests y
 promociones separados.
+
+## Sucesor Source: Frescura Y Recuperacion
+
+El corte source del `2026-07-30` adopta el
+[canon transversal de frescura y recuperacion](https://github.com/JuanDePena/pyrosa-docs/blob/main/design/tenant-access-freshness-and-recovery.md)
+sin reescribir la evidencia historica anterior:
+
+- el bootstrap pide una pagina Directory acotada y solo compone owners para
+  la seleccion concreta; deja de ejecutar decisiones sobre todos los
+  candidatos;
+- `GET /api/ui/v1/tenant-context/options` pagina y busca el catalogo visual con
+  cache `30 s/120 s`, maximo `128`, siempre acotado por `ownerExpiresAt`;
+- IAM se consulta directamente para `crm.dashboard.read`;
+- Directory v2 decide solo mapping, membership, proyeccion, asiento y frescura;
+- Store y Platform conservan decisiones directas;
+- `InteractiveTenantContext` guarda referencias, versiones y expiraciones
+  reales de los cinco owners, y vence por el minimo de esas fechas y la sesion;
+- `POST /api/ui/v1/tenant-context/renew` renueva `15 s` antes del minimo;
+- al vencer durante un outage, la SPA elimina el header funcional, desmonta
+  SharedShell y datos y recupera con backoff con jitter de `2 s` a `30 s`, sin
+  recarga de documento ni reseleccion.
+
+El modo canonico se fija con
+`PYROSA_CRM_DIRECTORY_DECISION_MODE=v2`. El adaptador v1 queda como rollback
+temporal con `v1`; su ventana local de compatibilidad es de `15 s` porque el
+contrato historico no publica expiracion owner. Con v2 activo,
+`PYROSA_CRM_DIRECTORY_V1_SHADOW_ENABLED=1` compara allow/deny, mapping,
+membership y asiento, pero el resultado shadow nunca concede acceso ni entra
+al contexto.
+
+Esta entrega no aprovisiona tokens, clientes, scopes o secretos; no cambia
+flags live; no despliega ni reinicia el runtime. Su promocion exige primero
+materializar por owner las credenciales dedicadas declaradas en
+`runtime/env/app-pyrosa-democrm.env.example`, verificar Directory v2 y ejecutar
+las fixtures/canary del plan transversal.
+
+### Pendientes Del Corte Transversal
+
+La vertical no declara cerrado el Corte 4 live:
+
+- el resource server IAM aun debe autorizar source/live el token de integracion
+  de `pyrosa-democrm`;
+- el carril bearer CRM v1 conserva el adaptador compuesto historico; migrarlo a
+  los mismos owners exige una entrega separada y fixtures de equivalencia;
+- las metricas transversales de switch, renewal, safe-state, recovery y cache
+  aun no tienen un exporter runtime; los logs source solo registran el
+  resultado sanitizado del shadow;
+- faltan canary coordinado, burn-in y rollback ejercitado con Store, Directory,
+  IAM y Platform desplegados;
+- no se ha retirado el adaptador v1 ni su excepcion temporal de expiracion.

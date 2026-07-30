@@ -39,11 +39,21 @@ export type CrmServerConfig = {
   accountsInternalBaseUrl: string;
   directoryInternalBaseUrl: string;
   storeInternalBaseUrl: string;
+  iamPolicyDecisionUrl: string;
+  iamPolicyDecisionToken: string | null;
+  directoryDecisionMode: "v2" | "v1";
+  directoryV1ShadowEnabled: boolean;
   directoryOauthTokenUrl: string;
   directoryOauthClientId: string;
   directoryOauthClientSecret: string | null;
   directoryOauthAudience: string;
   directoryOauthScope: string;
+  directoryCatalogOauthClientId: string;
+  directoryCatalogOauthClientSecret: string | null;
+  directoryDecisionOauthClientId: string;
+  directoryDecisionOauthClientSecret: string | null;
+  directoryDecisionUrl: string;
+  directoryLegacyDecisionUrl: string;
   storeOauthTokenUrl: string;
   storeOauthClientId: string;
   storeOauthClientSecret: string | null;
@@ -54,6 +64,7 @@ export type CrmServerConfig = {
   platformOauthClientSecret: string | null;
   platformOauthAudience: string;
   platformOauthScope: string;
+  platformTenantContextDecisionUrl: string;
   accessTimeoutMs: number;
   defaultTenantId: string | null;
   tenantContextSealSecret: string | null;
@@ -144,6 +155,18 @@ export function loadConfig(): CrmServerConfig {
     storeInternalBaseUrl:
       normalizeOptionalString(process.env.PYROSA_CRM_STORE_INTERNAL_BASE_URL) ??
       "https://store.pyrosa.com.do",
+    iamPolicyDecisionUrl:
+      normalizeOptionalString(process.env.PYROSA_CRM_IAM_POLICY_DECISION_URL) ??
+      new URL("/api/iam/policy/decisions", iamBaseUrl).toString(),
+    iamPolicyDecisionToken: normalizeOptionalString(
+      process.env.PYROSA_CRM_IAM_POLICY_DECISION_TOKEN
+    ),
+    directoryDecisionMode:
+      process.env.PYROSA_CRM_DIRECTORY_DECISION_MODE === "v1" ? "v1" : "v2",
+    directoryV1ShadowEnabled: parseBoolean(
+      process.env.PYROSA_CRM_DIRECTORY_V1_SHADOW_ENABLED,
+      true
+    ),
     directoryOauthTokenUrl: normalizeOptionalString(process.env.PYROSA_CRM_DIRECTORY_OAUTH_TOKEN_URL) ?? oauthTokenUrl,
     directoryOauthClientId:
       normalizeOptionalString(process.env.PYROSA_CRM_DIRECTORY_OAUTH_CLIENT_ID) ??
@@ -155,6 +178,36 @@ export function loadConfig(): CrmServerConfig {
     directoryOauthScope:
       normalizeOptionalString(process.env.PYROSA_CRM_DIRECTORY_OAUTH_SCOPE) ??
       "directory:crm-access:decide",
+    directoryCatalogOauthClientId:
+      normalizeOptionalString(
+        process.env.PYROSA_CRM_DIRECTORY_CATALOG_OAUTH_CLIENT_ID
+      ) ?? "client-pyrosa-democrm-directory-catalog",
+    directoryCatalogOauthClientSecret: normalizeOptionalString(
+      process.env.PYROSA_CRM_DIRECTORY_CATALOG_OAUTH_CLIENT_SECRET
+    ),
+    directoryDecisionOauthClientId:
+      normalizeOptionalString(
+        process.env.PYROSA_CRM_DIRECTORY_DECISION_OAUTH_CLIENT_ID
+      ) ?? "client-pyrosa-democrm-directory-access",
+    directoryDecisionOauthClientSecret: normalizeOptionalString(
+      process.env.PYROSA_CRM_DIRECTORY_DECISION_OAUTH_CLIENT_SECRET
+    ),
+    directoryDecisionUrl:
+      normalizeOptionalString(process.env.PYROSA_CRM_DIRECTORY_DECISION_URL) ??
+      new URL(
+        "/internal/directory/v2/application-access-decision",
+        normalizeOptionalString(process.env.PYROSA_CRM_DIRECTORY_INTERNAL_BASE_URL) ??
+          "https://directory.pyrosa.com.do"
+      ).toString(),
+    directoryLegacyDecisionUrl:
+      normalizeOptionalString(
+        process.env.PYROSA_CRM_DIRECTORY_LEGACY_DECISION_URL
+      ) ??
+      new URL(
+        "/internal/directory/v1/crm-access-decision",
+        normalizeOptionalString(process.env.PYROSA_CRM_DIRECTORY_INTERNAL_BASE_URL) ??
+          "https://directory.pyrosa.com.do"
+      ).toString(),
     storeOauthTokenUrl: normalizeOptionalString(process.env.PYROSA_CRM_STORE_OAUTH_TOKEN_URL) ?? oauthTokenUrl,
     storeOauthClientId:
       normalizeOptionalString(process.env.PYROSA_CRM_STORE_OAUTH_CLIENT_ID) ??
@@ -177,6 +230,15 @@ export function loadConfig(): CrmServerConfig {
     platformOauthScope:
       normalizeOptionalString(process.env.PYROSA_CRM_PLATFORM_OAUTH_SCOPE) ??
       "platform.provisioning.readiness.consume",
+    platformTenantContextDecisionUrl:
+      normalizeOptionalString(
+        process.env.PYROSA_CRM_PLATFORM_TENANT_CONTEXT_DECISION_URL
+      ) ??
+      new URL(
+        "/internal/platform/v1/schema-placement/resolve",
+        normalizeOptionalString(process.env.PYROSA_CRM_PLATFORM_INTERNAL_BASE_URL) ??
+          "https://platform.pyrosa.com.do"
+      ).toString(),
     accessTimeoutMs: parsePositiveInteger(process.env.PYROSA_CRM_ACCESS_TIMEOUT_MS, 4000),
     defaultTenantId: normalizeOptionalString(process.env.PYROSA_CRM_DEFAULT_TENANT_ID),
     tenantContextSealSecret: normalizeOptionalString(

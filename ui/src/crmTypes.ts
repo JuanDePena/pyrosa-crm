@@ -50,6 +50,9 @@ export type BootstrapResponse = {
   tenantContext?: {
     schemaVersion?: string;
     contextVersion?: string;
+    state?: "active" | "unselected" | "safe_state";
+    expiresAt?: string | null;
+    renewAfter?: string | null;
     selected?: {
       tenantId?: string;
       tenantKey?: string;
@@ -64,6 +67,23 @@ export type BootstrapResponse = {
     }>;
   };
   platform?: Record<string, unknown>;
+};
+
+export type TenantContextRenewResponse = {
+  schemaVersion?: string;
+  tenantContext?: BootstrapResponse["tenantContext"];
+  context?: BootstrapResponse["context"];
+};
+
+export type TenantOptionsResponse = {
+  schemaVersion?: string;
+  options?: NonNullable<BootstrapResponse["tenantContext"]>["options"];
+  page?: {
+    hasMore?: boolean;
+    nextCursor?: string | null;
+    ownerExpiresAt?: string;
+    cache?: "miss" | "fresh" | "stale";
+  };
 };
 
 export type ApiMeta = {

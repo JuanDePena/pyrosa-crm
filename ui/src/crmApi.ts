@@ -1,4 +1,8 @@
-import type { TechnicalIssue } from "./crmTypes";
+import type {
+  TechnicalIssue,
+  TenantContextRenewResponse,
+  TenantOptionsResponse
+} from "./crmTypes";
 
 type CrmErrorEnvelope = {
   error?: {
@@ -124,6 +128,41 @@ export async function switchCrmTenant(input: {
       method: "POST",
       signal: input.signal
     }
+  );
+}
+
+export async function renewCrmTenant(input: {
+  csrfToken: string;
+  signal?: AbortSignal;
+}): Promise<TenantContextRenewResponse> {
+  return fetchJson(
+    "/api/ui/v1/tenant-context/renew",
+    {
+      credentials: "same-origin",
+      headers: {
+        accept: "application/json",
+        "X-CSRF-Token": input.csrfToken
+      },
+      method: "POST",
+      signal: input.signal
+    }
+  );
+}
+
+export async function fetchCrmTenantOptions(input: {
+  query: string;
+  cursor?: string | null;
+  limit?: number;
+  signal?: AbortSignal;
+}): Promise<TenantOptionsResponse> {
+  const params = new URLSearchParams({
+    limit: String(input.limit ?? 24)
+  });
+  if (input.query.trim()) params.set("q", input.query.trim());
+  if (input.cursor) params.set("cursor", input.cursor);
+  return fetchAppJson(
+    `/api/ui/v1/tenant-context/options?${params.toString()}`,
+    input.signal
   );
 }
 

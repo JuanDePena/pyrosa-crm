@@ -48,8 +48,10 @@ import {
   type CrmTenantSessionState
 } from "./tenantContext.js";
 import {
+  listCrmTenantOptions,
   publicTenantContext,
   refreshCrmTenantSession,
+  renewCrmTenantContext,
   switchCrmTenantContext
 } from "./tenantContextService.js";
 
@@ -454,6 +456,80 @@ async function handleRequest(
 
   if (
     context.url.pathname ===
+    "/api/ui/v1/tenant-context/options"
+  ) {
+    if (req.method !== "GET" && req.method !== "HEAD") {
+      res.setHeader("allow", "GET, HEAD");
+      sendText(res, 405, "Method Not Allowed");
+      return;
+    }
+    const session = await requireCrmSession(
+      req,
+      res,
+      config,
+      context.headOnly
+    );
+    if (!session) return;
+    const limit = Number(context.url.searchParams.get("limit") ?? "24");
+    const result = await listCrmTenantOptions({
+      session,
+      config,
+      context,
+      query: context.url.searchParams.get("q"),
+      cursor: context.url.searchParams.get("cursor"),
+      limit
+    });
+    sendJson(res, 200, {
+      schemaVersion: "pyrosa.tenant-context.options.v1",
+      options: result.page.options.map((option) => ({
+        tenantId: option.tenantId,
+        tenantKey: option.tenantKey,
+        label: option.displayName,
+        status: "ready",
+        reason: null
+      })),
+      page: {
+        hasMore: result.page.hasMore,
+        nextCursor: result.page.nextCursor,
+        ownerExpiresAt: result.page.ownerExpiresAt,
+        cache: result.page.cache
+      }
+    }, context.headOnly);
+    return;
+  }
+
+  if (
+    context.url.pathname ===
+    "/api/ui/v1/tenant-context/renew"
+  ) {
+    if (req.method !== "POST") {
+      res.setHeader("allow", "POST");
+      sendText(res, 405, "Method Not Allowed");
+      return;
+    }
+    const session = await requireCrmSession(
+      req,
+      res,
+      config,
+      context.headOnly
+    );
+    if (!session) return;
+    assertTenantContextCsrf(session, req);
+    const renewed = await renewCrmTenantContext({
+      session,
+      config,
+      context
+    });
+    sendJson(res, 200, {
+      schemaVersion: "pyrosa.tenant-context.renew.response.v1",
+      tenantContext: publicTenantContext(renewed.state),
+      context: publicCrmAccessContext(renewed.access)
+    }, false);
+    return;
+  }
+
+  if (
+    context.url.pathname ===
     "/api/ui/v1/tenant-context/switch"
   ) {
     if (req.method !== "POST") {
@@ -556,6 +632,21 @@ async function handleRequest(
   }
 
   sendText(res, 404, "Not Found");
+}
+
+function publicCrmAccessContext(access: import("./crmV1Types.js").CrmAccessContext) {
+  return {
+    activeTenantId: access.tenantId,
+    tenantKey: access.tenantKey,
+    displayName: access.displayName,
+    profileKey: access.profileKey,
+    profileVersion: access.profileVersion,
+    timezone: access.timezone,
+    locale: access.locale,
+    dictionaryVersion: access.dictionaryVersion,
+    capabilities: access.capabilities,
+    contextVersion: access.contextVersion
+  };
 }
 
 function buildPlatformContracts(config: CrmServerConfig) {

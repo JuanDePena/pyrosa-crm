@@ -206,8 +206,9 @@ dl {
 .crm-tenant-scope-selector {
   align-items: center;
   display: flex;
+  flex-wrap: wrap;
   gap: var(--py-space-2);
-  min-width: min(22rem, 38vw);
+  min-width: min(30rem, 48vw);
 }
 
 .crm-tenant-scope-selector__icon {
@@ -220,6 +221,17 @@ dl {
 .crm-tenant-scope-selector__select {
   flex: 1 1 auto;
   min-width: 0;
+}
+
+.crm-tenant-scope-selector__search {
+  flex: 0 1 12rem;
+  min-width: 8rem;
+}
+
+.crm-tenant-scope-selector__error {
+  color: var(--py-color-danger);
+  flex: 1 0 100%;
+  font-size: var(--py-font-size-xs);
 }
 
 @media (max-width: 760px) {

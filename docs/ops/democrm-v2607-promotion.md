@@ -79,6 +79,20 @@ wildcards:
 | Store | `client-pyrosa-democrm-store-entitlements` | `pyrosa-store` | `store.entitlement.decide` |
 | Platform | `client-pyrosa-crm` | `pyrosa-platform` | `platform.provisioning.readiness.consume` |
 
+Esta tabla conserva el baseline v1 ya promovido. El sucesor source del
+`2026-07-30` no esta desplegado y agrega credenciales separadas:
+
+| Carril nuevo | Client/secret source esperado | Audience/scope |
+| --- | --- | --- |
+| IAM policy directa | token de integracion exclusivo DemoCRM | endpoint IAM policy; no reutiliza OAuth Directory |
+| Directory catalogo | `client-pyrosa-democrm-directory-catalog` | `pyrosa-directory` / `directory:tenant-access-catalog:read` |
+| Directory decision v2 | `client-pyrosa-democrm-directory-access` | `pyrosa-directory` / `directory:application-access:decide` |
+| Platform placement | `client-pyrosa-crm` | `pyrosa-platform` / `platform.schema.resolve` |
+
+No provisionar estos secrets ni cambiar scopes/flags durante una publicacion
+Git. La promocion requiere una autorizacion live separada, prueba de shadow v1,
+canary de expiry/safe-state/recovery y rollback ejercitable.
+
 Para el canario tenant `1`, los tres carriles owner estan habilitados con sus
 contratos exactos y el smoke E2E devolvio `3/3 allow`. El registro de clientes
 no se usa por si solo como evidencia: el resultado fue compuesto por CRM con la

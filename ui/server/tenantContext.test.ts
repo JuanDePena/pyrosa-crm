@@ -68,6 +68,11 @@ test("browser authority is the server session plus exact contextVersion, never t
   );
   assert.equal(bound.tenantId, access.tenantId);
   assert.equal(bound.tenantKey, tenantKey);
+  assert.equal(
+    state.interactive.expiresAt,
+    "2099-07-27T00:00:00.000Z",
+    "context expiry is the earliest real owner/session expiry"
+  );
 
   assert.throws(
     () =>
@@ -77,6 +82,35 @@ test("browser authority is the server session plus exact contextVersion, never t
         state
       ),
     hasCode("crm.tenant_context.header_required")
+  );
+});
+
+test("expired owner decisions enter safe state before any functional request", () => {
+  const session = crmSession();
+  const access = crmAccess();
+  const version = deriveContextVersion(
+    seal,
+    session.sid,
+    tenantKey,
+    "bootstrap",
+    "expiry-test"
+  );
+  const state = createInitialTenantState(session, seal, []);
+  state.interactive = {
+    ...composeInteractiveTenantContext({
+      session,
+      access,
+      contextVersion: version
+    }),
+    expiresAt: "2026-07-30T00:00:00.000Z"
+  };
+  assert.throws(
+    () => assertBoundBrowserTenantContext(
+      request({ "x-pyrosa-tenant-context-version": version }),
+      session,
+      state
+    ),
+    hasCode("crm.tenant_context.expired")
   );
 });
 
@@ -251,6 +285,33 @@ function crmAccess(): CrmAccessContext {
       directory: "decision-directory-alpha",
       store: "decision-store-alpha",
       platform: "decision-platform-alpha"
+    },
+    ownerDecisions: {
+      iam: {
+        reference: "decision-iam-alpha",
+        version: "iam-policy:4:binding:9",
+        expiresAt: "2099-07-27T00:00:00.000Z"
+      },
+      directory: {
+        reference: "decision-directory-alpha",
+        version: `sha256:${"b".repeat(64)}`,
+        expiresAt: "2099-07-27T00:01:00.000Z"
+      },
+      store: {
+        reference: "decision-store-alpha",
+        version: `sha256:${"c".repeat(64)}`,
+        expiresAt: "2099-07-27T00:02:00.000Z"
+      },
+      platform: {
+        reference: "decision-platform-alpha",
+        version: `sha256:${"d".repeat(64)}`,
+        expiresAt: "2099-07-27T00:03:00.000Z"
+      },
+      application: {
+        reference: "decision-application-alpha",
+        version: `sha256:${"e".repeat(64)}`,
+        expiresAt: "2099-07-27T00:04:00.000Z"
+      }
     }
   };
 }

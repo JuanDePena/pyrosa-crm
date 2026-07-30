@@ -38,6 +38,13 @@ export type CrmAccessContext = {
     store: string;
     platform: string;
   };
+  ownerDecisions?: {
+    iam: { reference: string; version: string; expiresAt: string };
+    directory: { reference: string; version: string; expiresAt: string };
+    store: { reference: string; version: string; expiresAt: string };
+    platform: { reference: string; version: string; expiresAt: string };
+    application: { reference: string; version: string; expiresAt: string };
+  };
 };
 
 export type CrmRecord = {
