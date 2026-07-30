@@ -1,8 +1,8 @@
 # Diseno Funcional Y Tecnico De Pyrosa CRM v2607
 
-Fecha: `2026-07-16`
+Fecha de ultima verificacion: `2026-07-28`
 
-Estado: `canario owner v2607 live; promocion general pendiente`
+Estado: `tenant context y OAuth accepted-development; promocion productiva y VOIX pendientes`
 
 ## Decision Central
 
@@ -36,7 +36,7 @@ implementacion v2607 endurece esa base sin reconstruir una shell paralela. El
 estado final y sus limites quedan en el
 [plan cerrado](../plans-completed/plan-democrm-v2607.md).
 
-## Estado Del Canario Owner
+## Baseline Historica Del Canario Owner
 
 Al `2026-07-16`, el runtime demo sirve v2607 como una unidad frontend/BFF con
 artefacto coherente. El tenant interno `1` tiene diccionarios global `2.0.0` y
@@ -53,10 +53,23 @@ activa confirmo Directory + Store + Platform `3/3 allow`, schema
 `pyrosa_democrm_8ef427da9f0e`, diccionario `2.0.1`, perfil `core` y capability
 `crm.cases.read`, sin registrar el subject.
 
-El canario owner queda verde, pero no habilita una cohorte general. El SLO movil
-de 24 horas de Store permanece `critical` y `/canaryz` responde `503`;
-workshop, datos y usuarios VOIX continuan fuera de alcance hasta cerrar ese y
-los demas gates operativos.
+El canario owner quedo verde, pero esa captura del `2026-07-16` no habilitaba
+una cohorte general. El SLO movil de Store y `/canaryz=503` se conservan como
+historia diagnostica, no como estado vigente.
+
+## Cierre Posterior En Development
+
+El `2026-07-25`, CRM cerro el resource server OAuth inbound, el binding
+tenant-service y la matriz de lifecycle/degradacion con rollback fail-closed.
+El `2026-07-28`, el runtime completo el contexto interactivo canonico y el
+canary PYROSA -> CMT -> PYROSA sobre una misma sesion de pool. El resultado
+acredita decisiones owner por request, aislamiento, rollback y cero fallback al
+schema global o al tenant anterior.
+
+Los manifests owner del cierre usan las lineas target-neutral global
+`2026.07.18.0` y tenant-product `2026.07.17.0`. Esta aceptacion se limita a
+`development`: workshop, datos y usuarios VOIX, preproduccion y el runtime
+`pyrosa-crm` conservan decisiones y gates separados.
 
 ## Terminologia Y Fronteras
 
@@ -126,8 +139,10 @@ owner. El id numerico y el perfil visible del usuario no sustituyen al subject.
   los schemas de guard/bootstrap pertenecen al gobierno Platform.
 - Tenant key y schema se resuelven desde Platform despues de validar Directory
   y Store.
-- En el canario tenant `1`, Platform reporta los contratos activos global
-  `2.0.0` y tenant-aware `2.0.1` como ready.
+- En el canario historico tenant `1`, Platform reporto los contratos global
+  `2.0.0` y tenant-aware `2.0.1` como ready. El cierre coordinado posterior
+  usa las lineas owner target-neutral global `2026.07.18.0` y tenant-product
+  `2026.07.17.0`.
 - CRM no duplica memberships, asientos, vigencias, perfiles o politicas.
 - Toda fila de negocio queda dentro del schema tenant correspondiente.
 
@@ -354,9 +369,10 @@ modelo aprobado
 
 El rol runtime no recibe DDL. `database/migrations/0001_crm_core.sql` queda como
 historia/compatibilidad y `npm run db:migrate` rechaza cualquier apply local.
-Para el canario actual, Platform completo adopcion y readiness de los targets
-global `2.0.0` y tenant-aware `2.0.1`; ello no autoriza cambios fisicos desde
-CRM ni la apertura de otra cohorte.
+Platform completo historicamente la adopcion de los targets global `2.0.0` y
+tenant-aware `2.0.1`; el cierre posterior los consolido bajo las lineas owner
+global `2026.07.18.0` y tenant-product `2026.07.17.0`. Ninguna de esas
+evidencias autoriza cambios fisicos desde CRM ni la apertura de otra cohorte.
 
 ## Importacion VOIX
 

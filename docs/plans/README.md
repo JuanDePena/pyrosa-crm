@@ -8,5 +8,9 @@ No hay planes de implementacion activos. El release candidate DemoCRM v2607
 se cerro mediante una excepcion formal que conserva como gates separados la
 promocion runtime y el piloto real de VOIX.
 
+La convergencia OAuth y de contexto tenant posterior quedo aceptada en
+`development`; no retira la excepcion de promocion productiva ni acredita el
+piloto VOIX.
+
 Los planes cerrados y sus evidencias se consultan en el
 [indice de planes completados](../plans-completed/README.md).

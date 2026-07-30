@@ -1,8 +1,8 @@
 # Contrato API Pyrosa CRM v1
 
-Fecha: `2026-07-16`
+Fecha de ultima verificacion: `2026-07-28`
 
-Estado: `canario owner E2E 3/3 verde; promocion general bloqueada por SLO Store`
+Estado: `tenant context y OAuth accepted-development; promocion productiva y VOIX pendientes`
 
 Base path: `/api/crm/v1`
 
@@ -87,7 +87,7 @@ issuer distinto al IAM configurado. Una cookie firmada anterior que no incluya
 la identidad canonica falla cerrada y debe reemplazarse mediante login. Los
 payloads publicos de session/bootstrap no exponen issuer ni subject.
 
-### Estado Del Canario Owner
+### Baseline Historica Del Canario Owner
 
 Al `2026-07-16`, el tenant interno `1` tiene el prerequisito transversal listo:
 
@@ -105,9 +105,26 @@ devolvieron `3/3 allow` para tenant `1`, schema
 `pyrosa_democrm_8ef427da9f0e`, diccionario `2.0.1`, perfil `core` y capability
 `crm.cases.read`. La evidencia no registra el subject.
 
-Este estado solo habilita la verificacion owner del tenant canary. El SLO movil
-de 24 horas de Store permanece `critical` y `/canaryz` responde `503`, por lo
-que no se promueve una cohorte general ni VOIX.
+Esta observacion del `2026-07-16` solo habilitaba la verificacion owner del
+primer tenant canary. El SLO movil de Store y `/canaryz=503` pertenecen a esa
+captura historica y no describen el readiness vigente.
+
+### Cierre Posterior De Contexto Tenant
+
+El `2026-07-25`, el resource server inbound, el binding tenant-service y la
+matriz de expiracion, revocacion, degradacion, recuperacion y rollback quedaron
+aceptados en `development`.
+
+El `2026-07-28`, CRM completo el contrato interactivo canonico y el canary
+PYROSA -> CMT -> PYROSA sobre una misma sesion de pool. Las decisiones owner,
+el binding por request, el rollback de sentinels y la ausencia de fallback al
+schema global o al tenant anterior quedaron aceptados con blockers vacios. Los
+diccionarios owner vigentes del cierre son global `2026.07.18.0` y
+tenant-product `2026.07.17.0`.
+
+La aceptacion acredita exclusivamente `development`. No autoriza
+preproduccion, promocion a `pyrosa-crm`, carga de datos VOIX ni expansion
+automatica de cohortes.
 
 ## Recursos
 
@@ -301,7 +318,8 @@ filtros/orden allowlisted, idempotencia funcional, concurrencia optimista,
 redaccion de errores, masking, audit/outbox transaccional, preservacion privada
 de la identidad IAM y rechazo de cookies legacy sin esa identidad.
 
-Pendiente antes de ampliar la promocion: SLO Store fuera de `critical`,
-artefactos OpenAPI/JSON Schema, contract tests HTTP
+Pendiente antes de una promocion funcional o productiva: decision explicita de
+cohorte y ambiente, artefactos OpenAPI/JSON Schema, contract tests HTTP
 cliente/BFF, carga y concurrencia PostgreSQL, workers reales de report/export,
-backward compatibility y observabilidad runtime.
+backward compatibility, observabilidad runtime y los gates de privacidad,
+importacion y operacion VOIX.

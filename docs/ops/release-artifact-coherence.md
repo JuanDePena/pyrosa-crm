@@ -1,6 +1,6 @@
 # Coherencia De Artefacto Frontend Y BFF
 
-Fecha: `2026-07-19`
+Fecha de ultima verificacion: `2026-07-28`
 
 Estado: `control observado en runtime v2607 canary`
 
@@ -97,9 +97,14 @@ construido desde el commit limpio exacto y volver a pasar health antes de abrir
 trafico. El smoke owner verde no permite mezclar el BFF corregido con el
 cliente/manifiesto v2607 anterior.
 
-El SLO movil `critical` de Store y su `/canaryz=503` no indican incoherencia de
-artefacto CRM. Son un gate transversal independiente que impide ampliar la
-cohorte aunque el health local de CRM sea sano.
+El SLO movil `critical` de Store y `/canaryz=503` pertenecen a la captura del
+primer canario y no indican incoherencia del artefacto CRM. El readiness
+posterior los retiro como blockers de `development`; una nueva ventana debe
+recapturar Store y conserva separada la promocion productiva.
+
+El cierre tenant del `2026-07-28` reutilizo el mismo contrato de artefacto para
+el canary PYROSA -> CMT -> PYROSA. Esa aceptacion acredita coherencia,
+aislamiento y rollback en `development`, no un despliegue de `pyrosa-crm`.
 
 ## Build Y Promocion
 

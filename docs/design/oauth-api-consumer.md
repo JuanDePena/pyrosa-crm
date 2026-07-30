@@ -1,6 +1,6 @@
 # Contrato OAuth2 De La API CRM
 
-Fecha de evidencia: `2026-07-25`
+Fecha de ultima verificacion: `2026-07-28`
 
 Estado: decisiones owner browser E2E `3/3 allow`; bearer, binding tenant para
 principal service y matriz de lifecycle/degradación aceptados en development.
@@ -57,7 +57,7 @@ compuesto mediante Directory, Store y Platform con grants owner-specific y
 scopes por accion; no se inventa un claim tenant ni se habilita un fallback
 local.
 
-## Canario Owner Tenant 1
+## Baseline Historica Del Canario Owner Tenant 1
 
 Las tres rutas de decision y sus carriles OAuth2 estan habilitados para el
 tenant interno `1`: Directory decide membresia/asiento, Store entitlement y
@@ -74,9 +74,15 @@ capability `crm.cases.read`. La evidencia no conserva ni expone el subject.
 
 El canario saliente permanece separado del resource server bearer entrante. El
 inbound queda aceptado solo en development; no certifica preproducción ni
-amplía por sí mismo la cohorte comercial o VOIX. La degradación global de Store
-por observaciones históricas sigue siendo un gate comercial independiente, no
-un blocker del contrato OAuth de CRM.
+amplía por sí mismo la cohorte comercial o VOIX. La captura Store degradada del
+primer canario quedó superada para development por el readiness posterior; la
+promoción productiva de Store y CRM continúa siendo una decisión independiente,
+no un blocker del contrato OAuth de CRM.
+
+El cierre tenant posterior del `2026-07-28` acreditó además PYROSA -> CMT ->
+PYROSA con `contextVersion`, binding owner por request y cero fallback entre
+tenants. Esa evidencia amplía el canario de contexto, no el scope OAuth
+`crm.read` ni la autorización de preproducción.
 
 La evolucion concreta se define en el
 [contrato API CRM v1](../api/crm-v1.md) y el

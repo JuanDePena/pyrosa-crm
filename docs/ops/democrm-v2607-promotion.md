@@ -1,16 +1,16 @@
 # Promocion Operativa DemoCRM v2607
 
-Fecha: `2026-07-16`
+Fecha de ultima verificacion: `2026-07-28`
 
-Estado: `canario owner tenant 1 E2E verde; expansion bloqueada por SLO Store`
+Estado: `tenant context y OAuth accepted-development; promocion productiva y piloto VOIX pendientes`
 
 ## Proposito
 
-Completar de forma controlada el canario owner v2607 ya desplegado en el
-runtime demo y, solo despues de aceptar todos sus gates, decidir por separado
-una cohorte general y la futura promocion hacia `pyrosa-crm`. Este runbook
-registra el avance parcial observado; no autoriza datos personales ni convierte
-el canario interno en una promocion productiva.
+Conservar los gates para ampliar DemoCRM mas alla del cierre
+`accepted-development` y decidir por separado cualquier cohorte funcional, el
+piloto VOIX y la futura promocion hacia `pyrosa-crm`. Este runbook no autoriza
+datos personales ni convierte la aceptacion del runtime demo en una promocion
+productiva.
 
 ## Baseline Confirmado
 
@@ -39,12 +39,18 @@ el canario interno en una promocion productiva.
   [evidencia del piloto sintetico](../evidence/democrm-v2607-synthetic-pilot-2026-07-15.md).
 - No se ha documentado como ejecutado el workshop VOIX, una importacion del
   XLSX real ni una cohorte humana.
-- El SLO movil de 24 horas de Store permanece `critical` y `/canaryz` responde
-  `503`; esta degradacion historica bloquea expansion, aunque la saga actual sea
-  terminal.
+- El SLO movil de Store y `/canaryz=503` describen la captura historica del
+  primer canario. El readiness posterior de Store los retiro como blockers de
+  `development`; la promocion productiva permanece deshabilitada por diseño.
+- El cierre del `2026-07-28` acepto PYROSA -> CMT -> PYROSA sobre una misma
+  sesion de pool, con decisiones owner por request, rollback y cero fallback.
+  Esa evidencia no incluye datos VOIX ni habilita `pyrosa-crm`.
 
-La evidencia saneada del avance vive en
-[canario owner v2607](../evidence/democrm-v2607-owner-canary-2026-07-16.md).
+La cronologia saneada se conserva en el
+[canario owner v2607](../evidence/democrm-v2607-owner-canary-2026-07-16.md),
+la [evidencia OAuth inbound](../evidence/oauth-api-inbound-live-2026-07-25.md)
+y el
+[cierre transversal CRM](https://github.com/JuanDePena/pyrosa-docs/blob/main/ops/tenant-context-runtime-convergence-crm-cut-6-2026-07-28.md).
 
 ## Gates De Promocion
 
@@ -88,8 +94,9 @@ El productor inbound inicial es exclusivamente
 `pyrosa-crm-api-canary`. No se reutiliza `client-crm`,
 `client-pyrosa-democrm`, `client-pyrosa-democrm-store-entitlements` ni
 `client-pyrosa-crm`, porque corresponden al browser o a decisiones owner
-salientes. Su estado source `ready_for_secret` exige todavía secreto, apply,
-membership/seat/entitlement/readiness y canarios positivos/negativos live.
+salientes. El `2026-07-25` quedaron materializados el productor, introspector,
+grant, binding tenant-service y pruebas positivas/negativas de lifecycle y
+degradacion en `development`.
 
 ### 3. Endpoints Owner Y Feature Flags
 
@@ -108,9 +115,9 @@ tenant, app, capability, membresia, asiento, vigencia, entitlement y readiness.
 Un `401`, `403`, `409` o `503` nunca se transforma en allow.
 
 Los tres endpoints owner estan activos para el canario actual. Directory,
-Store y Platform devolvieron el allow compuesto para `crm.cases.read`; la
-promocion general conserva como unico gate transversal observado el SLO movil
-de Store, sin convertir `/canaryz=503` en warning.
+Store y Platform devolvieron el allow compuesto para `crm.cases.read`. El
+cierre posterior extendio la prueba a PYROSA/CMT con contexto versionado. Esto
+no elimina los gates funcionales, de privacidad y de promocion productiva.
 
 ### 4. Configuracion Del Consumidor CRM
 
@@ -123,9 +130,11 @@ Inyectar mediante el env host-managed, sin imprimir valores:
 - audience y scope exactos documentados en
   [`runtime/env/app-pyrosa-democrm.env.example`](../../runtime/env/app-pyrosa-democrm.env.example).
 
-`PYROSA_CRM_OAUTH_API_ENABLED` permanece `false` salvo que se promueva tambien
-el resource server bearer y se completen sus pruebas de revocacion. La ausencia
-de cualquiera de los tres secrets owner mantiene CRM fail-closed.
+El runtime `development` termino el canario inbound con
+`PYROSA_CRM_OAUTH_API_ENABLED=1` despues de probar expiracion, revocacion,
+outage, recuperacion y rollback temporal a `0`. Cualquier ambiente o cohorte
+nueva repite esos gates; la ausencia de cualquiera de los tres secrets owner
+mantiene CRM fail-closed.
 
 La sesion browser conserva exactamente el issuer/subject canonicos que IAM
 entrega mediante ticket exchange o introspeccion. No fabrica el subject desde
@@ -140,16 +149,11 @@ tenant candidato y lo usa cuando la solicitud no incluye
 operacion vuelven a exigir las decisiones positivas de Directory, Store y
 Platform para ese mismo tenant.
 
-El template de `pyrosa-democrm` fija temporalmente el valor `1` para la cohorte
-interna v2607. Ese identificador de un solo caracter es valido en el consumidor
-y debe coincidir con el `tenant_id` transversal ya catalogado por los tres
-owners; no es un alias, slug ni `tenant_key`.
-
-Esta variable no es un selector multitenant ni debe usarse cuando el usuario
-pueda operar mas de un tenant. La promocion multitenant mantiene como gate un
-selector respaldado por el contexto autorizado de Directory; hasta entonces,
-la cohorte debe tener un unico tenant documentado y la variable queda vacia
-fuera de esa cohorte.
+El valor historico `1` del template se uso para el primer canario
+single-tenant. No es un alias, slug, `tenant_key` ni autoridad. Desde el cierre
+multitenant del `2026-07-28`, una sesion con mas de un tenant usa el selector
+server-side, `contextVersion` y el switch canonico; no puede depender de
+`PYROSA_CRM_DEFAULT_TENANT_ID` como fallback.
 
 ### 5. Preflight Funcional
 
@@ -170,6 +174,11 @@ El preflight owner terminal del tenant `1` ya completo los puntos `1` y `2`:
 `pyrosa_democrm_8ef427da9f0e`, diccionario `2.0.1`, perfil `core` y capability
 `crm.cases.read`. No se uso PII ni se registro la identidad. Los puntos
 funcionales restantes aplican antes de abrir una cohorte de trabajo.
+
+El cierre posterior completo el canary PYROSA -> CMT -> PYROSA con los
+diccionarios owner global `2026.07.18.0` y tenant-product `2026.07.17.0`,
+rollback y blockers vacios. Este resultado sustituye el baseline single-tenant
+para aislamiento, pero no ejecuta los puntos funcionales ni VOIX restantes.
 
 Antes de una cohorte real tambien deben cerrarse o aceptarse expresamente las
 capacidades diferidas del plan: merge asistido, reglas automaticas de
@@ -253,9 +262,10 @@ bloquea y la promocion debe detenerse para diseñar una compensacion auditada.
 Detener la promocion ante drift, fingerprint distinto, secret ausente, scope
 adicional, schema/tenant incongruente, decision owner ambigua, PII en logs,
 quarantine sin resolver, rollback no ensayado, health degradado o necesidad de
-usar un fallback local. La expansion tambien se detiene mientras el SLO movil
-de Store permanezca `critical` o `/canaryz` responda `503`. Ninguno de esos
-estados se acepta como warning.
+usar un fallback local. Tambien se detiene ante un blocker vigente de Store,
+Directory, IAM o Platform. No se reutilizan como estado actual las metricas
+historicas del primer canario; cada ventana recaptura readiness y stop
+conditions.
 
 ## Evidencia De Cierre Operativo
 
@@ -269,7 +279,7 @@ El gate se considera `ready` solo cuando existen:
 - backup/restore y rollback tecnico/de datos ensayados;
 - decision separada para promover o no a `pyrosa-crm`.
 
-El subgate owner del tenant `1` ya tiene allow E2E `3/3` y queda verde. El
-estado completo de esta lista permanece abierto: el SLO historico de Store es
-el unico gate transversal observado para ampliar la cohorte, y los gates
-funcionales/privacidad de VOIX siguen sin ejecutarse.
+Los subgates owner, OAuth inbound y contexto tenant de dos tenants quedaron
+verdes en `development`. El estado completo de esta lista permanece abierto:
+los gates funcionales y de privacidad de VOIX siguen sin ejecutarse, y
+preproduccion o `pyrosa-crm` requieren decisiones de promocion separadas.

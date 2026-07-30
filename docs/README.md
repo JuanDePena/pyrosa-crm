@@ -3,6 +3,10 @@
 Esta documentacion define la linea activa `v2607` de Pyrosa CRM. Los
 documentos v2606 se conservan como baseline historica, no como roadmap vigente.
 
+Estado vigente: OAuth inbound y contexto tenant PYROSA/CMT quedaron
+`accepted-development` el `2026-07-28`. El piloto VOIX, preproduccion y el
+runtime `pyrosa-crm` siguen pendientes y no se derivan del canario demo.
+
 Recommended reading order:
 
 1. [Vision de producto v2607](product/vision-v2607.md)
@@ -41,6 +45,7 @@ Recommended reading order:
 25. [OAuth2 API consumer contract](design/oauth-api-consumer.md)
 26. [Evidencia OAuth inbound live](evidence/oauth-api-inbound-live-2026-07-25.md)
 27. [Contexto tenant y aislamiento de runtime](design/tenant-context-runtime-isolation.md)
+28. [Cierre transversal CRM del Corte 6](https://github.com/JuanDePena/pyrosa-docs/blob/main/ops/tenant-context-runtime-convergence-crm-cut-6-2026-07-28.md)
 
 Diccionarios owner v2 en source:
 
