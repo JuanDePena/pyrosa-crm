@@ -87,11 +87,12 @@ Esta tabla conserva el baseline v1 ya promovido. El sucesor source del
 | IAM policy directa | token de integracion exclusivo DemoCRM | endpoint IAM policy; no reutiliza OAuth Directory |
 | Directory catalogo | `client-pyrosa-democrm-directory-catalog` | `pyrosa-directory` / `directory:tenant-access-catalog:read` |
 | Directory decision v2 | `client-pyrosa-democrm-directory-access` | `pyrosa-directory` / `directory:application-access:decide` |
-| Platform placement | `client-pyrosa-crm` | `pyrosa-platform` / `platform.schema.resolve` |
+| Platform placement | `client-pyrosa-democrm-platform` | `pyrosa-platform` / `platform.schema.resolve` |
 
-No provisionar estos secrets ni cambiar scopes/flags durante una publicacion
-Git. La promocion requiere una autorizacion live separada, prueba de shadow v1,
-canary de expiry/safe-state/recovery y rollback ejercitable.
+El cliente de placement tiene su propio secret
+`PYROSA_CRM_PLATFORM_PLACEMENT_OAUTH_CLIENT_SECRET`; no comparte el secret de
+readiness. La publicación Git no materializa el secret. La promoción requiere
+seed gobernado, canario exacto y rollback ejercitable.
 
 Para el canario tenant `1`, los tres carriles owner estan habilitados con sus
 contratos exactos y el smoke E2E devolvio `3/3 allow`. El registro de clientes

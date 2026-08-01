@@ -844,11 +844,11 @@ function ownerOauth(config: CrmServerConfig, owner: TokenOwner): {
               scope: config.storeOauthScope
             }
           : {
-              tokenUrl: config.platformOauthTokenUrl,
-              clientId: config.platformOauthClientId,
-              clientSecret: config.platformOauthClientSecret,
-              audience: config.platformOauthAudience,
-              scope: "platform.schema.resolve"
+              tokenUrl: config.platformPlacementOauthTokenUrl,
+              clientId: config.platformPlacementOauthClientId,
+              clientSecret: config.platformPlacementOauthClientSecret,
+              audience: config.platformPlacementOauthAudience,
+              scope: config.platformPlacementOauthScope
             };
   const secret = String(values.clientSecret ?? "");
   if (secret.length < 32) throw ownerError(owner, "oauth_not_configured", true);

@@ -70,11 +70,13 @@ test("catalog page is lazy, paginated and cached without owner decision fan-out"
 
 test("interactive access composes IAM, Directory v2, Store and Platform with real expiries", async () => {
   const ownerCalls: string[] = [];
+  const tokenCalls: Array<{ clientId: string; scope: string }> = [];
   globalThis.fetch = async (input, init) => {
     const url = new URL(String(input));
     if (url.pathname === "/oauth/token") {
       const clientId = basicClientId(init);
       const scope = new URLSearchParams(String(init?.body)).get("scope") ?? "";
+      tokenCalls.push({ clientId, scope });
       return tokenResponse(clientId, scope);
     }
     ownerCalls.push(url.pathname);
@@ -199,6 +201,13 @@ test("interactive access composes IAM, Directory v2, Store and Platform with rea
     access.ownerDecisions?.iam.reference,
     access.ownerDecisions?.directory.reference
   );
+  assert.deepEqual(
+    tokenCalls.find((entry) => entry.scope === "platform.schema.resolve"),
+    {
+      clientId: "client-pyrosa-democrm-platform",
+      scope: "platform.schema.resolve"
+    }
+  );
 });
 
 function config(overrides: Partial<CrmServerConfig> = {}): CrmServerConfig {
@@ -226,6 +235,9 @@ function config(overrides: Partial<CrmServerConfig> = {}): CrmServerConfig {
     platformOauthTokenUrl: "https://iam.pyrosa.test/oauth/token",
     platformOauthClientSecret:
       "platform-decision-secret-at-least-32-bytes",
+    platformPlacementOauthTokenUrl: "https://iam.pyrosa.test/oauth/token",
+    platformPlacementOauthClientSecret:
+      "platform-placement-secret-at-least-32-bytes",
     accessTimeoutMs: 1000,
     ...overrides
   };

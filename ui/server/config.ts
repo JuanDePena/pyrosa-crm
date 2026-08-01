@@ -64,6 +64,11 @@ export type CrmServerConfig = {
   platformOauthClientSecret: string | null;
   platformOauthAudience: string;
   platformOauthScope: string;
+  platformPlacementOauthTokenUrl: string;
+  platformPlacementOauthClientId: string;
+  platformPlacementOauthClientSecret: string | null;
+  platformPlacementOauthAudience: string;
+  platformPlacementOauthScope: string;
   platformTenantContextDecisionUrl: string;
   accessTimeoutMs: number;
   defaultTenantId: string | null;
@@ -230,6 +235,21 @@ export function loadConfig(): CrmServerConfig {
     platformOauthScope:
       normalizeOptionalString(process.env.PYROSA_CRM_PLATFORM_OAUTH_SCOPE) ??
       "platform.provisioning.readiness.consume",
+    platformPlacementOauthTokenUrl:
+      normalizeOptionalString(process.env.PYROSA_CRM_PLATFORM_PLACEMENT_OAUTH_TOKEN_URL) ??
+      oauthTokenUrl,
+    platformPlacementOauthClientId:
+      normalizeOptionalString(process.env.PYROSA_CRM_PLATFORM_PLACEMENT_OAUTH_CLIENT_ID) ??
+      "client-pyrosa-democrm-platform",
+    platformPlacementOauthClientSecret: normalizeOptionalString(
+      process.env.PYROSA_CRM_PLATFORM_PLACEMENT_OAUTH_CLIENT_SECRET
+    ),
+    platformPlacementOauthAudience:
+      normalizeOptionalString(process.env.PYROSA_CRM_PLATFORM_PLACEMENT_OAUTH_AUDIENCE) ??
+      "pyrosa-platform",
+    platformPlacementOauthScope:
+      normalizeOptionalString(process.env.PYROSA_CRM_PLATFORM_PLACEMENT_OAUTH_SCOPE) ??
+      "platform.schema.resolve",
     platformTenantContextDecisionUrl:
       normalizeOptionalString(
         process.env.PYROSA_CRM_PLATFORM_TENANT_CONTEXT_DECISION_URL

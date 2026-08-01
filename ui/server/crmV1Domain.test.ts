@@ -282,7 +282,7 @@ test("appointment commands reject non-IANA timezones", () => {
 
 test("dashboard uses stored aggregates and declares metric/profile versions", async () => {
   const store = new MemoryCrmV1Store(); const context = access("tenant_dashboard"); store.seedSynthetic(context);
-  const summary = await store.dashboard(context, { from: "2026-07-01T00:00:00.000Z", to: "2026-08-01T00:00:00.000Z" });
+  const summary = await store.dashboard(context, { from: "2026-07-01T00:00:00.000Z", to: "2099-08-01T00:00:00.000Z" });
   assert.equal(summary.contractVersion, "crm-dashboard-summary-v1");
   assert.equal(summary.metricSetVersion, "healthcare-call-center@1");
   assert.equal(summary.freshness.state, "live");

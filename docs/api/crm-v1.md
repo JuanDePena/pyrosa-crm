@@ -112,7 +112,11 @@ El switch y la renovacion componen:
 | Directory discovery | `POST /internal/directory/v1/tenant-access-catalog`, `1.1.0` | cliente catalogo y scope `directory:tenant-access-catalog:read` |
 | Directory decision | `POST /internal/directory/v2/application-access-decision`, `2.0.0` | cliente decision y scope `directory:application-access:decide` |
 | Store | `POST /internal/store/v1/entitlement-decision` | cliente Store existente |
-| Platform | `POST /internal/platform/v1/schema-placement/resolve` | cliente Platform y scope `platform.schema.resolve` |
+| Platform | `POST /internal/platform/v1/schema-placement/resolve` | `client-pyrosa-democrm-platform`, audience `pyrosa-platform` y scope único `platform.schema.resolve` |
+
+El cliente Platform histórico `client-pyrosa-crm` conserva exclusivamente el
+contrato v1 de application-readiness. No se reutiliza para placement ni se le
+agrega un segundo scope.
 
 El catalogo no autoriza. Una opcion stale puede seguir visible dentro de su
 ventana visual, pero el switch resuelve el candidato exacto y exige IAM,
