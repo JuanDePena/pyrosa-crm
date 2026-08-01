@@ -1,8 +1,8 @@
 # Promocion Operativa DemoCRM v2607
 
-Fecha de ultima verificacion: `2026-07-28`
+Fecha de ultima verificacion: `2026-08-01`
 
-Estado: `tenant context y OAuth accepted-development; promocion productiva y piloto VOIX pendientes`
+Estado: `runtime development recuperado y accepted-development; promocion productiva y piloto VOIX pendientes`
 
 ## Proposito
 
@@ -27,14 +27,14 @@ productiva.
 - Store termino la saga de provisioning y proyecta entitlement efectivo;
   Directory conserva un asiento activo de capacidad `1/1`; IAM mantiene
   frescos los bindings `tenant_admin` y `billing_admin`.
-- Las tres decisiones owner OAuth estan habilitadas y el runtime demo sirve
-  v2607 con artefacto frontend/BFF coherente.
+- Las decisiones owner y los carriles OAuth separados estan habilitados; el
+  runtime demo sirve v2607 con artefacto frontend/BFF coherente.
 - El fatal `crm.bootstrap.csrf_missing` tiene una correccion fail-closed:
   identidad IAM privada real, subject opaco de `1..200`, rechazo de cookies
   legacy y redaccion del payload publico.
-- El smoke con la identidad de la asignacion activa obtuvo Directory + Store +
-  Platform `3/3 allow`, schema `pyrosa_democrm_8ef427da9f0e`, diccionario
-  `2.0.1`, perfil `core` y capability `crm.cases.read`, sin exponer el subject.
+- El canario vigente resolvio el tenant interno sobre
+  `pyrosa_democrm_95a9f631e12d`, diccionario `2026.07.17.0`, y completo
+  PYROSA -> CMT -> PYROSA con los cuatro owners, sin exponer el subject.
 - El piloto ejecutado fue exclusivamente sintetico e in-memory; ver
   [evidencia del piloto sintetico](../evidence/democrm-v2607-synthetic-pilot-2026-07-15.md).
 - No se ha documentado como ejecutado el workshop VOIX, una importacion del
@@ -79,8 +79,8 @@ wildcards:
 | Store | `client-pyrosa-democrm-store-entitlements` | `pyrosa-store` | `store.entitlement.decide` |
 | Platform | `client-pyrosa-crm` | `pyrosa-platform` | `platform.provisioning.readiness.consume` |
 
-Esta tabla conserva el baseline v1 ya promovido. El sucesor source del
-`2026-07-30` no esta desplegado y agrega credenciales separadas:
+Esta tabla conserva el baseline v1 ya promovido. El sucesor del `2026-07-30`
+quedo promovido en development el `2026-08-01` con credenciales separadas:
 
 | Carril nuevo | Client/secret source esperado | Audience/scope |
 | --- | --- | --- |
@@ -91,8 +91,9 @@ Esta tabla conserva el baseline v1 ya promovido. El sucesor source del
 
 El cliente de placement tiene su propio secret
 `PYROSA_CRM_PLATFORM_PLACEMENT_OAUTH_CLIENT_SECRET`; no comparte el secret de
-readiness. La publicación Git no materializa el secret. La promoción requiere
-seed gobernado, canario exacto y rollback ejercitable.
+readiness. La publicación Git no materializa el secret. El seed gobernado y
+los canarios positivo y cross-app quedaron aceptados en development; otros
+ambientes repiten el gate y conservan rollback ejercitable.
 
 Para el canario tenant `1`, los tres carriles owner estan habilitados con sus
 contratos exactos y el smoke E2E devolvio `3/3 allow`. El registro de clientes
@@ -142,13 +143,14 @@ Inyectar mediante el env host-managed, sin imprimir valores:
 - `PYROSA_CRM_DIRECTORY_OAUTH_CLIENT_SECRET`;
 - `PYROSA_CRM_STORE_OAUTH_CLIENT_SECRET`;
 - `PYROSA_CRM_PLATFORM_OAUTH_CLIENT_SECRET`;
+- `PYROSA_CRM_PLATFORM_PLACEMENT_OAUTH_CLIENT_SECRET`;
 - audience y scope exactos documentados en
   [`runtime/env/app-pyrosa-democrm.env.example`](../../runtime/env/app-pyrosa-democrm.env.example).
 
 El runtime `development` termino el canario inbound con
 `PYROSA_CRM_OAUTH_API_ENABLED=1` despues de probar expiracion, revocacion,
 outage, recuperacion y rollback temporal a `0`. Cualquier ambiente o cohorte
-nueva repite esos gates; la ausencia de cualquiera de los tres secrets owner
+nueva repite esos gates; la ausencia de cualquiera de los cuatro secrets owner
 mantiene CRM fail-closed.
 
 La sesion browser conserva exactamente el issuer/subject canonicos que IAM
@@ -184,10 +186,10 @@ Con un tenant sintetico/canary y sin PII:
    fatal;
 5. registrar solo ids opacos, conteos, estados y hashes saneados.
 
-El preflight owner terminal del tenant `1` ya completo los puntos `1` y `2`:
-`3/3 allow`, tenant key coherente con el schema
-`pyrosa_democrm_8ef427da9f0e`, diccionario `2.0.1`, perfil `core` y capability
-`crm.cases.read`. No se uso PII ni se registro la identidad. Los puntos
+El preflight owner terminal del tenant `1` ya completo los puntos `1` y `2`
+con el cliente Platform dedicado: tenant key coherente con el schema
+`pyrosa_democrm_95a9f631e12d`, diccionario `2026.07.17.0`, placement ready y
+deny cross-app. No se uso PII ni se registro la identidad. Los puntos
 funcionales restantes aplican antes de abrir una cohorte de trabajo.
 
 El cierre posterior completo el canary PYROSA -> CMT -> PYROSA con los
@@ -298,3 +300,8 @@ Los subgates owner, OAuth inbound y contexto tenant de dos tenants quedaron
 verdes en `development`. El estado completo de esta lista permanece abierto:
 los gates funcionales y de privacidad de VOIX siguen sin ejecutarse, y
 preproduccion o `pyrosa-crm` requieren decisiones de promocion separadas.
+
+El runtime promovido el `2026-08-01` reporto `sourceDirty=false`, health `200`
+y artefacto coherente. El canario live verifico PYROSA -> CMT -> PYROSA,
+aislamiento cruzado, misma sesion de pool y rollback sin residuos. Este cierre
+recupera DemoCRM development; no amplia la cohorte ni autoriza datos VOIX.
