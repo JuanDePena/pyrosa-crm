@@ -48,6 +48,7 @@ type DirectoryProbe = OwnerDecision & {
   requiresNamedSeat: boolean;
   seatActive: boolean;
   reasons: string[];
+  contextGeneration: string | null;
 };
 
 type StoreProbe = OwnerDecision & {
@@ -234,6 +235,7 @@ export async function resolveInteractiveCrmAccess(
     capabilities: [requiredCapability],
     authorizationDecisionId: applicationReference,
     contextVersion: "owner-composed:pending-context-version",
+    contextGeneration: directory.contextGeneration,
     decisionReferences: {
       directory: directory.reference,
       store: store.reference,
@@ -479,12 +481,17 @@ async function requestDirectoryV2(
       kind: identity.principalType === "service" ? "service" : "browser"
     }
   });
+  const extendedGeneration = Object.hasOwn(payload, "context_generation") ||
+    Object.hasOwn(payload, "context_projection_expires_at");
   assertExactKeys(payload, [
     "allowed", "application_projected", "application_slug", "authority",
     "contract_version", "correlation_id", "decision_reference",
     "decision_version", "expires_at", "membership_active", "observed_at",
     "projection_max_staleness_seconds", "projection_synced_at", "reasons",
-    "request_id", "requires_named_seat", "seat_active", "tenant_id", "tenant_key"
+    "request_id", "requires_named_seat", "seat_active", "tenant_id", "tenant_key",
+    ...(extendedGeneration
+      ? ["context_generation", "context_projection_expires_at"]
+      : [])
   ]);
   if (
     payload.contract_version !== directoryDecisionContractVersion ||
@@ -516,7 +523,10 @@ async function requestDirectoryV2(
     reasons: payload.reasons as string[],
     reference: prefixedDigest(payload.decision_reference, "dirdec"),
     version: sha256(payload.decision_version),
-    expiresAt: futureIso(payload.expires_at)
+    expiresAt: futureIso(payload.expires_at),
+    contextGeneration: extendedGeneration && payload.context_generation !== null
+      ? contextGeneration(payload.context_generation)
+      : null
   };
 }
 
@@ -568,7 +578,8 @@ async function requestDirectoryV1(
     reasons: payload.allowed ? [] : ["legacy_denied"],
     reference: opaque(payload.authorization_decision_id),
     version: `legacy-v1:${opaque(payload.authorization_decision_id)}`,
-    expiresAt: compatibilityExpiry
+    expiresAt: compatibilityExpiry,
+    contextGeneration: null
   };
 }
 
@@ -995,6 +1006,14 @@ function sha256(value: unknown): string {
   const normalized = String(value ?? "").trim().toLowerCase();
   if (!/^sha256:[0-9a-f]{64}$/u.test(normalized)) {
     throw ownerError("contract", "version_invalid");
+  }
+  return normalized;
+}
+
+function contextGeneration(value: unknown): string {
+  const normalized = String(value ?? "").trim();
+  if (!/^ctxgen:sha256:[0-9a-f]{64}$/u.test(normalized)) {
+    throw ownerError("directoryDecision", "response_invalid");
   }
   return normalized;
 }

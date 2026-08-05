@@ -47,6 +47,7 @@ Recommended reading order:
 27. [Contexto tenant y aislamiento de runtime](design/tenant-context-runtime-isolation.md)
 28. [Cierre transversal CRM del Corte 6](https://github.com/JuanDePena/pyrosa-docs/blob/main/ops/tenant-context-runtime-convergence-crm-cut-6-2026-07-28.md)
 29. [Cierre operativo de acceso tenant](evidence/tenant-access-freshness-closure-2026-07-30.md)
+30. [Context generation v1](design/tenant-context-generation-v1.md)
 
 Diccionarios owner v2 en source:
 

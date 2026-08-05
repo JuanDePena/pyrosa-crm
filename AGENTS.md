@@ -69,3 +69,9 @@ create or update an ADR when the choice affects architecture, runtime, data
 model, or integration contracts.
 
 Keep operational claims tied to observed SimpleHostMan state when possible.
+
+La adopcion source de `contextGeneration` usa la extension Directory v2 y el
+flag `PYROSA_CRM_TENANT_CONTEXT_GENERATION_V1_ENABLED=false`. Cada request
+funcional compara generation antes del repositorio CRM; switch y renewal usan
+CAS posterior a owner calls. No activar sin proyeccion Directory, grants,
+canary y rollback aceptados.

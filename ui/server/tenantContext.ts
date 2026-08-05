@@ -43,6 +43,7 @@ export type InteractiveTenantContext = {
   tenantId: string;
   tenantKey: string;
   contextVersion: string;
+  contextGeneration?: string | null;
   decisions: {
     iam: TenantDecision;
     directory: TenantDecision;
@@ -106,6 +107,7 @@ export type TenantWorkContext = {
   correlationId: string;
   idempotencyKey: string;
   enqueuedAt: string;
+  contextGeneration?: string;
 };
 
 type StoredState = {
@@ -336,12 +338,14 @@ export function composeInteractiveTenantContext(input: {
   access: CrmAccessContext;
   contextVersion: string;
   previousIssuedAt?: string;
+  requireContextGeneration?: boolean;
   now?: Date;
 }): InteractiveTenantContext {
   const now = input.now ?? new Date();
   const refreshedAt = now.toISOString();
   const ownerDecisions = input.access.ownerDecisions;
   const access = input.access;
+  const contextGeneration = normalizeContextGeneration(access.contextGeneration);
   if (
     !/^sha256:[0-9a-f]{64}$/u.test(access.physicalFingerprint) ||
     !ownerDecisions
@@ -350,6 +354,14 @@ export function composeInteractiveTenantContext(input: {
       503,
       "crm.tenant_context.placement_unready",
       "Platform no devolvió un placement CRM vigente.",
+      true
+    );
+  }
+  if (input.requireContextGeneration && contextGeneration === null) {
+    throw new CrmV1Error(
+      503,
+      "crm.tenant_context.generation_unavailable",
+      "Directory no devolvio una generation vigente para DemoCRM.",
       true
     );
   }
@@ -378,6 +390,7 @@ export function composeInteractiveTenantContext(input: {
     tenantId: access.tenantId,
     tenantKey: access.tenantKey,
     contextVersion: normalizeContextVersion(input.contextVersion),
+    contextGeneration,
     decisions: {
       iam: ownerDecisions.iam,
       directory: ownerDecisions.directory,
@@ -476,8 +489,28 @@ export function createTenantWorkContext(input: {
     placementFingerprint: input.access.physicalFingerprint,
     correlationId: input.correlationId,
     idempotencyKey: input.idempotencyKey,
-    enqueuedAt: (input.now ?? new Date()).toISOString()
+    enqueuedAt: (input.now ?? new Date()).toISOString(),
+    ...(input.access.contextGeneration
+      ? { contextGeneration: normalizeContextGeneration(input.access.contextGeneration) ?? undefined }
+      : {})
   };
+}
+
+export function assertTenantContextGenerationStable(
+  context: InteractiveTenantContext,
+  access: CrmAccessContext,
+  required: boolean
+): void {
+  if (!required) return;
+  const expected = normalizeContextGeneration(context.contextGeneration);
+  const current = normalizeContextGeneration(access.contextGeneration);
+  if (!expected || !current || !safeEqual(expected, current)) {
+    throw new CrmV1Error(
+      409,
+      "crm.tenant_context.stale",
+      "Directory publico una generation distinta; el contexto debe recomponerse."
+    );
+  }
 }
 
 export function tenantNamespace(
@@ -594,6 +627,20 @@ function normalizeContextVersion(value: unknown): string {
       400,
       "crm.tenant_context.version_invalid",
       "contextVersion no tiene un formato válido."
+    );
+  }
+  return normalized;
+}
+
+function normalizeContextGeneration(value: unknown): string | null {
+  const normalized = String(value ?? "").trim();
+  if (!normalized) return null;
+  if (!/^ctxgen:sha256:[0-9a-f]{64}$/u.test(normalized)) {
+    throw new CrmV1Error(
+      503,
+      "crm.tenant_context.generation_invalid",
+      "contextGeneration no cumple el contrato opaco.",
+      true
     );
   }
   return normalized;

@@ -7,6 +7,7 @@ import type { RequestContext } from "./http.js";
 import {
   CRM_APPLICATION,
   TENANT_CONTEXT_SWITCH_RESPONSE_SCHEMA,
+  assertTenantContextGenerationStable,
   assertBoundBrowserTenantContext,
   capSwitchReceipts,
   composeInteractiveTenantContext,
@@ -108,7 +109,8 @@ export async function refreshCrmTenantSession(input: {
         interactive: composeInteractiveTenantContext({
           session: input.session,
           access,
-          contextVersion
+          contextVersion,
+          requireContextGeneration: input.config.tenantContextGenerationV1Enabled
         })
       };
       saveCrmTenantSession(input.session, state);
@@ -142,7 +144,8 @@ export async function refreshCrmTenantSession(input: {
         session: input.session,
         access,
         contextVersion: currentInteractive.contextVersion,
-        previousIssuedAt: currentInteractive.issuedAt
+        previousIssuedAt: currentInteractive.issuedAt,
+        requireContextGeneration: input.config.tenantContextGenerationV1Enabled
       })
     };
     saveCrmTenantSession(input.session, state);
@@ -201,7 +204,13 @@ export async function resolveBoundBrowserCrmAccess(input: {
     candidate
   );
   access.contextVersion = interactive.contextVersion;
+  assertTenantContextGenerationStable(
+    interactive,
+    access,
+    input.config.tenantContextGenerationV1Enabled === true
+  );
   assertPlacementStable(interactive, access);
+  assertSessionStateCas(state, loadCrmTenantSession(input.session));
   return access;
 }
 
@@ -268,6 +277,11 @@ export async function switchCrmTenantContext(input: {
       );
       access.contextVersion = replay.tenantContext.contextVersion;
       assertPlacementStable(replay.tenantContext, access);
+      assertTenantContextGenerationStable(
+        replay.tenantContext,
+        access,
+        input.config.tenantContextGenerationV1Enabled === true
+      );
       return {
         state,
         access,
@@ -318,7 +332,8 @@ export async function switchCrmTenantContext(input: {
       session: input.session,
       access,
       contextVersion,
-      now
+      now,
+      requireContextGeneration: input.config.tenantContextGenerationV1Enabled
     });
     const response: TenantContextSwitchResponse = {
       schemaVersion: TENANT_CONTEXT_SWITCH_RESPONSE_SCHEMA,
@@ -342,6 +357,7 @@ export async function switchCrmTenantContext(input: {
         }
       })
     };
+    assertSessionStateCas(state, loadCrmTenantSession(input.session));
     saveCrmTenantSession(input.session, next);
     return { state: next, access, response };
   });
@@ -481,12 +497,14 @@ export async function renewCrmTenantContext(input: {
       session: input.session,
       access,
       contextVersion,
-      previousIssuedAt: current.interactive.issuedAt
+      previousIssuedAt: current.interactive.issuedAt,
+      requireContextGeneration: input.config.tenantContextGenerationV1Enabled
     });
     const next = {
       ...mergeCandidateIntoState(current, candidate),
       interactive
     };
+    assertSessionStateCas(current, loadCrmTenantSession(input.session));
     saveCrmTenantSession(input.session, next);
     return { state: next, access };
   });
@@ -527,6 +545,30 @@ function assertPlacementStable(
       409,
       "crm.tenant_context.placement_drift",
       "Platform cambió el placement; recarga el contexto antes de continuar."
+    );
+  }
+}
+
+function assertSessionStateCas(
+  expected: CrmTenantSessionState,
+  current: CrmTenantSessionState | null
+): void {
+  if (
+    !current ||
+    current.sid !== expected.sid ||
+    current.issuer !== expected.issuer ||
+    current.subject !== expected.subject ||
+    (current.interactive?.tenantId ?? null) !==
+      (expected.interactive?.tenantId ?? null) ||
+    (current.interactive?.contextVersion ?? null) !==
+      (expected.interactive?.contextVersion ?? null) ||
+    (current.interactive?.contextGeneration ?? null) !==
+      (expected.interactive?.contextGeneration ?? null)
+  ) {
+    throw new CrmV1Error(
+      409,
+      "crm.tenant_context.stale",
+      "La identidad, tenant o generation cambio durante la recomposicion."
     );
   }
 }

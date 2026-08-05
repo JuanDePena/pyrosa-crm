@@ -73,6 +73,7 @@ export type CrmServerConfig = {
   accessTimeoutMs: number;
   defaultTenantId: string | null;
   tenantContextSealSecret: string | null;
+  tenantContextGenerationV1Enabled?: boolean;
 };
 
 export const mimeTypes: Record<string, string> = {
@@ -263,6 +264,10 @@ export function loadConfig(): CrmServerConfig {
     defaultTenantId: normalizeOptionalString(process.env.PYROSA_CRM_DEFAULT_TENANT_ID),
     tenantContextSealSecret: normalizeOptionalString(
       process.env.PYROSA_CRM_TENANT_CONTEXT_SEAL_SECRET
+    ),
+    tenantContextGenerationV1Enabled: parseBoolean(
+      process.env.PYROSA_CRM_TENANT_CONTEXT_GENERATION_V1_ENABLED,
+      false
     )
   };
 }

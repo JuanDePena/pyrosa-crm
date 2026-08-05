@@ -33,6 +33,7 @@ export type CrmAccessContext = {
   capabilities: string[];
   authorizationDecisionId: string;
   contextVersion: string;
+  contextGeneration?: string | null;
   decisionReferences: {
     directory: string;
     store: string;
