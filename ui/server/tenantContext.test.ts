@@ -20,7 +20,8 @@ import {
   resetCrmTenantSessionsForTests,
   saveCrmTenantSession,
   switchPayloadHash,
-  tenantNamespace
+  tenantNamespace,
+  withCrmTenantSessionLock
 } from "./tenantContext.js";
 
 const seal = "tenant-context-test-secret-at-least-32-bytes";
@@ -137,6 +138,35 @@ test("switch contract is exact, idempotency-bound and rejects unknown fields", (
     () => parseTenantContextSwitchRequest({ ...requestBody, tenantId: "evil" }),
     hasCode("crm.tenant_context.request_invalid")
   );
+});
+
+test("tenant session operations serialize external waits before persisting state", async () => {
+  const session = crmSession();
+  const events: string[] = [];
+  let releaseFirst!: () => void;
+  let markStarted!: () => void;
+  const firstStarted = new Promise<void>((resolve) => {
+    markStarted = resolve;
+  });
+  const firstGate = new Promise<void>((resolve) => {
+    releaseFirst = resolve;
+  });
+  const first = withCrmTenantSessionLock(session.sid, async () => {
+    events.push("first-start");
+    markStarted();
+    await firstGate;
+    events.push("first-end");
+  });
+  await firstStarted;
+  const second = withCrmTenantSessionLock(session.sid, async () => {
+    events.push("second-start");
+    events.push("second-end");
+  });
+  await Promise.resolve();
+  assert.deepEqual(events, ["first-start"]);
+  releaseFirst();
+  await Promise.all([first, second]);
+  assert.deepEqual(events, ["first-start", "first-end", "second-start", "second-end"]);
 });
 
 test("options, async work and external namespaces preserve the tenant boundary", () => {

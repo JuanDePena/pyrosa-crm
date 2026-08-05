@@ -32,6 +32,7 @@ import {
   fetchCrmTenantOptions,
   newIdempotencyKey,
   publicMessageFrom,
+  requiresTenantContextReconciliation,
   renewCrmTenant,
   setCrmCsrfToken,
   setCrmTenantContextVersion,
@@ -398,6 +399,11 @@ export function CrmApp() {
               error instanceof DOMException &&
               error.name === "AbortError"
             ) {
+              return;
+            }
+            if (requiresTenantContextReconciliation(error)) {
+              setCrmTenantContextVersion(undefined);
+              setBootstrapKey((value) => value + 1);
               return;
             }
             setTenantSwitchError(publicMessageFrom(error));

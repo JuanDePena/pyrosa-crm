@@ -247,6 +247,17 @@ export function publicMessageFrom(error: unknown): string {
     : "No fue posible completar la operacion solicitada.";
 }
 
+export function requiresTenantContextReconciliation(error: unknown): boolean {
+  if (!(error instanceof CrmApiError) || error.issue.status !== 409) {
+    return false;
+  }
+  return [
+    "crm.tenant_context.bootstrap_required",
+    "crm.tenant_context.placement_drift",
+    "crm.tenant_context.stale"
+  ].includes(error.issue.code);
+}
+
 export function newIdempotencyKey(): string {
   return typeof crypto !== "undefined" && typeof crypto.randomUUID === "function"
     ? crypto.randomUUID()

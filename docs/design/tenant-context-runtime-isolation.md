@@ -151,6 +151,13 @@ sin reescribir la evidencia historica anterior:
 - al vencer durante un outage, la SPA elimina el header funcional, desmonta
   SharedShell y datos y recupera con backoff con jitter de `2 s` a `30 s`, sin
   recarga de documento ni reseleccion.
+- el estado tenant server-side se serializa por sesion durante bootstrap,
+  switch y renovacion; la búsqueda visual espera el mismo lock y fusiona sobre
+  el estado mas reciente, por lo que una respuesta tardia no sobrescribe el
+  contexto activo;
+- si un switch recibe `409` por version stale, bootstrap ausente o drift de
+  placement, la SPA retira el header anterior y recompone bootstrap en vez de
+  conservar una alerta operativa persistente.
 
 El modo canonico se fija con
 `PYROSA_CRM_DIRECTORY_DECISION_MODE=v2`. El adaptador v1 queda como rollback
