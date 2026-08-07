@@ -391,12 +391,40 @@ export async function runSyntheticPilot(options: { seedPath?: string; generatedA
   };
 }
 
-export async function writeSyntheticPilotEvidence(evidence: SyntheticPilotEvidence, evidenceDirectory = resolve("../docs/evidence")): Promise<{ jsonPath: string; markdownPath: string }> {
-  const jsonPath = resolve(evidenceDirectory, `${evidenceBasename}.json`);
-  const markdownPath = resolve(evidenceDirectory, `${evidenceBasename}.md`);
+export async function writeSyntheticPilotEvidence(evidence: SyntheticPilotEvidence, evidenceDirectory: string): Promise<{ jsonPath: string; markdownPath: string }> {
+  const outputDirectory = requireEvidenceDirectory(evidenceDirectory);
+  const jsonPath = resolve(outputDirectory, `${evidenceBasename}.json`);
+  const markdownPath = resolve(outputDirectory, `${evidenceBasename}.md`);
   await writeFile(jsonPath, `${JSON.stringify(evidence, null, 2)}\n`, "utf8");
   await writeFile(markdownPath, renderMarkdown(evidence), "utf8");
   return { jsonPath, markdownPath };
+}
+
+export function parseSyntheticPilotCliArguments(args: readonly string[]): { evidenceDirectory: string } {
+  let evidenceDirectory: string | null = null;
+  for (let index = 0; index < args.length; index += 1) {
+    const argument = args[index];
+    if (argument !== "--evidence-directory") {
+      throw new Error(`Argumento no reconocido: ${argument}`);
+    }
+    if (evidenceDirectory !== null) {
+      throw new Error("--evidence-directory solo puede declararse una vez.");
+    }
+    const value = args[index + 1];
+    if (!value || value.startsWith("--")) {
+      throw new Error("--evidence-directory requiere una ruta explicita.");
+    }
+    evidenceDirectory = value;
+    index += 1;
+  }
+  return { evidenceDirectory: requireEvidenceDirectory(evidenceDirectory) };
+}
+
+function requireEvidenceDirectory(evidenceDirectory: string | null | undefined): string {
+  if (typeof evidenceDirectory !== "string" || evidenceDirectory.trim() === "") {
+    throw new Error("evidenceDirectory es obligatorio; el piloto no escribe dentro del checkout por defecto.");
+  }
+  return resolve(evidenceDirectory);
 }
 
 function renderMarkdown(evidence: SyntheticPilotEvidence): string {
@@ -431,7 +459,7 @@ function renderMarkdown(evidence: SyntheticPilotEvidence): string {
     `No representa promocion live ni readiness productivo.\n\n` +
     evidence.gaps.map((gap) => `- ${gap}`).join("\n") + `\n\n` +
     `## Reproduccion\n\n` +
-    `\`\`\`bash\ncd /srv/containers/apps/pyrosa-democrm/app\nnpm --prefix ui run pilot:synthetic\n\`\`\`\n\n` +
+    `\`\`\`bash\ncd /srv/containers/apps/pyrosa-democrm/app\nnpm --prefix ui run pilot:synthetic -- --evidence-directory /ruta/segura\n\`\`\`\n\n` +
     `El JSON hermano conserva el resultado machine-readable saneado.\n`;
 }
 
@@ -498,8 +526,9 @@ async function counts(store: MemoryCrmV1Store, accessContext: CrmAccessContext):
 }
 
 async function main(): Promise<void> {
+  const { evidenceDirectory } = parseSyntheticPilotCliArguments(process.argv.slice(2));
   const evidence = await runSyntheticPilot();
-  const paths = await writeSyntheticPilotEvidence(evidence);
+  const paths = await writeSyntheticPilotEvidence(evidence, evidenceDirectory);
   process.stdout.write(`${JSON.stringify({ status: evidence.status, assertions: evidence.assertions.length, ...paths })}\n`);
 }
 

@@ -17,10 +17,8 @@ ui/tmp/
 .vite/
 coverage/
 
-# Controlled customer source data. Only explicitly synthetic workbooks may be
-# versioned after privacy review.
-docs/examples/*.xlsx
-!docs/examples/*-synthetic.xlsx
+# Customer workbooks belong outside the checkout. Synthetic test inputs use
+# reviewed fixtures under database/ or contracts/ instead of a docs/ tree.
 
 # Python
 .venv/

@@ -14,8 +14,8 @@ The reserved production checkout, not yet materialized on this host, is:
 
 - `/srv/containers/apps/pyrosa-crm/app`
 
-Changes should land in the demo checkout, be pushed to GitHub, then be promoted
-to production by approved release tag.
+Application source changes should land in the demo checkout, be pushed to
+GitHub, then be promoted to production by approved release tag.
 
 The shared source repository does not make `pyrosa-democrm` and `pyrosa-crm`
 catalog aliases. Owner manifests must bind each app slug explicitly and keep
@@ -64,9 +64,26 @@ synthetic fixtures that passed privacy review may enter the repository.
 
 ## Documentation Rules
 
-When changing product direction, update the relevant document under `docs/` and
-create or update an ADR when the choice affects architecture, runtime, data
-model, or integration contracts.
+Detailed product, architecture, API, runtime, operations, plans and evidence
+live under `/srv/docs/apps/democrm/` and are published from the `pyrosa-docs`
+repository. The application root `README.md` only identifies the runtime,
+routes readers to that central index and lists executable artifacts that remain
+with the code.
+
+Do not recreate an app-local `docs/` tree or add secondary human-documentation
+READMEs. `AGENTS.md` remains a workspace instruction file, not product
+documentation. JSON Schema, fixtures, dictionaries, manifests, migrations,
+templates, source, tests and workflows remain beside the code.
+
+When changing product direction, update the relevant central document and
+create or update an ADR under
+`/srv/docs/apps/democrm/architecture/decisions/` when the choice affects
+architecture, runtime, data model or integration contracts. Preserve
+superseded material through Git and the central relocation inventory.
+
+Synthetic-pilot evidence must use an explicit output directory outside the
+checkout. Never restore a default writer under `docs/`. Customer workbooks and
+operational datasets remain outside the checkout and QA artifacts.
 
 Keep operational claims tied to observed SimpleHostMan state when possible.
 
