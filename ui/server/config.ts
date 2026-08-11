@@ -114,7 +114,7 @@ export function loadConfig(): CrmServerConfig {
     distDir,
     host: process.env.PYROSA_CRM_UI_HOST || "127.0.0.1",
     port: parsePositiveInteger(process.env.PYROSA_CRM_UI_PORT, 10166),
-    version: normalizeOptionalString(process.env.PYROSA_CRM_VERSION) ?? "v2607",
+    version: normalizeOptionalString(process.env.PYROSA_CRM_VERSION) ?? "v2608",
     branch: normalizeOptionalString(process.env.PYROSA_CRM_BRANCH) ?? "main",
     healthPath: process.env.PYROSA_CRM_UI_HEALTH_PATH || "/__pyrosa_crm_health",
     healthDetails: parseBoolean(process.env.PYROSA_CRM_UI_HEALTH_DETAILS, false),

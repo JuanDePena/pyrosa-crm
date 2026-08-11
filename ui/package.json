@@ -5,7 +5,7 @@
   "type": "module",
   "pyrosaRelease": {
     "application": "pyrosa-democrm",
-    "version": "v2607"
+    "version": "v2608"
   },
   "scripts": {
     "dev": "vite",
