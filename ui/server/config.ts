@@ -1,6 +1,8 @@
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
+import type { DirectoryInvalidationConsumerConfig } from "./tenantContextInvalidationConsumer.js";
+
 export type CrmServerConfig = {
   appRoot: string;
   distDir: string;
@@ -74,6 +76,7 @@ export type CrmServerConfig = {
   defaultTenantId: string | null;
   tenantContextSealSecret: string | null;
   tenantContextGenerationV1Enabled?: boolean;
+  tenantContextInvalidation?: DirectoryInvalidationConsumerConfig;
 };
 
 export const mimeTypes: Record<string, string> = {
@@ -102,6 +105,8 @@ export function loadConfig(): CrmServerConfig {
   const dsn = normalizeOptionalString(process.env.PYROSA_CRM_DB_DSN);
   const discreteDb = dsn ? parsePostgresDsn(dsn) : null;
   const iamBaseUrl = normalizeOptionalString(process.env.PYROSA_CRM_IAM_BASE_URL) ?? "https://iam.pyrosa.com.do";
+  const iamInternalBaseUrl = normalizeOptionalString(process.env.PYROSA_CRM_IAM_INTERNAL_BASE_URL) ?? "https://iam.pyrosa.com.do";
+  const directoryInternalBaseUrl = normalizeOptionalString(process.env.PYROSA_CRM_DIRECTORY_INTERNAL_BASE_URL) ?? "https://directory.pyrosa.com.do";
   const oauthTokenUrl = new URL("/oauth/token", iamBaseUrl).toString();
 
   return {
@@ -129,9 +134,7 @@ export function loadConfig(): CrmServerConfig {
       normalizeOptionalString(process.env.PYROSA_CRM_PLATFORM_INTERNAL_BASE_URL) ??
       "https://platform.pyrosa.com.do",
     iamBaseUrl,
-    iamInternalBaseUrl:
-      normalizeOptionalString(process.env.PYROSA_CRM_IAM_INTERNAL_BASE_URL) ??
-      "https://iam.pyrosa.com.do",
+    iamInternalBaseUrl,
     iamClientSlug:
       normalizeOptionalString(process.env.PYROSA_CRM_IAM_CLIENT_SLUG) ??
       "crm",
@@ -155,9 +158,7 @@ export function loadConfig(): CrmServerConfig {
     accountsInternalBaseUrl:
       normalizeOptionalString(process.env.PYROSA_CRM_ACCOUNTS_INTERNAL_BASE_URL) ??
       "https://accounts.pyrosa.com.do",
-    directoryInternalBaseUrl:
-      normalizeOptionalString(process.env.PYROSA_CRM_DIRECTORY_INTERNAL_BASE_URL) ??
-      "https://directory.pyrosa.com.do",
+    directoryInternalBaseUrl,
     storeInternalBaseUrl:
       normalizeOptionalString(process.env.PYROSA_CRM_STORE_INTERNAL_BASE_URL) ??
       "https://store.pyrosa.com.do",
@@ -268,7 +269,24 @@ export function loadConfig(): CrmServerConfig {
     tenantContextGenerationV1Enabled: parseBoolean(
       process.env.PYROSA_CRM_TENANT_CONTEXT_GENERATION_V1_ENABLED,
       false
-    )
+    ),
+    tenantContextInvalidation: {
+      ackUrl: normalizeOptionalString(process.env.PYROSA_CRM_TENANT_CONTEXT_INVALIDATION_ACK_URL) ??
+        new URL("/internal/directory/v1/tenant-context-invalidations/ack", directoryInternalBaseUrl).toString(),
+      audience: normalizeOptionalString(process.env.PYROSA_CRM_TENANT_CONTEXT_INVALIDATION_OAUTH_AUDIENCE) ?? "pyrosa-directory",
+      claimUrl: normalizeOptionalString(process.env.PYROSA_CRM_TENANT_CONTEXT_INVALIDATION_CLAIM_URL) ??
+        new URL("/internal/directory/v1/tenant-context-invalidations", directoryInternalBaseUrl).toString(),
+      clientId: normalizeOptionalString(process.env.PYROSA_CRM_TENANT_CONTEXT_INVALIDATION_OAUTH_CLIENT_ID),
+      clientSecret: normalizeOptionalString(process.env.PYROSA_CRM_TENANT_CONTEXT_INVALIDATION_OAUTH_CLIENT_SECRET),
+      consumer: "pyrosa-democrm",
+      enabled: parseBoolean(process.env.PYROSA_CRM_TENANT_CONTEXT_INVALIDATION_ENABLED, false),
+      pollMs: parsePositiveInteger(process.env.PYROSA_CRM_TENANT_CONTEXT_INVALIDATION_POLL_MS, 5000),
+      scope: normalizeOptionalString(process.env.PYROSA_CRM_TENANT_CONTEXT_INVALIDATION_OAUTH_SCOPE) ??
+        "directory:tenant-context-invalidation:consume",
+      timeoutMs: parsePositiveInteger(process.env.PYROSA_CRM_TENANT_CONTEXT_INVALIDATION_TIMEOUT_MS, 4000),
+      tokenUrl: normalizeOptionalString(process.env.PYROSA_CRM_TENANT_CONTEXT_INVALIDATION_OAUTH_TOKEN_URL) ??
+        new URL("/oauth/token", iamInternalBaseUrl).toString()
+    }
   };
 }
 

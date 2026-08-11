@@ -28,6 +28,8 @@ import { buildActionPreview, buildCrmContracts } from "./contracts.js";
 import { authenticateCrmApiBearer, hasApiAuthorization, type CrmApiPrincipal } from "./oauthApiAuth.js";
 import { handleCrmV1, sendCrmV1Error } from "./crmV1Http.js";
 import { CrmV1Error } from "./crmV1Domain.js";
+import { invalidateCrmTenantDecisionCaches } from "./tenantOwnerAccess.js";
+import { createDirectoryInvalidationConsumer } from "./tenantContextInvalidationConsumer.js";
 import {
   assertReleaseFresh,
   assertReleaseMatchesConfig,
@@ -247,15 +249,23 @@ export function startServer(
   assertStaticShellExists(config);
 
   const server = createCrmServer(release, config);
+  const invalidationConsumer = config.tenantContextInvalidation
+    ? createDirectoryInvalidationConsumer(
+        config.tenantContextInvalidation,
+        invalidateCrmTenantDecisionCaches
+      )
+    : null;
   server.listen(config.port, config.host, () => {
     console.log(
       `PYROSA CRM listening on http://${config.host}:${config.port} release_id=${release.releaseId} commit=${release.commit}`
     );
+    invalidationConsumer?.start();
   });
 
   for (const signal of ["SIGINT", "SIGTERM"] as const) {
     process.on(signal, () => {
       console.log(`PYROSA CRM received ${signal}; closing server`);
+      invalidationConsumer?.stop();
       server.close((error) => {
         if (error) {
           console.error(`PYROSA CRM shutdown failed: ${error.message}`);

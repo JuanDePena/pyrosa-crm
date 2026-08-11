@@ -3,6 +3,10 @@ import type { CrmServerConfig } from "./config.js";
 import { CrmV1Error } from "./crmV1Domain.js";
 import type { RequestContext } from "./http.js";
 import type { CrmAccessContext, CrmIdentity } from "./crmV1Types.js";
+import {
+  TenantContextDecisionCache,
+  type TenantContextInvalidation
+} from "./tenantContextDecisionCache.js";
 
 const applicationSlug = "pyrosa-democrm" as const;
 const directoryCatalogContractVersion = "1.1.0" as const;
@@ -80,10 +84,25 @@ type CacheEntry = {
 
 let tokenCache = new WeakMap<CrmServerConfig, Map<TokenOwner, CachedToken>>();
 let pageCaches = new WeakMap<CrmServerConfig, Map<string, CacheEntry>>();
+type CachedCrmAccess = {
+  contextGeneration: string | null;
+  expiresAt: string;
+  tenantId: string;
+  value: CrmAccessContext;
+};
+let decisionCaches = new WeakMap<CrmServerConfig, TenantContextDecisionCache<CachedCrmAccess>>();
+const activeDecisionCaches = new Set<TenantContextDecisionCache<CachedCrmAccess>>();
 
 export function resetTenantOwnerAccessForTests(): void {
   tokenCache = new WeakMap();
   pageCaches = new WeakMap();
+  for (const cache of activeDecisionCaches) cache.clear();
+  activeDecisionCaches.clear();
+  decisionCaches = new WeakMap();
+}
+
+export function invalidateCrmTenantDecisionCaches(invalidation: TenantContextInvalidation): void {
+  for (const cache of activeDecisionCaches) cache.invalidate(invalidation);
 }
 
 export async function loadTenantCatalogPage(
@@ -166,6 +185,41 @@ export async function resolveInteractiveCrmAccess(
   candidate: TenantCatalogCandidate
 ): Promise<CrmAccessContext> {
   requireCapability(requiredCapability);
+  const cache = accessDecisionCache(config);
+  const cached = await cache.resolve({
+    applicationSlug,
+    capability: requiredCapability,
+    issuer: identity.issuer,
+    principalType: "human",
+    subject: identity.subject,
+    tenantId: candidate.tenantId
+  }, async () => {
+    const value = await composeInteractiveCrmAccess(
+      context,
+      config,
+      identity,
+      requiredCapability,
+      candidate
+    );
+    const expiresAt = value.ownerDecisions?.application.expiresAt;
+    if (!expiresAt) throw new CrmV1Error(503, "crm.tenant_context.expiry_missing", "La decision compuesta no incluyo expiracion.", true);
+    return {
+      contextGeneration: value.contextGeneration ?? null,
+      expiresAt,
+      tenantId: value.tenantId,
+      value
+    };
+  });
+  return cached.value;
+}
+
+async function composeInteractiveCrmAccess(
+  context: RequestContext,
+  config: CrmServerConfig,
+  identity: CrmIdentity,
+  requiredCapability: string,
+  candidate: TenantCatalogCandidate
+): Promise<CrmAccessContext> {
   const [iam, directory, store, platform] = await Promise.all([
     requestIamDecision(context, config, identity, candidate, requiredCapability),
     requestDirectoryDecision(context, config, identity, candidate),
@@ -253,6 +307,15 @@ export async function resolveInteractiveCrmAccess(
       }
     }
   };
+}
+
+function accessDecisionCache(config: CrmServerConfig): TenantContextDecisionCache<CachedCrmAccess> {
+  const existing = decisionCaches.get(config);
+  if (existing) return existing;
+  const cache = new TenantContextDecisionCache<CachedCrmAccess>();
+  decisionCaches.set(config, cache);
+  activeDecisionCaches.add(cache);
+  return cache;
 }
 
 function pageCache(config: CrmServerConfig): Map<string, CacheEntry> {

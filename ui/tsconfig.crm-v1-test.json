@@ -23,6 +23,7 @@
     "server/tenantContextGeneration.test.ts",
     "server/tenantOwnerAccess.ts",
     "server/tenantOwnerAccess.test.ts",
+    "server/tenantContextDecisionCache.test.ts",
     "server/oauthApiAuth.ts"
   ],
   "exclude": []
