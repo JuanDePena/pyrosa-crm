@@ -84,6 +84,7 @@ test("interactive access composes IAM, Directory v2, Store and Platform with rea
     if (url.pathname === "/api/iam/policy/decisions") {
       return json({
         allowed: true,
+        cacheScope: "subject",
         bindingVersion: 7,
         capability: "crm.dashboard.read",
         decidedAt: "2026-07-30T00:00:00.000Z",
@@ -91,7 +92,7 @@ test("interactive access composes IAM, Directory v2, Store and Platform with rea
         expiresAt: "2099-07-30T00:00:30.000Z",
         policyVersion: "pyrosa.standard-tenant@4",
         reasonCode: "allowed",
-        subject: identity.subject,
+        subject: body.iam_subject,
         tenantKey
       });
     }
@@ -99,6 +100,7 @@ test("interactive access composes IAM, Directory v2, Store and Platform with rea
       return json({
         allowed: true,
         application_projected: true,
+        cache_scope: "subject",
         application_slug: "pyrosa-democrm",
         authority: "pyrosa-directory",
         contract_version: "2.0.0",
@@ -135,6 +137,7 @@ test("interactive access composes IAM, Directory v2, Store and Platform with rea
     if (url.pathname.endsWith("/entitlement-decision")) {
       return json({
         contract_version: "1.0.0",
+        cache_scope: "tenant",
         request_id: body.request_id,
         correlation_id: body.correlation_id,
         tenant_id: tenantId,
@@ -149,6 +152,7 @@ test("interactive access composes IAM, Directory v2, Store and Platform with rea
     }
     return json({
       application_slug: "pyrosa-democrm",
+      cache_scope: "tenant",
       contract_version: "1.0.0",
       database_name: "app_pyrosa_democrm",
       decision_reference: `placement:${"d".repeat(64)}`,
@@ -167,9 +171,10 @@ test("interactive access composes IAM, Directory v2, Store and Platform with rea
     });
   };
 
+  const configured = config();
   const access = await resolveInteractiveCrmAccess(
     requestContext(),
-    config(),
+    configured,
     identity,
     "crm.dashboard.read",
     {
@@ -208,6 +213,26 @@ test("interactive access composes IAM, Directory v2, Store and Platform with rea
       scope: "platform.schema.resolve"
     }
   );
+
+  await resolveInteractiveCrmAccess(
+    requestContext(),
+    configured,
+    { ...identity, subject: "subject-beta" },
+    "crm.dashboard.read",
+    {
+      tenantId,
+      tenantKey,
+      displayName: "Alpha",
+      decisionReference: `dirdec:${"1".repeat(64)}`,
+      decisionVersion: `sha256:${"2".repeat(64)}`,
+      ownerExpiresAt: "2099-07-30T00:01:00.000Z"
+    }
+  );
+  assert.equal(ownerCalls.filter((path) => path.includes("policy/decisions")).length, 2);
+  assert.equal(ownerCalls.filter((path) => path.includes("application-access-decision")).length, 2);
+  assert.equal(ownerCalls.filter((path) => path.includes("crm-access-decision")).length, 2);
+  assert.equal(ownerCalls.filter((path) => path.includes("entitlement-decision")).length, 1);
+  assert.equal(ownerCalls.filter((path) => path.includes("schema-placement")).length, 1);
 });
 
 function config(overrides: Partial<CrmServerConfig> = {}): CrmServerConfig {

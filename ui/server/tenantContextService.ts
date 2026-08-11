@@ -110,7 +110,9 @@ export async function refreshCrmTenantSession(input: {
           session: input.session,
           access,
           contextVersion,
-          requireContextGeneration: input.config.tenantContextGenerationV1Enabled
+          requireContextGeneration: input.config.tenantContextGenerationV1Enabled,
+          renewalLeadMs: input.config.tenantContextRenewalLeadMs,
+          renewalJitterMaxMs: input.config.tenantContextRenewalJitterMaxMs
         })
       };
       saveCrmTenantSession(input.session, state);
@@ -145,7 +147,9 @@ export async function refreshCrmTenantSession(input: {
         access,
         contextVersion: currentInteractive.contextVersion,
         previousIssuedAt: currentInteractive.issuedAt,
-        requireContextGeneration: input.config.tenantContextGenerationV1Enabled
+        requireContextGeneration: input.config.tenantContextGenerationV1Enabled,
+        renewalLeadMs: input.config.tenantContextRenewalLeadMs,
+        renewalJitterMaxMs: input.config.tenantContextRenewalJitterMaxMs
       })
     };
     saveCrmTenantSession(input.session, state);
@@ -333,7 +337,9 @@ export async function switchCrmTenantContext(input: {
       access,
       contextVersion,
       now,
-      requireContextGeneration: input.config.tenantContextGenerationV1Enabled
+      requireContextGeneration: input.config.tenantContextGenerationV1Enabled,
+      renewalLeadMs: input.config.tenantContextRenewalLeadMs,
+      renewalJitterMaxMs: input.config.tenantContextRenewalJitterMaxMs
     });
     const response: TenantContextSwitchResponse = {
       schemaVersion: TENANT_CONTEXT_SWITCH_RESPONSE_SCHEMA,
@@ -483,7 +489,7 @@ export async function renewCrmTenantContext(input: {
       identity,
       "crm.dashboard.read",
       candidate,
-      { minimumCachedDecisionRemainingMs: 15_000 }
+      { minimumCachedDecisionRemainingMs: input.config.tenantContextRenewalLeadMs }
     );
     assertPlacementStable(current.interactive, access);
     const contextVersion = tenantDecisionEvidenceMatches(
@@ -504,7 +510,9 @@ export async function renewCrmTenantContext(input: {
       access,
       contextVersion,
       previousIssuedAt: current.interactive.issuedAt,
-      requireContextGeneration: input.config.tenantContextGenerationV1Enabled
+      requireContextGeneration: input.config.tenantContextGenerationV1Enabled,
+      renewalLeadMs: input.config.tenantContextRenewalLeadMs,
+      renewalJitterMaxMs: input.config.tenantContextRenewalJitterMaxMs
     });
     const next = {
       ...mergeCandidateIntoState(current, candidate),

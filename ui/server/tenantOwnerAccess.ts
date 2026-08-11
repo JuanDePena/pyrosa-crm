@@ -41,6 +41,7 @@ type OwnerDecision = {
   reference: string;
   version: string;
   expiresAt: string;
+  cacheScope?: "subject" | "tenant";
 };
 
 type DirectoryProbe = OwnerDecision & {
@@ -92,6 +93,17 @@ type CachedCrmAccess = {
 };
 let decisionCaches = new WeakMap<CrmServerConfig, TenantContextDecisionCache<CachedCrmAccess>>();
 const activeDecisionCaches = new Set<TenantContextDecisionCache<CachedCrmAccess>>();
+type TenantScopedOwnerCacheEntry<T extends OwnerDecision> = {
+  value: T | null;
+  expiresAtMs: number;
+  inFlight: Promise<T> | null;
+};
+type TenantScopedOwnerCaches = {
+  store: Map<string, TenantScopedOwnerCacheEntry<StoreProbe>>;
+  platform: Map<string, TenantScopedOwnerCacheEntry<PlatformProbe>>;
+};
+let tenantScopedOwnerCaches = new WeakMap<CrmServerConfig, TenantScopedOwnerCaches>();
+const activeTenantScopedOwnerCaches = new Set<TenantScopedOwnerCaches>();
 
 export function resetTenantOwnerAccessForTests(): void {
   tokenCache = new WeakMap();
@@ -99,10 +111,24 @@ export function resetTenantOwnerAccessForTests(): void {
   for (const cache of activeDecisionCaches) cache.clear();
   activeDecisionCaches.clear();
   decisionCaches = new WeakMap();
+  for (const caches of activeTenantScopedOwnerCaches) {
+    caches.store.clear();
+    caches.platform.clear();
+  }
+  activeTenantScopedOwnerCaches.clear();
+  tenantScopedOwnerCaches = new WeakMap();
 }
 
 export function invalidateCrmTenantDecisionCaches(invalidation: TenantContextInvalidation): void {
   for (const cache of activeDecisionCaches) cache.invalidate(invalidation);
+  const prefix = `${invalidation.tenantId}\u0000`;
+  for (const caches of activeTenantScopedOwnerCaches) {
+    for (const cache of [caches.store, caches.platform]) {
+      for (const key of cache.keys()) {
+        if (key.startsWith(prefix)) cache.delete(key);
+      }
+    }
+  }
 }
 
 export async function loadTenantCatalogPage(
@@ -226,8 +252,18 @@ async function composeInteractiveCrmAccess(
   const [iam, directory, store, platform] = await Promise.all([
     requestIamDecision(context, config, identity, candidate, requiredCapability),
     requestDirectoryDecision(context, config, identity, candidate),
-    requestStoreDecision(context, config, identity, candidate, requiredCapability),
-    requestPlatformDecision(context, config, candidate)
+    resolveTenantScopedOwnerDecision(
+      config,
+      "store",
+      `${candidate.tenantId}\u0000${requiredCapability}`,
+      () => requestStoreDecision(context, config, identity, candidate, requiredCapability)
+    ),
+    resolveTenantScopedOwnerDecision(
+      config,
+      "platform",
+      `${candidate.tenantId}\u0000placement`,
+      () => requestPlatformDecision(context, config, candidate)
+    )
   ]);
   if (!iam.allowed) {
     throw new CrmV1Error(403, "crm.iam.permission_denied", "IAM denegó la capacidad CRM solicitada.");
@@ -272,7 +308,10 @@ async function composeInteractiveCrmAccess(
     platform.expiresAt
   ]);
   const applicationExpiry = new Date(
-    Math.min(Date.parse(earliestOwnerExpiry), Date.parse(observedAt) + 30_000)
+    Math.min(
+      Date.parse(earliestOwnerExpiry),
+      Date.parse(observedAt) + config.tenantContextDecisionCacheMaxMs
+    )
   ).toISOString();
   const applicationReference = `crmapp:${digest(
     `${candidate.tenantId}\u0000${identity.subject}\u0000${requiredCapability}\u0000${applicationVersion}`
@@ -312,10 +351,65 @@ async function composeInteractiveCrmAccess(
   };
 }
 
+async function resolveTenantScopedOwnerDecision<Owner extends "store" | "platform">(
+  config: CrmServerConfig,
+  owner: Owner,
+  key: string,
+  load: () => Promise<Owner extends "store" ? StoreProbe : PlatformProbe>
+): Promise<Owner extends "store" ? StoreProbe : PlatformProbe> {
+  const caches = tenantScopedCaches(config);
+  const cache = caches[owner] as Map<string, TenantScopedOwnerCacheEntry<StoreProbe | PlatformProbe>>;
+  const now = Date.now();
+  const current = cache.get(key);
+  if (current?.value && current.expiresAtMs > now) {
+    return current.value as Owner extends "store" ? StoreProbe : PlatformProbe;
+  }
+  if (current?.inFlight) {
+    return await current.inFlight as Owner extends "store" ? StoreProbe : PlatformProbe;
+  }
+  const entry: TenantScopedOwnerCacheEntry<StoreProbe | PlatformProbe> = {
+    value: null,
+    expiresAtMs: 0,
+    inFlight: null
+  };
+  const inFlight = load().then((value) => {
+    if (value.cacheScope !== "tenant") {
+      throw ownerError(owner, "cache_scope_invalid");
+    }
+    entry.value = value;
+    entry.expiresAtMs = Math.min(
+      Date.parse(value.expiresAt),
+      Date.now() + config.tenantContextDecisionCacheMaxMs
+    );
+    entry.inFlight = null;
+    return value;
+  }).catch((error) => {
+    cache.delete(key);
+    throw error;
+  });
+  entry.inFlight = inFlight;
+  cache.set(key, entry);
+  return await inFlight as Owner extends "store" ? StoreProbe : PlatformProbe;
+}
+
+function tenantScopedCaches(config: CrmServerConfig): TenantScopedOwnerCaches {
+  const existing = tenantScopedOwnerCaches.get(config);
+  if (existing) return existing;
+  const caches: TenantScopedOwnerCaches = {
+    store: new Map(),
+    platform: new Map()
+  };
+  tenantScopedOwnerCaches.set(config, caches);
+  activeTenantScopedOwnerCaches.add(caches);
+  return caches;
+}
+
 function accessDecisionCache(config: CrmServerConfig): TenantContextDecisionCache<CachedCrmAccess> {
   const existing = decisionCaches.get(config);
   if (existing) return existing;
-  const cache = new TenantContextDecisionCache<CachedCrmAccess>();
+  const cache = new TenantContextDecisionCache<CachedCrmAccess>(
+    config.tenantContextDecisionCacheMaxMs
+  );
   decisionCaches.set(config, cache);
   activeDecisionCaches.add(cache);
   return cache;
@@ -475,13 +569,15 @@ async function requestIamDecision(
   );
   assertExactKeys(payload, [
     "allowed", "bindingVersion", "capability", "decidedAt", "decisionId",
-    "expiresAt", "policyVersion", "reasonCode", "subject", "tenantKey"
+    "expiresAt", "policyVersion", "reasonCode", "subject", "tenantKey",
+    "cacheScope"
   ]);
   if (
     typeof payload.allowed !== "boolean" ||
     payload.capability !== capability ||
     payload.subject !== identity.subject ||
-    payload.tenantKey !== candidate.tenantKey
+    payload.tenantKey !== candidate.tenantKey ||
+    payload.cacheScope !== "subject"
   ) {
     throw ownerError("iam", "response_invalid");
   }
@@ -491,6 +587,7 @@ async function requestIamDecision(
     : positiveInteger(payload.bindingVersion);
   return {
     allowed: payload.allowed,
+    cacheScope: "subject",
     reference: opaque(payload.decisionId),
     version: payload.allowed
       ? `iam-policy:${policyVersion ?? "global"}:binding:${bindingVersion ?? 0}`
@@ -555,6 +652,7 @@ async function requestDirectoryV2(
     "decision_version", "expires_at", "membership_active", "observed_at",
     "projection_max_staleness_seconds", "projection_synced_at", "reasons",
     "request_id", "requires_named_seat", "seat_active", "tenant_id", "tenant_key",
+    "cache_scope",
     ...(extendedGeneration
       ? ["context_generation", "context_projection_expires_at"]
       : [])
@@ -566,6 +664,7 @@ async function requestDirectoryV2(
     payload.authority !== "pyrosa-directory" ||
     payload.tenant_id !== candidate.tenantId ||
     payload.application_slug !== applicationSlug ||
+    payload.cache_scope !== "subject" ||
     typeof payload.allowed !== "boolean" ||
     typeof payload.membership_active !== "boolean" ||
     typeof payload.application_projected !== "boolean" ||
@@ -580,6 +679,7 @@ async function requestDirectoryV2(
   }
   return {
     allowed: payload.allowed,
+    cacheScope: "subject",
     tenantId: opaque(payload.tenant_id),
     tenantKey: normalizeTenantKey(payload.tenant_key),
     membershipActive: payload.membership_active,
@@ -635,6 +735,7 @@ async function requestDirectoryV1(
   const compatibilityExpiry = new Date(Date.now() + 15_000).toISOString();
   return {
     allowed: payload.allowed,
+    cacheScope: "subject",
     tenantId: candidate.tenantId,
     tenantKey: normalizeTenantKey(payload.tenant_key),
     membershipActive: payload.membership_active,
@@ -684,12 +785,14 @@ async function requestStoreDecision(
     payload.application_slug !== applicationSlug ||
     payload.requested_capability !== capability ||
     typeof payload.allowed !== "boolean" ||
-    typeof payload.entitlement_active !== "boolean"
+    typeof payload.entitlement_active !== "boolean" ||
+    payload.cache_scope !== "tenant"
   ) {
     throw ownerError("store", "response_invalid");
   }
   return {
     allowed: payload.allowed,
+    cacheScope: "tenant",
     entitlementActive: payload.entitlement_active,
     reference: opaque(payload.authorization_decision_id),
     version: sha256(payload.decision_version),
@@ -715,12 +818,14 @@ async function requestPlatformDecision(
   );
   assertExactKeys(payload, [
     "application_slug", "contract_version", "database_name",
+    "cache_scope",
     "decision_reference", "dictionary_version", "expires_at",
     "physical_fingerprint", "placement_version", "readiness_status", "ready",
     "request_id", "schema_name", "schema_scope", "status", "tenant_id", "tenant_key"
   ]);
   if (
     payload.application_slug !== applicationSlug ||
+    payload.cache_scope !== "tenant" ||
     payload.contract_version !== ownerContractVersion ||
     payload.request_id !== context.requestId ||
     payload.tenant_id !== candidate.tenantId ||
@@ -741,6 +846,7 @@ async function requestPlatformDecision(
   }
   return {
     allowed: true,
+    cacheScope: "tenant",
     tenantId: candidate.tenantId,
     tenantKey: candidate.tenantKey,
     schemaName,

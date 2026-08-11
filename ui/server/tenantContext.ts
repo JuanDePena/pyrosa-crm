@@ -339,6 +339,8 @@ export function composeInteractiveTenantContext(input: {
   contextVersion: string;
   previousIssuedAt?: string;
   requireContextGeneration?: boolean;
+  renewalLeadMs?: number;
+  renewalJitterMaxMs?: number;
   now?: Date;
 }): InteractiveTenantContext {
   const now = input.now ?? new Date();
@@ -406,10 +408,24 @@ export function composeInteractiveTenantContext(input: {
     issuedAt: input.previousIssuedAt ?? refreshedAt,
     refreshedAt,
     expiresAt,
-    renewAfter: new Date(
-      Math.max(now.valueOf(), Date.parse(expiresAt) - 15_000)
-    ).toISOString()
+    renewAfter: new Date(Math.max(
+      now.valueOf(),
+      Date.parse(expiresAt) - (input.renewalLeadMs ?? 15_000) - stableRenewalJitter(
+        `${input.session.sid}:${input.contextVersion}`,
+        input.renewalJitterMaxMs ?? 0
+      )
+    )).toISOString()
   };
+}
+
+function stableRenewalJitter(key: string, maxMs: number): number {
+  if (!Number.isFinite(maxMs) || maxMs <= 0) return 0;
+  let hash = 2166136261;
+  for (let index = 0; index < key.length; index += 1) {
+    hash ^= key.charCodeAt(index);
+    hash = Math.imul(hash, 16777619);
+  }
+  return (hash >>> 0) % (Math.trunc(maxMs) + 1);
 }
 
 export function interactiveTenantContextExpiresAt(

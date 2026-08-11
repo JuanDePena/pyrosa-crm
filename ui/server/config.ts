@@ -77,6 +77,9 @@ export type CrmServerConfig = {
   tenantContextSealSecret: string | null;
   tenantContextGenerationV1Enabled?: boolean;
   tenantContextInvalidation?: DirectoryInvalidationConsumerConfig;
+  tenantContextDecisionCacheMaxMs: number;
+  tenantContextRenewalLeadMs: number;
+  tenantContextRenewalJitterMaxMs: number;
 };
 
 export const mimeTypes: Record<string, string> = {
@@ -270,6 +273,18 @@ export function loadConfig(): CrmServerConfig {
       process.env.PYROSA_CRM_TENANT_CONTEXT_GENERATION_V1_ENABLED,
       false
     ),
+    tenantContextDecisionCacheMaxMs: boundedMilliseconds(
+      process.env.PYROSA_CRM_TENANT_CONTEXT_DECISION_CACHE_MAX_MS,
+      30_000, 30_000, 300_000
+    ),
+    tenantContextRenewalLeadMs: boundedMilliseconds(
+      process.env.PYROSA_CRM_TENANT_CONTEXT_RENEWAL_LEAD_MS,
+      15_000, 5_000, 120_000
+    ),
+    tenantContextRenewalJitterMaxMs: boundedMilliseconds(
+      process.env.PYROSA_CRM_TENANT_CONTEXT_RENEWAL_JITTER_MAX_MS,
+      0, 0, 30_000
+    ),
     tenantContextInvalidation: {
       ackUrl: normalizeOptionalString(process.env.PYROSA_CRM_TENANT_CONTEXT_INVALIDATION_ACK_URL) ??
         new URL("/internal/directory/v1/tenant-context-invalidations/ack", directoryInternalBaseUrl).toString(),
@@ -288,6 +303,11 @@ export function loadConfig(): CrmServerConfig {
         new URL("/oauth/token", iamInternalBaseUrl).toString()
     }
   };
+}
+
+function boundedMilliseconds(value: string | undefined, fallback: number, min: number, max: number): number {
+  const parsed = Number(value);
+  return Number.isInteger(parsed) ? Math.min(max, Math.max(min, parsed)) : fallback;
 }
 
 export function parsePositiveInteger(value: string | undefined, fallback: number): number {
