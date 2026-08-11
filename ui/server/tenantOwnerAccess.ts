@@ -182,7 +182,8 @@ export async function resolveInteractiveCrmAccess(
   config: CrmServerConfig,
   identity: CrmIdentity,
   requiredCapability: string,
-  candidate: TenantCatalogCandidate
+  candidate: TenantCatalogCandidate,
+  options: { minimumCachedDecisionRemainingMs?: number } = {}
 ): Promise<CrmAccessContext> {
   requireCapability(requiredCapability);
   const cache = accessDecisionCache(config);
@@ -209,6 +210,8 @@ export async function resolveInteractiveCrmAccess(
       tenantId: value.tenantId,
       value
     };
+  }, {
+    minimumRemainingMs: options.minimumCachedDecisionRemainingMs
   });
   return cached.value;
 }
@@ -806,6 +809,14 @@ async function postJson(
     throw ownerError(owner, "unavailable", true);
   }
   if (!response.ok) {
+    if (response.status === 429) {
+      throw new OwnerHttpError(
+        response.status,
+        `crm.${owner}.rate_limited`,
+        `El owner ${owner} limitó temporalmente la validación. DemoCRM reintentará de forma controlada.`,
+        true
+      );
+    }
     throw new OwnerHttpError(
       response.status,
       `crm.${owner}.decision_failed`,

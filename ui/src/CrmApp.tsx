@@ -46,6 +46,12 @@ import {
   routeById
 } from "./routeRegistry";
 import type { CrmRouteId } from "./routeRegistry";
+import {
+  boundedTenantRenewalRetryDelay,
+  tenantRenewalAdvanced,
+  tenantRenewalRetryInitialMs,
+  tenantRenewalRetryMaxMs
+} from "./tenantRenewal";
 
 type ShellRoute = NavigationRoute<CrmRouteId>;
 type OpenDrawer = "alerts" | "user" | null;
@@ -76,6 +82,7 @@ export function CrmApp() {
   const [tenantSwitching, setTenantSwitching] = React.useState(false);
   const [tenantSwitchError, setTenantSwitchError] = React.useState<string | null>(null);
   const tenantSwitchRequest = React.useRef<AbortController | null>(null);
+  const renewalNotBeforeRef = React.useRef(0);
 
   React.useEffect(() => {
     const controller = new AbortController();
@@ -150,9 +157,9 @@ export function CrmApp() {
 
   React.useEffect(() => {
     if (bootstrapState.kind !== "ready") return undefined;
-    const expiresAt = Date.parse(
-      bootstrapState.bootstrap.tenantContext?.expiresAt ?? ""
-    );
+    const currentExpiresAt =
+      bootstrapState.bootstrap.tenantContext?.expiresAt ?? "";
+    const expiresAt = Date.parse(currentExpiresAt);
     const renewAfter = Date.parse(
       bootstrapState.bootstrap.tenantContext?.renewAfter ?? ""
     );
@@ -161,7 +168,7 @@ export function CrmApp() {
     }
     const controller = new AbortController();
     let timer: ReturnType<typeof setTimeout> | undefined;
-    let retryMs = 2_000;
+    let retryMs = tenantRenewalRetryInitialMs;
     const renew = async () => {
       try {
         const response = await renewCrmTenant({
@@ -177,7 +184,7 @@ export function CrmApp() {
           });
         }
         setCrmTenantContextVersion(contextVersion);
-        setBootstrapState({
+        const nextState: BootstrapState = {
           ...bootstrapState,
           bootstrap: {
             ...bootstrapState.bootstrap,
@@ -189,7 +196,39 @@ export function CrmApp() {
             response.context?.displayName ??
             response.tenantContext.selected.label ??
             "Tenant activo"
-        });
+        };
+        if (
+          tenantRenewalAdvanced(
+            currentExpiresAt,
+            response.tenantContext.expiresAt
+          )
+        ) {
+          renewalNotBeforeRef.current = 0;
+          setBootstrapState(nextState);
+          return;
+        }
+        const jitter = Math.floor(Math.random() * Math.min(500, retryMs / 4));
+        const retryDelay = boundedTenantRenewalRetryDelay(
+          expiresAt,
+          retryMs,
+          Date.now(),
+          jitter
+        );
+        if (retryDelay === null) {
+          throw new CrmApiError("El contexto tenant venció durante la renovación.", {
+            code: "crm.tenant_context.renewal_expired",
+            retryable: true
+          });
+        }
+        renewalNotBeforeRef.current = Date.now() + retryDelay;
+        retryMs = Math.min(tenantRenewalRetryMaxMs, retryMs * 2);
+        const currentContextVersion =
+          bootstrapState.bootstrap.tenantContext?.contextVersion;
+        if (contextVersion !== currentContextVersion) {
+          setBootstrapState(nextState);
+          return;
+        }
+        timer = setTimeout(() => void renew(), retryDelay);
       } catch (error) {
         if (error instanceof DOMException && error.name === "AbortError") return;
         if (Date.now() >= expiresAt) {
@@ -205,12 +244,16 @@ export function CrmApp() {
         }
         const jitter = Math.floor(Math.random() * Math.min(500, retryMs / 4));
         timer = setTimeout(() => void renew(), retryMs + jitter);
-        retryMs = Math.min(30_000, retryMs * 2);
+        retryMs = Math.min(tenantRenewalRetryMaxMs, retryMs * 2);
       }
     };
     timer = setTimeout(
       () => void renew(),
-      Math.max(0, renewAfter - Date.now())
+      Math.max(
+        0,
+        renewAfter - Date.now(),
+        renewalNotBeforeRef.current - Date.now()
+      )
     );
     return () => {
       controller.abort();

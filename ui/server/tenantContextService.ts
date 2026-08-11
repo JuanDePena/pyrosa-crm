@@ -482,16 +482,22 @@ export async function renewCrmTenantContext(input: {
       input.config,
       identity,
       "crm.dashboard.read",
-      candidate
+      candidate,
+      { minimumCachedDecisionRemainingMs: 15_000 }
     );
     assertPlacementStable(current.interactive, access);
-    const contextVersion = deriveContextVersion(
-      requireSealSecret(input.config),
-      input.session.sid,
-      candidate.tenantKey,
-      "renew",
-      `${input.context.requestId}:${new Date().toISOString()}`
-    );
+    const contextVersion = tenantDecisionEvidenceMatches(
+      current.interactive,
+      access
+    )
+      ? current.interactive.contextVersion
+      : deriveContextVersion(
+          requireSealSecret(input.config),
+          input.session.sid,
+          candidate.tenantKey,
+          "renew",
+          `${input.context.requestId}:${new Date().toISOString()}`
+        );
     access.contextVersion = contextVersion;
     const interactive = composeInteractiveTenantContext({
       session: input.session,
@@ -508,6 +514,21 @@ export async function renewCrmTenantContext(input: {
     saveCrmTenantSession(input.session, next);
     return { state: next, access };
   });
+}
+
+function tenantDecisionEvidenceMatches(
+  current: NonNullable<CrmTenantSessionState["interactive"]>,
+  access: CrmAccessContext
+): boolean {
+  const decisions = access.ownerDecisions;
+  if (!decisions) return false;
+  return (
+    current.contextGeneration === (access.contextGeneration ?? null) &&
+    current.placement.reference === access.schemaName &&
+    current.placement.fingerprint === access.physicalFingerprint &&
+    current.placement.readinessVersion === access.dictionaryVersion &&
+    JSON.stringify(current.decisions) === JSON.stringify(decisions)
+  );
 }
 
 function mergeCandidateIntoState(

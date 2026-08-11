@@ -19,6 +19,10 @@ export type TenantContextInvalidation = {
   tenantId: string;
 };
 
+export type TenantContextDecisionCacheResolveOptions = {
+  minimumRemainingMs?: number;
+};
+
 export class TenantContextDecisionCacheError extends Error {
   constructor(readonly code: "tenant_context_generation_stale" | "tenant_context_expiry_invalid") {
     super(code);
@@ -40,10 +44,21 @@ export class TenantContextDecisionCache<T extends TenantContextCacheableDecision
     private readonly clock: () => number = Date.now
   ) {}
 
-  async resolve(identity: TenantContextDecisionIdentity, loader: () => Promise<T>): Promise<T> {
+  async resolve(
+    identity: TenantContextDecisionIdentity,
+    loader: () => Promise<T>,
+    options: TenantContextDecisionCacheResolveOptions = {}
+  ): Promise<T> {
     const key = keyOf(identity);
     const cached = this.entries.get(key);
-    if (cached && cached.expiresAtMs > this.clock() && this.matchesHead(cached.value)) {
+    const minimumRemainingMs = normalizeMinimumRemainingMs(
+      options.minimumRemainingMs
+    );
+    if (
+      cached &&
+      cached.expiresAtMs - this.clock() > minimumRemainingMs &&
+      this.matchesHead(cached.value)
+    ) {
       this.entries.delete(key);
       this.entries.set(key, cached);
       return cached.value;
@@ -105,6 +120,11 @@ export class TenantContextDecisionCache<T extends TenantContextCacheableDecision
     const head = this.heads.get(value.tenantId);
     return !head || value.contextGeneration === head.contextGeneration;
   }
+}
+
+function normalizeMinimumRemainingMs(value: number | undefined): number {
+  if (value === undefined) return 0;
+  return Number.isFinite(value) && value > 0 ? Math.floor(value) : 0;
 }
 
 function keyOf(identity: TenantContextDecisionIdentity): string {
