@@ -1,4 +1,4 @@
-import type { NavigationSemanticIconId } from "@pyrosa/ui-icons";
+import type { EntitySemanticIconId, NavigationSemanticIconId } from "@pyrosa/ui-icons";
 import type { ResourceRouteId } from "./crmTypes";
 
 export type ResourceField = {
@@ -16,6 +16,7 @@ export type EditorField = ResourceField & {
 export type ResourceConfig = {
   description: string;
   editorFields: EditorField[];
+  entitySemanticId: EntitySemanticIconId;
   endpoint: string;
   eyebrow: string;
   fields: ResourceField[];
@@ -79,6 +80,7 @@ export const resourceConfigs: Record<ResourceRouteId, ResourceConfig> = {
       { input: "text", label: "Referencia externa", name: "externalRef" }
     ],
     endpoint: "/api/crm/v1/accounts",
+    entitySemanticId: "entity.account",
     eyebrow: "Relacion",
     fields: [
       { label: "Nombre", name: "name" },
@@ -115,6 +117,7 @@ export const resourceConfigs: Record<ResourceRouteId, ResourceConfig> = {
       ] }
     ],
     endpoint: "/api/crm/v1/contacts",
+    entitySemanticId: "entity.contact",
     eyebrow: "Relacion",
     fields: [
       { label: "Nombre", name: "displayName" },
@@ -148,6 +151,7 @@ export const resourceConfigs: Record<ResourceRouteId, ResourceConfig> = {
       { input: "text", label: "Vencimiento SLA (ISO con offset)", name: "slaDueAt" }
     ],
     endpoint: "/api/crm/v1/cases",
+    entitySemanticId: "entity.alert",
     eyebrow: "Operacion",
     fields: [
       { label: "Asunto", name: "subject" },
@@ -183,6 +187,7 @@ export const resourceConfigs: Record<ResourceRouteId, ResourceConfig> = {
       { input: "text", label: "Vencimiento (ISO con offset)", name: "dueAt" }
     ],
     endpoint: "/api/crm/v1/activities",
+    entitySemanticId: "entity.activity",
     eyebrow: "Operacion",
     fields: [
       { label: "Asunto", name: "subject" },
@@ -213,6 +218,7 @@ export const resourceConfigs: Record<ResourceRouteId, ResourceConfig> = {
       { input: "text", label: "Referencia externa", name: "externalRef" }
     ],
     endpoint: "/api/crm/v1/appointments",
+    entitySemanticId: "entity.activity",
     eyebrow: "Agenda",
     fields: [
       { format: "date-time", label: "Inicio", name: "startAt" },
@@ -244,6 +250,7 @@ export const resourceConfigs: Record<ResourceRouteId, ResourceConfig> = {
       { input: "text", label: "Owner", name: "ownerId" }
     ],
     endpoint: "/api/crm/v1/opportunities",
+    entitySemanticId: "entity.opportunity",
     eyebrow: "Pipeline",
     fields: [
       { label: "Nombre", name: "name" },
@@ -268,6 +275,7 @@ export const resourceConfigs: Record<ResourceRouteId, ResourceConfig> = {
     description: "Catalogo autorizado de reportes y read models con freshness explicita.",
     editorFields: [],
     endpoint: "/api/crm/v1/reports",
+    entitySemanticId: "entity.report",
     eyebrow: "Analitica",
     fields: [
       { label: "Nombre", name: "label" },

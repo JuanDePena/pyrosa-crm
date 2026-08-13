@@ -1,18 +1,5 @@
 import React from "react";
 import {
-  Activity,
-  AlertTriangle,
-  Building2,
-  CalendarClock,
-  CheckCircle2,
-  Clock3,
-  Gauge,
-  ShieldCheck,
-  Target,
-  Tickets,
-  UsersRound
-} from "lucide-react";
-import {
   EmptyState,
   ErrorState,
   ExecutiveDomainCard,
@@ -32,6 +19,8 @@ import {
   ViewNotice
 } from "@pyrosa/ui";
 import type { ExecutiveTone } from "@pyrosa/ui";
+import { EntitySemanticIcon, IndicatorSemanticIcon } from "@pyrosa/ui-icons";
+import type { EntitySemanticIconId, IndicatorSemanticIconId } from "@pyrosa/ui-icons";
 import { WorkspaceLayout } from "@pyrosa/ui-layouts";
 import { CrmApiError, fetchCrmJson, publicMessageFrom } from "./crmApi";
 import type {
@@ -91,8 +80,8 @@ export function DashboardView({
     return (
       <WorkspaceLayout className="crm-workspace">
         <StatusStrip items={[
-          { icon: <Building2 aria-hidden="true" />, key: "tenant", label: "Tenant", tone: "info", value: tenantLabel },
-          { icon: <Clock3 aria-hidden="true" />, key: "freshness", label: "Freshness", tone: "info", value: "cargando" }
+          { icon: <EntitySemanticIcon semanticId="entity.tenant" />, key: "tenant", label: "Tenant", tone: "info", value: tenantLabel },
+          { icon: <IndicatorSemanticIcon semanticId="indicator.pending" />, key: "freshness", label: "Freshness", tone: "info", value: "cargando" }
         ]} />
         <Panel eyebrow="Overview" title="Preparando metricas CRM">
           <LoadingState>Consultando el resumen autorizado del tenant.</LoadingState>
@@ -105,8 +94,8 @@ export function DashboardView({
     return (
       <WorkspaceLayout className="crm-workspace">
         <StatusStrip items={[
-          { icon: <Building2 aria-hidden="true" />, key: "tenant", label: "Tenant", tone: "info", value: tenantLabel },
-          { icon: <AlertTriangle aria-hidden="true" />, key: "freshness", label: "Freshness", tone: "warning", value: "unavailable" }
+          { icon: <EntitySemanticIcon semanticId="entity.tenant" />, key: "tenant", label: "Tenant", tone: "info", value: tenantLabel },
+          { icon: <IndicatorSemanticIcon semanticId="indicator.error" />, key: "freshness", label: "Freshness", tone: "warning", value: "unavailable" }
         ]} />
         <Panel eyebrow="Overview" title="Resumen no disponible">
           <ErrorState action={{ label: "Reintentar", onClick: reload }}>
@@ -124,10 +113,10 @@ export function DashboardView({
   return (
     <WorkspaceLayout className="crm-workspace">
       <StatusStrip items={[
-        { icon: <Building2 aria-hidden="true" />, key: "tenant", label: "Tenant", tone: "info", value: tenantLabel },
-        { icon: <Clock3 aria-hidden="true" />, key: "freshness", label: "Freshness", tone: stale || unavailable ? "warning" : "success", value: summary.freshness.state },
-        { icon: <CalendarClock aria-hidden="true" />, key: "period", label: "Periodo", tone: "info", value: formatPeriod(summary.period) },
-        { icon: <ShieldCheck aria-hidden="true" />, key: "profile", label: "Perfil", tone: "info", value: summary.profileVersion }
+        { icon: <EntitySemanticIcon semanticId="entity.tenant" />, key: "tenant", label: "Tenant", tone: "info", value: tenantLabel },
+        { icon: <IndicatorSemanticIcon semanticId={stale || unavailable ? "indicator.warning" : "indicator.active"} />, key: "freshness", label: "Freshness", tone: stale || unavailable ? "warning" : "success", value: summary.freshness.state },
+        { icon: <IndicatorSemanticIcon semanticId="indicator.records" />, key: "period", label: "Periodo", tone: "info", value: formatPeriod(summary.period) },
+        { icon: <IndicatorSemanticIcon semanticId="indicator.readiness" />, key: "profile", label: "Perfil", tone: "info", value: summary.profileVersion }
       ]} />
 
       {stale ? (
@@ -174,7 +163,7 @@ export function DashboardView({
               {summary.metrics.map((metric) => (
                 <MetricCard
                   detail={metricDetail(metric)}
-                  icon={metricIcon(metric.key)}
+                  indicatorSemanticId={dashboardIndicatorSemanticId(metric.key)}
                   key={metric.key}
                   label={metric.label}
                   tone={metricCardTone(metric.tone)}
@@ -189,7 +178,7 @@ export function DashboardView({
               {summary.progress.map((item) => (
                 <ExecutiveProgressCard
                   detail={item.detail}
-                  icon={metricIcon(item.key)}
+                  icon={<IndicatorSemanticIcon semanticId={dashboardIndicatorSemanticId(item.key)} />}
                   key={item.key}
                   label={item.label}
                   percent={metricPercent(item)}
@@ -207,7 +196,7 @@ export function DashboardView({
                 const card = (
                   <ExecutiveDomainCard
                     contract={`${domain.value} registros`}
-                    icon={domainIcon(domain.key)}
+                    icon={<EntitySemanticIcon semanticId={dashboardEntitySemanticId(domain.key)} />}
                     owner="pyrosa-democrm"
                     status={domain.status}
                     title={domain.label}
@@ -224,7 +213,7 @@ export function DashboardView({
                 <ExecutiveRiskCard
                   action={dashboardAction(risk.route, "Revisar")}
                   detail={`Severidad ${risk.severity}`}
-                  icon={<AlertTriangle aria-hidden="true" />}
+                  icon={<IndicatorSemanticIcon semanticId="indicator.warning" />}
                   key={risk.key}
                   title={risk.label}
                   tone={riskTone(risk.severity)}
@@ -240,7 +229,7 @@ export function DashboardView({
                 <ExecutiveInsightCard
                   action={dashboardAction(insight.route, "Abrir inventario")}
                   detail={insight.detail}
-                  icon={<Gauge aria-hidden="true" />}
+                  icon={<IndicatorSemanticIcon semanticId="indicator.readiness" />}
                   key={insight.key}
                   title={insight.title}
                   tone={executiveTone(insight.tone)}
@@ -282,18 +271,23 @@ function metricCardTone(tone: DashboardTone | undefined): "blue" | "green" | "am
   return "blue";
 }
 
-function metricIcon(key: string) {
+function dashboardIndicatorSemanticId(key: string): IndicatorSemanticIconId {
   const normalized = key.toLowerCase();
-  if (normalized.includes("case") || normalized.includes("caso")) return <Tickets aria-hidden="true" />;
-  if (normalized.includes("appointment") || normalized.includes("cita")) return <CalendarClock aria-hidden="true" />;
-  if (normalized.includes("contact")) return <UsersRound aria-hidden="true" />;
-  if (normalized.includes("opportun") || normalized.includes("pipeline")) return <Target aria-hidden="true" />;
-  if (normalized.includes("risk") || normalized.includes("overdue")) return <AlertTriangle aria-hidden="true" />;
-  return <Activity aria-hidden="true" />;
+  if (normalized.includes("risk") || normalized.includes("overdue")) return "indicator.warning";
+  if (normalized.includes("active") || normalized.includes("resolved") || normalized.includes("won")) return "indicator.active";
+  if (normalized.includes("pending") || normalized.includes("appointment") || normalized.includes("cita")) return "indicator.pending";
+  if (normalized.includes("filter")) return "indicator.filtered";
+  return "indicator.records";
 }
 
-function domainIcon(key: string) {
-  return metricIcon(key);
+function dashboardEntitySemanticId(key: string): EntitySemanticIconId {
+  const normalized = key.toLowerCase();
+  if (normalized.includes("account") || normalized.includes("cuenta")) return "entity.account";
+  if (normalized.includes("contact")) return "entity.contact";
+  if (normalized.includes("opportun") || normalized.includes("pipeline")) return "entity.opportunity";
+  if (normalized.includes("case") || normalized.includes("caso")) return "entity.alert";
+  if (normalized.includes("report")) return "entity.report";
+  return "entity.activity";
 }
 
 function metricPercent(metric: DashboardMetric): number {

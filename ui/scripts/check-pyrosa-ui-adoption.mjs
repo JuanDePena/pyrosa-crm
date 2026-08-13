@@ -126,8 +126,37 @@ check("navigation registry is semantic config without local glyph maps", () =>
 check("resource config reuses the provider semantic identities", () =>
   sources.resourceConfig.includes('navigationSemanticId: "business.accounts"') &&
   sources.resourceConfig.includes('navigationSemanticId: "business.contacts"') &&
+  sources.resourceConfig.includes('entitySemanticId: "entity.account"') &&
+  sources.resourceConfig.includes('entitySemanticId: "entity.contact"') &&
+  sources.resourceConfig.includes('entitySemanticId: "entity.opportunity"') &&
   !sources.resourceConfig.includes("lucide-react") &&
   !sources.resourceConfig.includes("React.ReactNode")
+);
+check("semantic visual contract pins provider catalog 1.1.0 and classifies resources", () =>
+  contract.semanticVisual?.catalogVersion === "1.1.0" &&
+  contract.semanticVisual?.applicableInventoryDetail?.length === 6 &&
+  contract.semanticVisual?.partialReadOnly?.includes("reportes")
+);
+for (const primitive of contract.semanticVisual?.requiredProviderPrimitives ?? []) {
+  check(`resource views adopt provider-owned ${primitive}`, () => sources.resources.includes(primitive));
+}
+for (const semanticId of contract.semanticVisual?.requiredActionIds ?? []) {
+  check(`resource views use semantic action ${semanticId}`, () =>
+    semanticId.startsWith("filter.")
+      ? sources.resources.includes("<FilterSubmitActions")
+      : sources.resources.includes(`"${semanticId}"`)
+  );
+}
+check("resource filters use neutral provider fields and compact semantic actions", () =>
+  sources.resources.includes("<TextField") &&
+  sources.resources.includes("<SelectField") &&
+  sources.resources.includes("<FilterSubmitActions") &&
+  sources.resources.includes("compact")
+);
+check("inventory indicators and entity glyphs resolve through the provider", () =>
+  sources.resources.includes('indicatorSemanticId: "indicator.total"') &&
+  sources.resources.includes('indicatorSemanticId: "indicator.filtered"') &&
+  sources.resources.includes("config.entitySemanticId")
 );
 
 for (const route of contract.resourceViews.routes) {
@@ -195,6 +224,13 @@ check("Dashboard preserves explicit live empty stale and unavailable states", ()
 check("Dashboard links only through the allowlisted CRM hash resolver", () =>
   sources.dashboard.includes("allowedDashboardRoute") &&
   sources.routing.includes("routeHash(parsed.routeId")
+);
+check("Dashboard resolves metric and domain glyphs through semantic provider ids", () =>
+  sources.dashboard.includes("indicatorSemanticId={dashboardIndicatorSemanticId(metric.key)}") &&
+  sources.dashboard.includes("<IndicatorSemanticIcon") &&
+  sources.dashboard.includes("<EntitySemanticIcon") &&
+  !sources.dashboard.includes("function metricIcon(") &&
+  !sources.dashboard.includes("function domainIcon(")
 );
 
 check("BusinessOpsShellTemplate owns the shell", () =>

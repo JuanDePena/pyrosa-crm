@@ -1,36 +1,30 @@
 import React from "react";
 import {
-  ArrowLeft,
-  ChevronLeft,
-  ChevronRight,
-  Pencil,
   Play,
-  Plus,
-  RefreshCw,
-  Save,
-  Search,
-  Workflow,
-  X
+  Workflow
 } from "lucide-react";
 import {
   Button,
+  CountBar,
   DataTable,
   DataTableInline,
   EmptyState,
   EntityCell,
   ErrorState,
   FilterPanel,
-  IconButton,
+  FilterSubmitActions,
   IconAction,
   LoadingState,
   Panel,
+  SelectField,
   StatusBadge,
   StatusStrip,
   TableActionGroup,
+  TextField,
   ViewNotice
 } from "@pyrosa/ui";
 import type { DataTableColumn } from "@pyrosa/ui";
-import { NavigationSemanticIcon } from "@pyrosa/ui-icons";
+import { EntitySemanticIcon } from "@pyrosa/ui-icons";
 import { WorkspaceLayout } from "@pyrosa/ui-layouts";
 import {
   CrmApiError,
@@ -171,46 +165,55 @@ function ResourceList({ config, initialAttention, initialDirection, initialSort,
         { key: "records", label: "Registros", tone: "success", value: total ?? rows.length },
         { key: "state", label: "Estado", tone: state.kind === "error" ? "warning" : "success", value: state.kind }
       ]} />
+      <CountBar items={[
+        { indicatorSemanticId: "indicator.total", key: "total", label: "Total", value: total ?? rows.length },
+        { indicatorSemanticId: "indicator.filtered", key: "filtered", label: "Filtrados", value: rows.length }
+      ]} />
       <FilterPanel
         actions={
-          <div className="crm-filter-actions">
-            <Button icon={<Search aria-hidden="true" />} onClick={applyFilters}>Buscar</Button>
-            <Button disabled={!attention && !query && status === "all" && !queryInput && statusInput === "all"} icon={<X aria-hidden="true" />} onClick={clearFilters} variant="secondary">Limpiar</Button>
-          </div>
+          <FilterSubmitActions
+            applyLabel="Buscar"
+            clearButtonProps={{ disabled: !attention && !query && status === "all" && !queryInput && statusInput === "all" }}
+            clearLabel="Limpiar"
+            compact
+            onApply={applyFilters}
+            onClear={clearFilters}
+          />
         }
         onEscapeClear={clearFilters}
       >
         {attention ? <ViewNotice message={attention === "overdue" ? "Mostrando solo casos vencidos que requieren atencion." : attention === "exception" ? "Mostrando solo citas con excepciones operacionales." : "Mostrando solo actividades abiertas o en progreso."} title="Vista filtrada" tone="info" /> : null}
-        <label className="crm-field">
-          <span>Buscar</span>
-          <input
-            className="crm-input"
-            onChange={(event) => setQueryInput(event.target.value)}
-            onKeyDown={(event) => {
-              if (event.key === "Enter") applyFilters();
-            }}
-            placeholder={config.searchPlaceholder}
-            type="search"
-            value={queryInput}
-          />
-        </label>
+        <TextField
+          active={Boolean(queryInput)}
+          label="Buscar"
+          onChange={(event) => setQueryInput(event.currentTarget.value)}
+          onKeyDown={(event) => {
+            if (event.key === "Enter") applyFilters();
+          }}
+          placeholder={config.searchPlaceholder}
+          type="search"
+          value={queryInput}
+        />
         {config.statusOptions ? (
-          <label className="crm-field">
-            <span>Estado</span>
-            <select className="crm-input" onChange={(event) => setStatusInput(event.target.value)} value={statusInput}>
-              <option value="all">Todos</option>
-              {statusInput !== "all" && !config.statusOptions.some((option) => option.value === statusInput) ? <option value={statusInput}>{statusInput}</option> : null}
-              {config.statusOptions.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
-            </select>
-          </label>
+          <SelectField
+            active={statusInput !== "all"}
+            label="Estado"
+            onValueChange={setStatusInput}
+            options={[
+              { label: "Todos", value: "all" },
+              ...(statusInput !== "all" && !config.statusOptions.some((option) => option.value === statusInput) ? [{ label: statusInput, value: statusInput }] : []),
+              ...config.statusOptions
+            ]}
+            value={statusInput}
+          />
         ) : null}
       </FilterPanel>
 
       <Panel
         actions={
           <div className="crm-panel-actions">
-            <IconButton icon={<RefreshCw aria-hidden="true" />} label={`Actualizar ${config.title}`} onClick={() => setReloadKey((value) => value + 1)} variant="secondary" />
-            {!config.readOnly ? <Button icon={<Plus aria-hidden="true" />} onClick={() => navigateToLocation(config.id, "new")}>Nueva {config.singular}</Button> : null}
+            <IconAction label={`Actualizar ${config.title}`} onAction={() => setReloadKey((value) => value + 1)} semanticId="collection.refresh" variant="secondary" />
+            {!config.readOnly ? <IconAction label={`Nueva ${config.singular}`} onAction={() => navigateToLocation(config.id, "new")} semanticId="collection.create" variant="primary" /> : null}
           </div>
         }
         description={config.description}
@@ -239,31 +242,29 @@ function ResourceList({ config, initialAttention, initialDirection, initialSort,
         ) : null}
         {state.kind === "ready" || state.kind === "empty" ? (
           <nav aria-label={`Paginacion de ${config.title}`} className="crm-pagination">
-            <Button
+            <IconAction
               disabled={cursorHistory.length === 0}
-              icon={<ChevronLeft aria-hidden="true" />}
-              onClick={() => {
+              label={`Pagina anterior de ${config.title}`}
+              onAction={() => {
                 const previous = cursorHistory[cursorHistory.length - 1];
                 setCursorHistory((history) => history.slice(0, -1));
                 setCursor(previous);
               }}
+              semanticId="pagination.previous"
               variant="secondary"
-            >
-              Anterior
-            </Button>
+            />
             <span>{typeof total === "number" ? `${total} registros` : `${rows.length} en esta pagina`}</span>
-            <Button
+            <IconAction
               disabled={!response?.page.nextCursor}
-              icon={<ChevronRight aria-hidden="true" />}
-              onClick={() => {
+              label={`Pagina siguiente de ${config.title}`}
+              onAction={() => {
                 if (!response?.page.nextCursor) return;
                 setCursorHistory((history) => [...history, cursor]);
                 setCursor(response.page.nextCursor);
               }}
+              semanticId="pagination.next"
               variant="secondary"
-            >
-              Siguiente
-            </Button>
+            />
           </nav>
         ) : null}
       </Panel>
@@ -317,8 +318,8 @@ function ResourceDetail({
       <Panel
         actions={
           <div className="crm-panel-actions">
-            <Button icon={<ArrowLeft aria-hidden="true" />} onClick={() => navigateToLocation(config.id)} variant="secondary">Volver</Button>
-            {entity && !config.readOnly ? <Button icon={<Pencil aria-hidden="true" />} onClick={() => navigateToLocation(config.id, "edit", entity.id)}>Editar</Button> : null}
+            <IconAction label={`Volver a ${config.title}`} onAction={() => navigateToLocation(config.id)} semanticId="navigation.back" variant="secondary" />
+            {entity && !config.readOnly ? <IconAction label={`Editar ${entityTitle(config, entity)}`} onAction={() => navigateToLocation(config.id, "edit", entity.id)} semanticId="record.edit" variant="primary" /> : null}
           </div>
         }
         description={`Identificador opaco ${recordId}`}
@@ -350,14 +351,22 @@ function EntityDetails({ config, entity }: { config: ResourceConfig; entity: Crm
     { format: "number", label: "Version", name: "version" }
   ];
   return (
-    <dl className="crm-detail-list">
-      {fields.map((field) => (
-        <div key={field.name}>
-          <dt>{field.label}</dt>
-          <dd>{formatEntityValue(entity, field)}</dd>
-        </div>
-      ))}
-    </dl>
+    <div className="crm-detail">
+      <EntityCell
+        description={`${config.singular} · ${entity.status ?? "sin estado"}`}
+        icon={<EntitySemanticIcon semanticId={config.entitySemanticId} size={22} />}
+        meta={<DataTableInline>{entity.id}</DataTableInline>}
+        title={entityTitle(config, entity)}
+      />
+      <dl className="crm-detail-list">
+        {fields.map((field) => (
+          <div key={field.name}>
+            <dt>{field.label}</dt>
+            <dd>{formatEntityValue(entity, field)}</dd>
+          </div>
+        ))}
+      </dl>
+    </div>
   );
 }
 
@@ -374,6 +383,7 @@ function ResourceEditor({
   tenantId: string;
   tenantLabel: string;
 }) {
+  const formRef = React.useRef<HTMLFormElement>(null);
   const editorFields = React.useMemo(() => editorFieldsForMode(config, mode), [config, mode]);
   const [form, setForm] = React.useState<Record<string, string>>(() => emptyForm(editorFields));
   const [entity, setEntity] = React.useState<CrmEntity | null>(null);
@@ -477,7 +487,7 @@ function ResourceEditor({
         {loading ? <LoadingState>Cargando datos del recurso.</LoadingState> : null}
         {error ? <RegionalError error={error} /> : null}
         {!loading ? (
-          <form className="crm-editor" onSubmit={submit}>
+          <form className="crm-editor" onSubmit={submit} ref={formRef}>
             <div className="crm-editor__grid">
               {editorFields.map((field) => (
                 <EditorControl
@@ -489,8 +499,8 @@ function ResourceEditor({
               ))}
             </div>
             <div className="crm-editor__actions">
-              <Button icon={<ArrowLeft aria-hidden="true" />} onClick={() => navigateToLocation(config.id, recordId ? "detail" : "list", recordId)} type="button" variant="secondary">Cancelar</Button>
-              <Button disabled={saving} icon={<Save aria-hidden="true" />} type="submit">{saving ? "Guardando" : "Guardar"}</Button>
+              <IconAction label="Cancelar" onAction={() => navigateToLocation(config.id, recordId ? "detail" : "list", recordId)} semanticId="record.cancel" variant="secondary" />
+              <IconAction disabled={saving} label={saving ? "Guardando" : "Guardar"} onAction={() => formRef.current?.requestSubmit()} semanticId="record.save" variant="primary" />
             </div>
           </form>
         ) : null}
@@ -725,7 +735,7 @@ function resourceColumns(config: ResourceConfig): Array<DataTableColumn<CrmEntit
       render: (row) => index === 0 ? (
         <EntityCell
           description={secondaryDescription(config, row)}
-          icon={<NavigationSemanticIcon semanticId={config.navigationSemanticId} size={18} />}
+          icon={<EntitySemanticIcon semanticId={config.entitySemanticId} size={18} />}
           meta={<DataTableInline>{row.id}</DataTableInline>}
           title={formatEntityValue(row, field)}
         />
