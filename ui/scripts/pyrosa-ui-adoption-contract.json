@@ -17,46 +17,46 @@
     "visualQa": "scripts/qa-visual-smoke.mjs"
   },
   "sharedDependencies": {
-    "@pyrosa/ui": "0.2.3",
-    "@pyrosa/ui-icons": "0.2.3",
-    "@pyrosa/ui-layouts": "0.2.3",
-    "@pyrosa/ui-templates": "0.2.3",
-    "@pyrosa/ui-theme": "0.2.3",
-    "@pyrosa/ui-tokens": "0.2.3"
+    "@pyrosa/ui": "0.2.14",
+    "@pyrosa/ui-icons": "0.2.14",
+    "@pyrosa/ui-layouts": "0.2.14",
+    "@pyrosa/ui-templates": "0.2.14",
+    "@pyrosa/ui-theme": "0.2.14",
+    "@pyrosa/ui-tokens": "0.2.14"
   },
   "packageProvenance": {
-    "aggregateSha256": "31faea2551ce134ad1f167d77f523e9eae12b58be2c26ec7d751ff21485603c6",
+    "aggregateSha256": "4f172412be841325b2d9879eb3f252068564f555c84511d5101fa7b45055fda8",
     "baseUrl": "https://ui.pyrosa.com.do/public/packages/tarballs",
     "packages": {
       "@pyrosa/ui": {
-        "integrity": "sha512-sOWPnF6ozx3Xhi1zG8yb41csJzhJNvcl2CfZXXXy2R++iOiOOWO64bSAMp3/BfDNFELMtK8lYHWbIi/YMvKLbw==",
-        "sha256": "58ca09ca08bfbb530080bb9e25e5262704bc16f3999af6732afd67b58e437eee",
-        "tarball": "pyrosa-ui-0.2.3.tgz"
+        "integrity": "sha512-lAo/VBUBAUnfXyHOarQtjqKDhj/jvFCkdEafc/xu20yfMapbfawpUgQGROHpzvtmpFevtZ5TFfc/+DHxg4hbKQ==",
+        "sha256": "9127117c053ba49da0750a72574d37c080e7a364b8626fa1ca5ce999e73bbf3e",
+        "tarball": "pyrosa-ui-0.2.14.tgz"
       },
       "@pyrosa/ui-icons": {
-        "integrity": "sha512-1tj+qeJY6dE2tjmIyZVy78Nogu1J5qDqxOfvxHGNxrJp9gN2LSdTNenzhksL8f+MF7ulS1UnAJD0JStZOt7UxA==",
-        "sha256": "8e39410c19369b35602dd2b644783d99c6be319dc9d353ce637395fae448b7d5",
-        "tarball": "pyrosa-ui-icons-0.2.3.tgz"
+        "integrity": "sha512-Hg+k2qU2QUL0LQGRFehlS6xtlePHeysK9jEN9uqQHJH78ZL2EodcxUplNLl6Jx8SotK6cIcAF9hLpTDReSrRCA==",
+        "sha256": "6ea2793f3b84f4d14c02276a9ed5d082c7003aed0c458ac475743ad230799788",
+        "tarball": "pyrosa-ui-icons-0.2.14.tgz"
       },
       "@pyrosa/ui-layouts": {
-        "integrity": "sha512-+PxVpXxwCcqjlHSNXI264lv9n1C0Ew9qoyNGXHbNImboSQS+kJALCWqWNJi3RLxck67QCn1Z+q/yaiziKSfvGg==",
-        "sha256": "8b46adb31ef93d12365f178e635b7cfd527dd7c97e77ef6b45a4f63401a31e19",
-        "tarball": "pyrosa-ui-layouts-0.2.3.tgz"
+        "integrity": "sha512-mSgU1+hSRHUFk8OAiID/egKuQp4LHD4rnHOoS6z9QZn1vcLXD58ZbILNfHfv0mJ/VH+DqOW6ZuJvKmQnjIMhwg==",
+        "sha256": "3079bc68a141c8bc4d783db45e5c2f4840cc181b19014d3f9d9be9c2ec5e3b46",
+        "tarball": "pyrosa-ui-layouts-0.2.14.tgz"
       },
       "@pyrosa/ui-templates": {
-        "integrity": "sha512-svwfg7pKL3lLPct1h8tksIakJNW9ONhg1jdUzVrKDIbd2oQeeva2S7+dMS346zaoObSSBn5/LGFAB3gIgJDcnw==",
-        "sha256": "24fc740be98b38d4c283f87c0aa718ae62ed2fdc0c22f40d402bc13b1f24c61f",
-        "tarball": "pyrosa-ui-templates-0.2.3.tgz"
+        "integrity": "sha512-qc49fSblW9ZCkA2YKlt4jb7aTQWZwSzuPExxICA9JMgBs+QoNi40dNUt1dJhUDHKvoiK8o6X50J0Wjw0PxB/og==",
+        "sha256": "df3b61f163139d7bb330d973abdbf5b324c2cb039df8f542d03e995053de359f",
+        "tarball": "pyrosa-ui-templates-0.2.14.tgz"
       },
       "@pyrosa/ui-theme": {
-        "integrity": "sha512-f7hd/kQbnxfu473GAHa3qzmzJrvdNx/Mbr4RO+Ckzrw3gpgHY2kL1gEbNv6J4/BKut984q301FO5OtQjzlCSeQ==",
-        "sha256": "b1b1dd891a79592de289d7601a10789a1f22b86d18bdd53a3d03736ef599c9be",
-        "tarball": "pyrosa-ui-theme-0.2.3.tgz"
+        "integrity": "sha512-4tg1YlXR9aK+o0NcAK+k/aeRbxCoXFKBZmTiHq1+ZXAYYQohMM/NMPJdoaXU/82BJEPtxV4gNfLUxkO5sSRAig==",
+        "sha256": "d24cd574148503caea9d3149a0a160a65b4df50bf4ffa4ff0064c4f05ae46c31",
+        "tarball": "pyrosa-ui-theme-0.2.14.tgz"
       },
       "@pyrosa/ui-tokens": {
-        "integrity": "sha512-DiVsewUEJGZFrq0lhY9r48X+igWVzYYzzl8VlZXYYQevT6Mzg3TBuKPU6GD+gOM90N3sr9kEUnV5/h0LHuFIYw==",
-        "sha256": "8072b15f0917533603ab3d6118fe4983cf07b55bcd930e2fbecfe15a6ad47967",
-        "tarball": "pyrosa-ui-tokens-0.2.3.tgz"
+        "integrity": "sha512-HuwB0eFfGHjT/FvSQpggOYHzPSOH7vZPt2G5HgFTuPBtPt/V4pvSyakCM1q2mWUqzvGWNEi6Lfx0dzU0kh3ZBg==",
+        "sha256": "afd933e234bfe80d7a1a1c4b4c1ed58d31fd7a55f522f28750a821020ace2747",
+        "tarball": "pyrosa-ui-tokens-0.2.14.tgz"
       }
     }
   },
@@ -86,7 +86,7 @@
     "title",
     "description",
     "hash",
-    "icon",
+    "navigationSemanticId",
     "groupId",
     "groupLabel",
     "groupOrder",

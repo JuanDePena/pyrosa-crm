@@ -1,13 +1,4 @@
-import React from "react";
-import {
-  Activity,
-  Building2,
-  CalendarDays,
-  FileBarChart,
-  Target,
-  Tickets,
-  UsersRound
-} from "lucide-react";
+import type { NavigationSemanticIconId } from "@pyrosa/ui-icons";
 import type { ResourceRouteId } from "./crmTypes";
 
 export type ResourceField = {
@@ -28,7 +19,7 @@ export type ResourceConfig = {
   endpoint: string;
   eyebrow: string;
   fields: ResourceField[];
-  icon: React.ReactNode;
+  navigationSemanticId: NavigationSemanticIconId;
   id: ResourceRouteId;
   readOnly?: boolean;
   searchPlaceholder: string;
@@ -97,7 +88,7 @@ export const resourceConfigs: Record<ResourceRouteId, ResourceConfig> = {
       { format: "list", label: "Etiquetas", name: "tags" },
       { label: "Referencia externa", name: "externalRef" }
     ],
-    icon: <Building2 aria-hidden="true" />,
+    navigationSemanticId: "business.accounts",
     id: "cuentas",
     searchPlaceholder: "nombre, owner, etiqueta o referencia",
     singular: "cuenta",
@@ -133,7 +124,7 @@ export const resourceConfigs: Record<ResourceRouteId, ResourceConfig> = {
       { label: "Canal", name: "preferredChannel" },
       { label: "Consentimiento", name: "consentStatus" }
     ],
-    icon: <UsersRound aria-hidden="true" />,
+    navigationSemanticId: "business.contacts",
     id: "contactos",
     searchPlaceholder: "nombre visible, rol o cuenta",
     singular: "contacto",
@@ -167,7 +158,7 @@ export const resourceConfigs: Record<ResourceRouteId, ResourceConfig> = {
       { label: "Owner", name: "ownerId" },
       { format: "date-time", label: "SLA", name: "slaDueAt" }
     ],
-    icon: <Tickets aria-hidden="true" />,
+    navigationSemanticId: "business.cases",
     id: "casos",
     searchPlaceholder: "asunto, cola, owner o codigo",
     singular: "caso",
@@ -202,7 +193,7 @@ export const resourceConfigs: Record<ResourceRouteId, ResourceConfig> = {
       { format: "date-time", label: "Vencimiento", name: "dueAt" },
       { label: "Resultado", name: "outcomeCode" }
     ],
-    icon: <Activity aria-hidden="true" />,
+    navigationSemanticId: "business.activities",
     id: "actividades",
     searchPlaceholder: "asunto, tipo, owner o recurso relacionado",
     singular: "actividad",
@@ -232,7 +223,7 @@ export const resourceConfigs: Record<ResourceRouteId, ResourceConfig> = {
       { label: "Zona", name: "timezone" },
       { label: "Referencia externa", name: "externalRef" }
     ],
-    icon: <CalendarDays aria-hidden="true" />,
+    navigationSemanticId: "business.appointments",
     id: "agenda",
     searchPlaceholder: "contacto, recurso, estado o referencia",
     singular: "cita",
@@ -263,7 +254,7 @@ export const resourceConfigs: Record<ResourceRouteId, ResourceConfig> = {
       { format: "number", label: "Probabilidad", name: "probability" },
       { label: "Owner", name: "ownerId" }
     ],
-    icon: <Target aria-hidden="true" />,
+    navigationSemanticId: "business.opportunities",
     id: "oportunidades",
     searchPlaceholder: "nombre, cuenta, etapa u owner",
     singular: "oportunidad",
@@ -286,7 +277,7 @@ export const resourceConfigs: Record<ResourceRouteId, ResourceConfig> = {
       { label: "Version", name: "version" },
       { label: "Freshness", name: "freshness" }
     ],
-    icon: <FileBarChart aria-hidden="true" />,
+    navigationSemanticId: "business.reports",
     id: "reportes",
     readOnly: true,
     searchPlaceholder: "nombre, categoria o version",

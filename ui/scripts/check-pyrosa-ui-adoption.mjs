@@ -116,6 +116,19 @@ check("navigation exposes exactly one optional live status and no static badge",
 check("application consumes the canonical navigation adapter", () =>
   sources.app.includes("createCrmSidebarItems({") && !sources.app.includes("routeDefinitions.map")
 );
+check("navigation registry is semantic config without local glyph maps", () =>
+  routeObjects.every((route) => hasObjectProperty(route, "navigationSemanticId")) &&
+  sources.routes.includes("navigationSemanticId: route.navigationSemanticId") &&
+  !sources.routes.includes("lucide-react") &&
+  !sources.routes.includes("route.icon") &&
+  !sources.routes.includes("icon:")
+);
+check("resource config reuses the provider semantic identities", () =>
+  sources.resourceConfig.includes('navigationSemanticId: "business.accounts"') &&
+  sources.resourceConfig.includes('navigationSemanticId: "business.contacts"') &&
+  !sources.resourceConfig.includes("lucide-react") &&
+  !sources.resourceConfig.includes("React.ReactNode")
+);
 
 for (const route of contract.resourceViews.routes) {
   check(`resource ${route} maps to a CRM v1 endpoint`, () =>
@@ -143,6 +156,14 @@ check("resource writes protect create and update operations", () =>
   sources.resources.includes("newIdempotencyKey") &&
   sources.resources.includes("entityEtag") &&
   sources.resources.includes('method: isEdit ? "PATCH" : "POST"')
+);
+check("inventory row navigation uses semantic icon-only anchors", () =>
+  sources.resources.includes("<IconAction") &&
+  sources.resources.includes('semanticId="record.view"') &&
+  sources.resources.includes('semanticId="record.edit"') &&
+  sources.resources.includes('href={routeHash(config.id, "detail", row.id)}') &&
+  sources.resources.includes('href={routeHash(config.id, "edit", row.id)}') &&
+  !sources.resources.includes('label={`Ver ${config.singular}`}')
 );
 check("cases appointments opportunities and reports expose typed command endpoints", () =>
   [

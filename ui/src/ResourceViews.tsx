@@ -3,7 +3,6 @@ import {
   ArrowLeft,
   ChevronLeft,
   ChevronRight,
-  Eye,
   Pencil,
   Play,
   Plus,
@@ -22,6 +21,7 @@ import {
   ErrorState,
   FilterPanel,
   IconButton,
+  IconAction,
   LoadingState,
   Panel,
   StatusBadge,
@@ -30,6 +30,7 @@ import {
   ViewNotice
 } from "@pyrosa/ui";
 import type { DataTableColumn } from "@pyrosa/ui";
+import { NavigationSemanticIcon } from "@pyrosa/ui-icons";
 import { WorkspaceLayout } from "@pyrosa/ui-layouts";
 import {
   CrmApiError,
@@ -46,7 +47,7 @@ import type {
   ResourceRouteId,
   ResourceViewMode
 } from "./crmTypes";
-import { navigateToLocation } from "./crmRouting";
+import { navigateToLocation, routeHash } from "./crmRouting";
 import type { EditorField, ResourceConfig, ResourceField } from "./resourceConfig";
 import { resourceConfigs } from "./resourceConfig";
 
@@ -724,7 +725,7 @@ function resourceColumns(config: ResourceConfig): Array<DataTableColumn<CrmEntit
       render: (row) => index === 0 ? (
         <EntityCell
           description={secondaryDescription(config, row)}
-          icon={config.icon}
+          icon={<NavigationSemanticIcon semanticId={config.navigationSemanticId} size={18} />}
           meta={<DataTableInline>{row.id}</DataTableInline>}
           title={formatEntityValue(row, field)}
         />
@@ -738,15 +739,21 @@ function resourceColumns(config: ResourceConfig): Array<DataTableColumn<CrmEntit
       kind: "actions",
       label: "Acciones",
       render: (row) => (
-        <TableActionGroup>
-          <IconButton icon={<Eye aria-hidden="true" />} label={`Ver ${config.singular}`} onClick={(event) => {
-            event.stopPropagation();
-            navigateToLocation(config.id, "detail", row.id);
-          }} variant="secondary" />
-          {!config.readOnly ? <IconButton icon={<Pencil aria-hidden="true" />} label={`Editar ${config.singular}`} onClick={(event) => {
-            event.stopPropagation();
-            navigateToLocation(config.id, "edit", row.id);
-          }} variant="secondary" /> : null}
+        <TableActionGroup onClick={(event) => event.stopPropagation()}>
+          <IconAction
+            href={routeHash(config.id, "detail", row.id)}
+            label={`Ver ${config.singular} ${entityTitle(config, row)}`}
+            semanticId="record.view"
+            variant="secondary"
+          />
+          {!config.readOnly ? (
+            <IconAction
+              href={routeHash(config.id, "edit", row.id)}
+              label={`Editar ${config.singular} ${entityTitle(config, row)}`}
+              semanticId="record.edit"
+              variant="secondary"
+            />
+          ) : null}
         </TableActionGroup>
       )
     }

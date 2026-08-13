@@ -1,16 +1,6 @@
-import React from "react";
-import {
-  Activity,
-  Building2,
-  CalendarDays,
-  FileBarChart,
-  LayoutDashboard,
-  Settings,
-  Target,
-  Tickets,
-  UsersRound
-} from "lucide-react";
 import type { SidebarItem } from "@pyrosa/ui";
+import type { NavigationSemanticIconId } from "@pyrosa/ui-icons";
+import type { ReactNode } from "react";
 
 export type CrmRouteId =
   | "dashboard"
@@ -29,7 +19,7 @@ export type CrmRouteDefinition = {
   groupLabel: "Gestion" | "Relacion" | "Operacion" | "Analitica" | "Gobierno";
   groupOrder: number;
   hash: string;
-  icon: React.ReactNode;
+  navigationSemanticId: NavigationSemanticIconId;
   id: CrmRouteId;
   itemOrder: number;
   keywords: string[];
@@ -44,7 +34,7 @@ export const routeDefinitions: CrmRouteDefinition[] = [
     groupLabel: "Gestion",
     groupOrder: 1,
     hash: "dashboard",
-    icon: <LayoutDashboard aria-hidden="true" />,
+    navigationSemanticId: "navigation.overview",
     id: "dashboard",
     itemOrder: 1,
     keywords: ["inicio", "overview", "resumen", "metricas", "indicadores"],
@@ -57,7 +47,7 @@ export const routeDefinitions: CrmRouteDefinition[] = [
     groupLabel: "Relacion",
     groupOrder: 2,
     hash: "cuentas",
-    icon: <Building2 aria-hidden="true" />,
+    navigationSemanticId: "business.accounts",
     id: "cuentas",
     itemOrder: 1,
     keywords: ["cuentas", "organizaciones", "clientes", "clinicas", "empresas"],
@@ -70,7 +60,7 @@ export const routeDefinitions: CrmRouteDefinition[] = [
     groupLabel: "Relacion",
     groupOrder: 2,
     hash: "contactos",
-    icon: <UsersRound aria-hidden="true" />,
+    navigationSemanticId: "business.contacts",
     id: "contactos",
     itemOrder: 2,
     keywords: ["contactos", "personas", "roles", "medicos", "pacientes"],
@@ -83,7 +73,7 @@ export const routeDefinitions: CrmRouteDefinition[] = [
     groupLabel: "Operacion",
     groupOrder: 3,
     hash: "casos",
-    icon: <Tickets aria-hidden="true" />,
+    navigationSemanticId: "business.cases",
     id: "casos",
     itemOrder: 1,
     keywords: ["casos", "seguimientos", "colas", "sla", "elegibilidad", "autorizacion"],
@@ -96,7 +86,7 @@ export const routeDefinitions: CrmRouteDefinition[] = [
     groupLabel: "Operacion",
     groupOrder: 3,
     hash: "actividades",
-    icon: <Activity aria-hidden="true" />,
+    navigationSemanticId: "business.activities",
     id: "actividades",
     itemOrder: 2,
     keywords: ["actividades", "llamadas", "tareas", "notas", "seguimientos"],
@@ -109,7 +99,7 @@ export const routeDefinitions: CrmRouteDefinition[] = [
     groupLabel: "Operacion",
     groupOrder: 3,
     hash: "agenda",
-    icon: <CalendarDays aria-hidden="true" />,
+    navigationSemanticId: "business.appointments",
     id: "agenda",
     itemOrder: 3,
     keywords: ["agenda", "citas", "calendario", "recursos", "confirmacion"],
@@ -122,7 +112,7 @@ export const routeDefinitions: CrmRouteDefinition[] = [
     groupLabel: "Relacion",
     groupOrder: 2,
     hash: "oportunidades",
-    icon: <Target aria-hidden="true" />,
+    navigationSemanticId: "business.opportunities",
     id: "oportunidades",
     itemOrder: 3,
     keywords: ["oportunidades", "pipeline", "forecast", "etapas", "ventas"],
@@ -135,7 +125,7 @@ export const routeDefinitions: CrmRouteDefinition[] = [
     groupLabel: "Analitica",
     groupOrder: 4,
     hash: "reportes",
-    icon: <FileBarChart aria-hidden="true" />,
+    navigationSemanticId: "business.reports",
     id: "reportes",
     itemOrder: 1,
     keywords: ["reportes", "analitica", "exportaciones", "metricas", "vistas"],
@@ -148,7 +138,7 @@ export const routeDefinitions: CrmRouteDefinition[] = [
     groupLabel: "Gobierno",
     groupOrder: 5,
     hash: "configuracion",
-    icon: <Settings aria-hidden="true" />,
+    navigationSemanticId: "configuration.general",
     id: "configuracion",
     itemOrder: 1,
     keywords: ["configuracion", "perfil", "tenant", "integraciones", "sla", "voix"],
@@ -179,7 +169,7 @@ export function createCrmSidebarItems({
 }: {
   activeRoute: CrmRouteId;
   onSelect: (routeId: CrmRouteId) => void;
-  statusByRoute?: Partial<Record<CrmRouteId, React.ReactNode>>;
+  statusByRoute?: Partial<Record<CrmRouteId, ReactNode>>;
 }): SidebarItem[] {
   return routeDefinitions.map((route) => ({
     active: activeRoute === route.id,
@@ -187,11 +177,11 @@ export function createCrmSidebarItems({
     groupLabel: route.groupLabel,
     groupOrder: route.groupOrder,
     href: `#${route.hash}`,
-    icon: route.icon,
     id: route.id,
     itemOrder: route.itemOrder,
     keywords: route.keywords,
     label: route.label,
+    navigationSemanticId: route.navigationSemanticId,
     onSelect: () => onSelect(route.id),
     status: statusByRoute?.[route.id]
   }));
