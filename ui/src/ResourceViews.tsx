@@ -14,6 +14,7 @@ import {
   FilterPanel,
   FilterSubmitActions,
   IconAction,
+  InventoryTablePanel,
   LoadingState,
   Panel,
   SelectField,
@@ -209,7 +210,7 @@ function ResourceList({ config, initialAttention, initialDirection, initialSort,
         ) : null}
       </FilterPanel>
 
-      <Panel
+      <InventoryTablePanel
         actions={
           <div className="crm-panel-actions">
             <IconAction label={`Actualizar ${config.title}`} onAction={() => setReloadKey((value) => value + 1)} semanticId="collection.refresh" variant="secondary" />
@@ -267,7 +268,7 @@ function ResourceList({ config, initialAttention, initialDirection, initialSort,
             />
           </nav>
         ) : null}
-      </Panel>
+      </InventoryTablePanel>
     </WorkspaceLayout>
   );
 }

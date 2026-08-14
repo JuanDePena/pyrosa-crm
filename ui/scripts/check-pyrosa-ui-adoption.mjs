@@ -23,6 +23,10 @@ const productSources = [
   sources.routes,
   sources.routing
 ].join("\n");
+const resourceListSource = sources.resources.slice(
+  sources.resources.indexOf("function ResourceList("),
+  sources.resources.indexOf("function ResourceDetail(")
+);
 const checks = [];
 
 check("contract schema and application identity are ready", () =>
@@ -157,6 +161,11 @@ check("inventory indicators and entity glyphs resolve through the provider", () 
   sources.resources.includes('indicatorSemanticId: "indicator.total"') &&
   sources.resources.includes('indicatorSemanticId: "indicator.filtered"') &&
   sources.resources.includes("config.entitySemanticId")
+);
+check("primary resource lists use one provider-owned inventory table container", () =>
+  (resourceListSource.match(/<InventoryTablePanel\b/gu)?.length ?? 0) === 1 &&
+  (resourceListSource.match(/<\/InventoryTablePanel>/gu)?.length ?? 0) === 1 &&
+  !resourceListSource.includes("<Panel")
 );
 
 for (const route of contract.resourceViews.routes) {

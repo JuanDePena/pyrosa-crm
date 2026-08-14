@@ -17,46 +17,46 @@
     "visualQa": "scripts/qa-visual-smoke.mjs"
   },
   "sharedDependencies": {
-    "@pyrosa/ui": "0.2.16",
-    "@pyrosa/ui-icons": "0.2.16",
-    "@pyrosa/ui-layouts": "0.2.16",
-    "@pyrosa/ui-templates": "0.2.16",
-    "@pyrosa/ui-theme": "0.2.16",
-    "@pyrosa/ui-tokens": "0.2.16"
+    "@pyrosa/ui": "0.2.17",
+    "@pyrosa/ui-icons": "0.2.17",
+    "@pyrosa/ui-layouts": "0.2.17",
+    "@pyrosa/ui-templates": "0.2.17",
+    "@pyrosa/ui-theme": "0.2.17",
+    "@pyrosa/ui-tokens": "0.2.17"
   },
   "packageProvenance": {
-    "aggregateSha256": "e1b8631352bc4a4eaece316cb149cd9c172af66a781e0b1ece5ba4052373528a",
+    "aggregateSha256": "c6c216645e0474e7d9257426abb44a2a37ee8f5c34733b3178806d28b985ff56",
     "baseUrl": "https://ui.pyrosa.com.do/public/packages/tarballs",
     "packages": {
       "@pyrosa/ui": {
-        "integrity": "sha512-PGR2MRGjiEzvdGdTXT6hF1t7KixOd8tsOuWKZ/YgCM+hNbYLXHQam76ZhQOK7JtQdjXBs/Dud0zdVkXHePl3JA==",
-        "sha256": "971c348279796033c9383988d5032e5a460d6b7486a3788136019c73d205c232",
-        "tarball": "pyrosa-ui-0.2.16.tgz"
+        "integrity": "sha512-WVEsPXFgdhAZGBUZSOyLkSCSiQscrszMSS5l07JWfEtyz4+7GXX5hUkXL6lPMEsw3z+X5QMJ7JuPnpUAjDM7EQ==",
+        "sha256": "b6bd0ec9a39d2369d3f9353cfe9cd23d89109a0ebb3ae07d00ee2a3a38c53ac5",
+        "tarball": "pyrosa-ui-0.2.17.tgz"
       },
       "@pyrosa/ui-icons": {
-        "integrity": "sha512-0fV0nPtqdiQk9b82nDiB10aOi5Ke+2qAS3Slh+miAP7ys62xAyRL1RgZcj0tNZTq2RMmFgUdKJ6WvuBC9TtsAQ==",
-        "sha256": "5dfd9beb9efd59382306152396ab551bf70ccb92c50cbb693b8390d063e69d87",
-        "tarball": "pyrosa-ui-icons-0.2.16.tgz"
+        "integrity": "sha512-i3zU8fojFM3nR9EPASMNUvOExmohFQWzWylpOJj625cWeWbnJz95VhrxeX5LvuSomxlYffGKMF6nratkrDuJpA==",
+        "sha256": "8a80fe3d51e7194cf09ccf67b31e002317518e5951a69658d69e47a89b54deac",
+        "tarball": "pyrosa-ui-icons-0.2.17.tgz"
       },
       "@pyrosa/ui-layouts": {
-        "integrity": "sha512-K/87NRn2SNmmFDga2WuOfN2IdZZ71zMIIXKe2TywAnTsj1deML4qdPYuYGfEx3EMc8GyNdpk2qaBnaCo0sM7dQ==",
-        "sha256": "77e934bcad80b6695b865d6aadd195255944eda948486d21b18e0b794c5558d6",
-        "tarball": "pyrosa-ui-layouts-0.2.16.tgz"
+        "integrity": "sha512-uTS5ABq1KlIZEw66Q/lugv0X9zqz0yluIy3OErydQFq0Yjzoh3ZivxhDBteHaIjQpGjVO6ZUj6hPZO4EnoBXog==",
+        "sha256": "97f68c12c3235e3e439fe55c029708dba2d5b8b38175b7bdc053bb355d679f0b",
+        "tarball": "pyrosa-ui-layouts-0.2.17.tgz"
       },
       "@pyrosa/ui-templates": {
-        "integrity": "sha512-063dDqkdaSsgo534dADMe3CvefexbFFeGSzQa950iyJq0R6n37xGoTsHaj0coeMZ60cEdddV8luXa7haMYT0bQ==",
-        "sha256": "3fe0caa1ec90d8e8d5fc209cf0e9f9862e78e6184a9b53429f3b07308ffd6935",
-        "tarball": "pyrosa-ui-templates-0.2.16.tgz"
+        "integrity": "sha512-lfjMjfmNqjuIUMc6dZzMlpVbgjgsLd2H5hQJ7tml7S9gx4ttmshaj+8s9W95/kP2ISB9/t7D3LhGqcHTBn4qZg==",
+        "sha256": "524d68ef84c51579f55b24219a8ec30db55b5c3ff5978a7a6f8d9ac2451ba6dd",
+        "tarball": "pyrosa-ui-templates-0.2.17.tgz"
       },
       "@pyrosa/ui-theme": {
-        "integrity": "sha512-xfDsLq+m6NqZ2z5yjZj/oWcWWjQ6qKp2pzv0p2W6rVEloddi5p8N+K7az0qW8oiWp/ace0hZnU5I3+rjeths6w==",
-        "sha256": "f4621d3ca4967785558940bb692c46ca39967b71a1abc86c533f472ef3bb4bd7",
-        "tarball": "pyrosa-ui-theme-0.2.16.tgz"
+        "integrity": "sha512-iNh8/PzGl/njwm+vGm9xPbuF/fJieG8583S7sAlTIyOtBMhW/btjZQHijfc74DTQzqnf9MeqH9n0IiCpuBCLFA==",
+        "sha256": "8a1d36dbc390a234dbd272ee5b4d38aec1e4f594bb67e6dd1674f16b1a63e9de",
+        "tarball": "pyrosa-ui-theme-0.2.17.tgz"
       },
       "@pyrosa/ui-tokens": {
-        "integrity": "sha512-Ml+8asPKPcfxPWw3O90d0mzAZGWqm2EbPaNKOjj4S88l3/f/TW4v9V2JwT0MkKE4/Q0BmD++yGOccce17+oblA==",
-        "sha256": "f5b324eec558333740b405619f839b25d3d1ed74247391c6fccf1f05415ddf8c",
-        "tarball": "pyrosa-ui-tokens-0.2.16.tgz"
+        "integrity": "sha512-gkzgxGE0Y3p36qIi1WEMSLItaMKb4PKjF7D9Tv35et3tgF2phrar+0Pa3Lg+eFY6/bJUv2x/cgbw/LPFcjydog==",
+        "sha256": "1f40df1c737e04c73052fd3d553bfecf3d5134f3caa50df9aea06cafb8e057a8",
+        "tarball": "pyrosa-ui-tokens-0.2.17.tgz"
       }
     }
   },
@@ -102,7 +102,7 @@
     "catalogVersion": "1.1.0",
     "applicableInventoryDetail": ["cuentas", "contactos", "casos", "actividades", "agenda", "oportunidades"],
     "partialReadOnly": ["reportes"],
-    "requiredProviderPrimitives": ["CountBar", "EntitySemanticIcon", "FilterSubmitActions", "IconAction"],
+    "requiredProviderPrimitives": ["CountBar", "EntitySemanticIcon", "FilterSubmitActions", "IconAction", "InventoryTablePanel"],
     "requiredActionIds": ["collection.create", "collection.refresh", "filter.apply", "filter.clear", "navigation.back", "pagination.next", "pagination.previous", "record.cancel", "record.edit", "record.save", "record.view"]
   },
   "dashboard": {
