@@ -275,7 +275,7 @@ export function loadConfig(): CrmServerConfig {
     ),
     tenantContextDecisionCacheMaxMs: boundedMilliseconds(
       process.env.PYROSA_CRM_TENANT_CONTEXT_DECISION_CACHE_MAX_MS,
-      30_000, 30_000, 300_000
+      30_000, 30_000, 900_000
     ),
     tenantContextRenewalLeadMs: boundedMilliseconds(
       process.env.PYROSA_CRM_TENANT_CONTEXT_RENEWAL_LEAD_MS,
