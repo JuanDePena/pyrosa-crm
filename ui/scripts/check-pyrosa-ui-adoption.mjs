@@ -184,6 +184,13 @@ for (const state of contract.resourceViews.requiredStates) {
     sources.resources.includes(`"${state}"`)
   );
 }
+check("related record actions remain explicitly not applicable without fabricated collections", () =>
+  contract.relatedRecordActions?.status === "not-applicable" &&
+  contract.relatedRecordActions?.forbiddenConfigKey === "relatedCollections" &&
+  contract.relatedRecordActions?.reason?.includes("campos escalares") &&
+  !sources.resourceConfig.includes("relatedCollections") &&
+  !sources.resources.includes("relatedCollections")
+);
 check("resource lists request backend pagination and typed filters", () =>
   sources.resources.includes('new URLSearchParams({ limit: "25" })') &&
   sources.resources.includes('parameters.set("q", query)') &&

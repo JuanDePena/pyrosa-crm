@@ -17,46 +17,46 @@
     "visualQa": "scripts/qa-visual-smoke.mjs"
   },
   "sharedDependencies": {
-    "@pyrosa/ui": "0.2.17",
-    "@pyrosa/ui-icons": "0.2.17",
-    "@pyrosa/ui-layouts": "0.2.17",
-    "@pyrosa/ui-templates": "0.2.17",
-    "@pyrosa/ui-theme": "0.2.17",
-    "@pyrosa/ui-tokens": "0.2.17"
+    "@pyrosa/ui": "0.2.20",
+    "@pyrosa/ui-icons": "0.2.20",
+    "@pyrosa/ui-layouts": "0.2.20",
+    "@pyrosa/ui-templates": "0.2.20",
+    "@pyrosa/ui-theme": "0.2.20",
+    "@pyrosa/ui-tokens": "0.2.20"
   },
   "packageProvenance": {
-    "aggregateSha256": "c6c216645e0474e7d9257426abb44a2a37ee8f5c34733b3178806d28b985ff56",
+    "aggregateSha256": "d9a7bc791c95a4d03b20ca0b64e3e0d8cb5016379c915c47492d30952795258a",
     "baseUrl": "https://ui.pyrosa.com.do/public/packages/tarballs",
     "packages": {
       "@pyrosa/ui": {
-        "integrity": "sha512-WVEsPXFgdhAZGBUZSOyLkSCSiQscrszMSS5l07JWfEtyz4+7GXX5hUkXL6lPMEsw3z+X5QMJ7JuPnpUAjDM7EQ==",
-        "sha256": "b6bd0ec9a39d2369d3f9353cfe9cd23d89109a0ebb3ae07d00ee2a3a38c53ac5",
-        "tarball": "pyrosa-ui-0.2.17.tgz"
+        "integrity": "sha512-Z6Rj3lFmX8/BrI69ZtSxfRNyaHnoKCXK4MKk3pNjsBzEEXe8P1sDaJejSuvJxVCNTu23qMFvb07VIbTYDhAN5g==",
+        "sha256": "1ed909ef80693ff35122686ac04e39f233d28593d674b521e7c60efba82894a0",
+        "tarball": "pyrosa-ui-0.2.20.tgz"
       },
       "@pyrosa/ui-icons": {
-        "integrity": "sha512-i3zU8fojFM3nR9EPASMNUvOExmohFQWzWylpOJj625cWeWbnJz95VhrxeX5LvuSomxlYffGKMF6nratkrDuJpA==",
-        "sha256": "8a80fe3d51e7194cf09ccf67b31e002317518e5951a69658d69e47a89b54deac",
-        "tarball": "pyrosa-ui-icons-0.2.17.tgz"
+        "integrity": "sha512-A4UAS+VqxxW/iGeKqiYKq61ziafNTAMRjphONCQqcCfNANHIMJd1/R2p097sRndO/GtumN/XYMW34g2Pgx/luA==",
+        "sha256": "0e6485228c47f3b368d12158aa133b43b05cc5be789854083e8d28c59d15d812",
+        "tarball": "pyrosa-ui-icons-0.2.20.tgz"
       },
       "@pyrosa/ui-layouts": {
-        "integrity": "sha512-uTS5ABq1KlIZEw66Q/lugv0X9zqz0yluIy3OErydQFq0Yjzoh3ZivxhDBteHaIjQpGjVO6ZUj6hPZO4EnoBXog==",
-        "sha256": "97f68c12c3235e3e439fe55c029708dba2d5b8b38175b7bdc053bb355d679f0b",
-        "tarball": "pyrosa-ui-layouts-0.2.17.tgz"
+        "integrity": "sha512-SlPirTx+Zsx8Kl7lwSDyqAAmiQ0AfS/J/r71VDBMgOZZ1+0hFMjSgrrTvmJK/vrO1BpA0LYnaEr0IsA9iSHdmQ==",
+        "sha256": "90750ee9bf16c546c5854e15966468b5475189a9047199f70ea698b0ce42751e",
+        "tarball": "pyrosa-ui-layouts-0.2.20.tgz"
       },
       "@pyrosa/ui-templates": {
-        "integrity": "sha512-lfjMjfmNqjuIUMc6dZzMlpVbgjgsLd2H5hQJ7tml7S9gx4ttmshaj+8s9W95/kP2ISB9/t7D3LhGqcHTBn4qZg==",
-        "sha256": "524d68ef84c51579f55b24219a8ec30db55b5c3ff5978a7a6f8d9ac2451ba6dd",
-        "tarball": "pyrosa-ui-templates-0.2.17.tgz"
+        "integrity": "sha512-vkMFIxdcBsPfEdwulYNnhxEXyA3BaEQIPQs0A7s9XjZrv01CPrnfhIk7L4FivHYwdJMJmkrTjRmeYtNJW3rDHA==",
+        "sha256": "8c0ae5115d3dc84dd60faa92c6ad31b0d12cf76d1dd7164f40986eeea7281759",
+        "tarball": "pyrosa-ui-templates-0.2.20.tgz"
       },
       "@pyrosa/ui-theme": {
-        "integrity": "sha512-iNh8/PzGl/njwm+vGm9xPbuF/fJieG8583S7sAlTIyOtBMhW/btjZQHijfc74DTQzqnf9MeqH9n0IiCpuBCLFA==",
-        "sha256": "8a1d36dbc390a234dbd272ee5b4d38aec1e4f594bb67e6dd1674f16b1a63e9de",
-        "tarball": "pyrosa-ui-theme-0.2.17.tgz"
+        "integrity": "sha512-vAazWyPUBW+SMT94QxpVLOSSzzwXDj4PlmQWAZDyTloDrzeMslcDEbMPmb8GqvFhhDzOhAWoO5ydcySX9sknuA==",
+        "sha256": "5676cbe1bbfc152d9fc6b07d31cb9c237dc0ded845e02892c5694d402abc3057",
+        "tarball": "pyrosa-ui-theme-0.2.20.tgz"
       },
       "@pyrosa/ui-tokens": {
-        "integrity": "sha512-gkzgxGE0Y3p36qIi1WEMSLItaMKb4PKjF7D9Tv35et3tgF2phrar+0Pa3Lg+eFY6/bJUv2x/cgbw/LPFcjydog==",
-        "sha256": "1f40df1c737e04c73052fd3d553bfecf3d5134f3caa50df9aea06cafb8e057a8",
-        "tarball": "pyrosa-ui-tokens-0.2.17.tgz"
+        "integrity": "sha512-X04pR7r9rccGUWE+AGewyranHy/cIjCPPn8AauaVt3rCgfD7Igr3EKCnFviYAhkdhKwkHJ05a/2ybMurwClSkA==",
+        "sha256": "e46a3bea0863988f126c07f8852c1a96e80de1dc0204fb26a3c2c71b1035a850",
+        "tarball": "pyrosa-ui-tokens-0.2.20.tgz"
       }
     }
   },
@@ -97,6 +97,11 @@
     "routes": ["cuentas", "contactos", "casos", "actividades", "agenda", "oportunidades", "reportes"],
     "modes": ["list", "detail", "new", "edit"],
     "requiredStates": ["loading", "empty", "error", "ready"]
+  },
+  "relatedRecordActions": {
+    "status": "not-applicable",
+    "reason": "Los detalles CRM actuales exponen solo campos escalares y no declaran colecciones relacionadas.",
+    "forbiddenConfigKey": "relatedCollections"
   },
   "semanticVisual": {
     "catalogVersion": "1.1.0",
