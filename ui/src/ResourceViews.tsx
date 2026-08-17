@@ -17,6 +17,7 @@ import {
   InventoryTablePanel,
   LoadingState,
   Panel,
+  RecordActionCluster,
   SelectField,
   StatusBadge,
   StatusStrip,
@@ -318,10 +319,15 @@ function ResourceDetail({
       ]} />
       <Panel
         actions={
-          <div className="crm-panel-actions">
-            <IconAction label={`Volver a ${config.title}`} onAction={() => navigateToLocation(config.id)} semanticId="navigation.back" variant="secondary" />
-            {entity && !config.readOnly ? <IconAction label={`Editar ${entityTitle(config, entity)}`} onAction={() => navigateToLocation(config.id, "edit", entity.id)} semanticId="record.edit" variant="primary" /> : null}
-          </div>
+          <RecordActionCluster
+            actionSlots={{
+              secondary: <IconAction label={`Volver a ${config.title}`} onAction={() => navigateToLocation(config.id)} semanticId="navigation.back" variant="secondary" />,
+              primary: entity && !config.readOnly
+                ? <IconAction label={`Editar ${entityTitle(config, entity)}`} onAction={() => navigateToLocation(config.id, "edit", entity.id)} semanticId="record.edit" variant="primary" />
+                : null
+            }}
+            marker="democrm-detail-action-order"
+          />
         }
         description={`Identificador opaco ${recordId}`}
         eyebrow="Detalle"
@@ -481,6 +487,15 @@ function ResourceEditor({
         { key: "state", label: "Estado", tone: error ? "warning" : "success", value: saving ? "guardando" : loading ? "cargando" : "listo" }
       ]} />
       <Panel
+        actions={
+          <RecordActionCluster
+            actionSlots={{
+              secondary: <IconAction label="Cancelar" onAction={() => navigateToLocation(config.id, recordId ? "detail" : "list", recordId)} semanticId="record.cancel" variant="secondary" />,
+              primary: <IconAction disabled={saving} label={saving ? "Guardando" : "Guardar"} onAction={() => formRef.current?.requestSubmit()} semanticId="record.save" variant="primary" />
+            }}
+            marker="democrm-editor-action-order"
+          />
+        }
         description="Las escrituras usan idempotencia o version para proteger reintentos y concurrencia."
         eyebrow={mode === "new" ? "Nuevo" : "Edicion"}
         title={mode === "new" ? `Nueva ${config.singular}` : `Editar ${config.singular}`}
@@ -498,10 +513,6 @@ function ResourceEditor({
                   value={form[field.name] ?? ""}
                 />
               ))}
-            </div>
-            <div className="crm-editor__actions">
-              <IconAction label="Cancelar" onAction={() => navigateToLocation(config.id, recordId ? "detail" : "list", recordId)} semanticId="record.cancel" variant="secondary" />
-              <IconAction disabled={saving} label={saving ? "Guardando" : "Guardar"} onAction={() => formRef.current?.requestSubmit()} semanticId="record.save" variant="primary" />
             </div>
           </form>
         ) : null}

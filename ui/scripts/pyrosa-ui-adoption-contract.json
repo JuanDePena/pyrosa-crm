@@ -17,46 +17,46 @@
     "visualQa": "scripts/qa-visual-smoke.mjs"
   },
   "sharedDependencies": {
-    "@pyrosa/ui": "0.2.20",
-    "@pyrosa/ui-icons": "0.2.20",
-    "@pyrosa/ui-layouts": "0.2.20",
-    "@pyrosa/ui-templates": "0.2.20",
-    "@pyrosa/ui-theme": "0.2.20",
-    "@pyrosa/ui-tokens": "0.2.20"
+    "@pyrosa/ui": "0.2.22",
+    "@pyrosa/ui-icons": "0.2.22",
+    "@pyrosa/ui-layouts": "0.2.22",
+    "@pyrosa/ui-templates": "0.2.22",
+    "@pyrosa/ui-theme": "0.2.22",
+    "@pyrosa/ui-tokens": "0.2.22"
   },
   "packageProvenance": {
-    "aggregateSha256": "d9a7bc791c95a4d03b20ca0b64e3e0d8cb5016379c915c47492d30952795258a",
+    "aggregateSha256": "2379901e4b060d5cec2595a8ae17c7bf5cba11d94c8b8f2de216ea386d4a21c5",
     "baseUrl": "https://ui.pyrosa.com.do/public/packages/tarballs",
     "packages": {
       "@pyrosa/ui": {
-        "integrity": "sha512-Z6Rj3lFmX8/BrI69ZtSxfRNyaHnoKCXK4MKk3pNjsBzEEXe8P1sDaJejSuvJxVCNTu23qMFvb07VIbTYDhAN5g==",
-        "sha256": "1ed909ef80693ff35122686ac04e39f233d28593d674b521e7c60efba82894a0",
-        "tarball": "pyrosa-ui-0.2.20.tgz"
+        "integrity": "sha512-zP3nwVTw7agcJz1eY3kvvR+euAnt2KmmZN+5VDnCVehjwRIYPQMCCITkMRslo6rxUgAFTinwcCXGfhtqKfDpfw==",
+        "sha256": "2bdb40f4640f6b0b11edb8cebaaaf817781f8a0f3cec9b3c03c85bde9060132e",
+        "tarball": "pyrosa-ui-0.2.22.tgz"
       },
       "@pyrosa/ui-icons": {
-        "integrity": "sha512-A4UAS+VqxxW/iGeKqiYKq61ziafNTAMRjphONCQqcCfNANHIMJd1/R2p097sRndO/GtumN/XYMW34g2Pgx/luA==",
-        "sha256": "0e6485228c47f3b368d12158aa133b43b05cc5be789854083e8d28c59d15d812",
-        "tarball": "pyrosa-ui-icons-0.2.20.tgz"
+        "integrity": "sha512-SuqJMS26yRJjsCu8cHnMzXmKuTt0Mini6c1aZsudLgPS2RocJOAOGFF/7h/r2gX1C574V6aaKoRnQB0vsI9qTA==",
+        "sha256": "b066057d1bd5248a94c01e4c7886a867ab5ddbb7efc1179855f2e8f3278dc0ec",
+        "tarball": "pyrosa-ui-icons-0.2.22.tgz"
       },
       "@pyrosa/ui-layouts": {
-        "integrity": "sha512-SlPirTx+Zsx8Kl7lwSDyqAAmiQ0AfS/J/r71VDBMgOZZ1+0hFMjSgrrTvmJK/vrO1BpA0LYnaEr0IsA9iSHdmQ==",
-        "sha256": "90750ee9bf16c546c5854e15966468b5475189a9047199f70ea698b0ce42751e",
-        "tarball": "pyrosa-ui-layouts-0.2.20.tgz"
+        "integrity": "sha512-/t0tIzSYhsRrEMzKU6HJcBOadd2u/2ZoyXafDR4/S8aTjJzf5evhZWc6K5k+cd8rpm922hgnc2s5VsFugxT+2w==",
+        "sha256": "f61e2caf8f4c15f620aac9489c95bc8b6a7579fa978cded977dfa99fbc6be44e",
+        "tarball": "pyrosa-ui-layouts-0.2.22.tgz"
       },
       "@pyrosa/ui-templates": {
-        "integrity": "sha512-vkMFIxdcBsPfEdwulYNnhxEXyA3BaEQIPQs0A7s9XjZrv01CPrnfhIk7L4FivHYwdJMJmkrTjRmeYtNJW3rDHA==",
-        "sha256": "8c0ae5115d3dc84dd60faa92c6ad31b0d12cf76d1dd7164f40986eeea7281759",
-        "tarball": "pyrosa-ui-templates-0.2.20.tgz"
+        "integrity": "sha512-TOSPRjuv4jl8406oxOb0QknLdHrOxK/ESD5/s74ImSqLAZupKyMSD9NHCVxWXDTkyD4TJXXGx28gH4Dob6Ot4Q==",
+        "sha256": "d28bbb8aa7500756f579455ec65e8e397ed642b65ae029220a7646ab1ef3e9c8",
+        "tarball": "pyrosa-ui-templates-0.2.22.tgz"
       },
       "@pyrosa/ui-theme": {
-        "integrity": "sha512-vAazWyPUBW+SMT94QxpVLOSSzzwXDj4PlmQWAZDyTloDrzeMslcDEbMPmb8GqvFhhDzOhAWoO5ydcySX9sknuA==",
-        "sha256": "5676cbe1bbfc152d9fc6b07d31cb9c237dc0ded845e02892c5694d402abc3057",
-        "tarball": "pyrosa-ui-theme-0.2.20.tgz"
+        "integrity": "sha512-WjT/bF8IA6kq9mpL3CfgSE+ArFKo7xNEmA2G36+/S6DajPnvoCqTJSFasE/OmLtoFy5zRYyNqD1j49v36nfENA==",
+        "sha256": "2a50cdeeb49501c3022f6f92069fea59a6290a146fb20240e921d4e07a22deec",
+        "tarball": "pyrosa-ui-theme-0.2.22.tgz"
       },
       "@pyrosa/ui-tokens": {
-        "integrity": "sha512-X04pR7r9rccGUWE+AGewyranHy/cIjCPPn8AauaVt3rCgfD7Igr3EKCnFviYAhkdhKwkHJ05a/2ybMurwClSkA==",
-        "sha256": "e46a3bea0863988f126c07f8852c1a96e80de1dc0204fb26a3c2c71b1035a850",
-        "tarball": "pyrosa-ui-tokens-0.2.20.tgz"
+        "integrity": "sha512-uVf/qYbA6U9rwhFNWh5zGyLcjPLsWDGRfJ46xnLiEtQr32dfkNKlrf6czwfV7BWzd2DgFloZ/xmIpTrCiZApOg==",
+        "sha256": "71ad51ad9a6856c6bc5bdcef6c08ba4a9fca207940188305d53cf88c8bb04e91",
+        "tarball": "pyrosa-ui-tokens-0.2.22.tgz"
       }
     }
   },
@@ -103,11 +103,24 @@
     "reason": "Los detalles CRM actuales exponen solo campos escalares y no declaran colecciones relacionadas.",
     "forbiddenConfigKey": "relatedCollections"
   },
+  "detailActions": {
+    "providerPrimitive": "RecordActionCluster",
+    "roles": ["destructive", "auxiliary", "secondary", "primary"],
+    "markers": ["democrm-detail-action-order", "democrm-editor-action-order"],
+    "nestedBackPlacement": "detail",
+    "trash": {
+      "classification": "blocked-domain",
+      "owner": "pyrosa-democrm",
+      "reason": "CRM no tiene comandos, capability, tombstones ni restore para sus recursos actuales.",
+      "rollback": "Restaurar solo el adaptador visual 0.2.20 sin agregar mutaciones.",
+      "removalCondition": "Adoptar record.move-to-trash solo despues de cerrar lifecycle, capability, auditoria y restore CRM."
+    }
+  },
   "semanticVisual": {
     "catalogVersion": "1.1.0",
     "applicableInventoryDetail": ["cuentas", "contactos", "casos", "actividades", "agenda", "oportunidades"],
     "partialReadOnly": ["reportes"],
-    "requiredProviderPrimitives": ["CountBar", "EntitySemanticIcon", "FilterSubmitActions", "IconAction", "InventoryTablePanel"],
+    "requiredProviderPrimitives": ["CountBar", "EntitySemanticIcon", "FilterSubmitActions", "IconAction", "InventoryTablePanel", "RecordActionCluster"],
     "requiredActionIds": ["collection.create", "collection.refresh", "filter.apply", "filter.clear", "navigation.back", "pagination.next", "pagination.previous", "record.cancel", "record.edit", "record.save", "record.view"]
   },
   "dashboard": {
@@ -192,7 +205,7 @@
     "strategy": "source-revert",
     "steps": [
       "Revertir el commit de UI v2607 sin alterar datos ni contratos CRM.",
-      "Restaurar en conjunto el bundle inmutable @pyrosa/ui 0.2.2.",
+      "Restaurar en conjunto el bundle inmutable @pyrosa/ui 0.2.20.",
       "Conservar las rutas hash y el ownership de datos de DemoCRM.",
       "Ejecutar check:pyrosa-ui, typecheck, build y qa:visual antes de reabrir el runtime."
     ],

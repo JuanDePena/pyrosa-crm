@@ -40,7 +40,6 @@ dl {
 
 .crm-filter-actions,
 .crm-panel-actions,
-.crm-editor__actions,
 .crm-config-summary {
   align-items: center;
   display: flex;
@@ -146,10 +145,6 @@ dl {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
-.crm-editor__actions {
-  justify-content: flex-end;
-}
-
 .crm-command-grid {
   align-items: end;
 }
@@ -245,13 +240,11 @@ dl {
     border-bottom: 1px solid var(--py-color-border);
   }
 
-  .crm-pagination,
-  .crm-editor__actions {
+  .crm-pagination {
     justify-content: stretch;
   }
 
-  .crm-pagination > *,
-  .crm-editor__actions > * {
+  .crm-pagination > * {
     flex: 1 1 auto;
   }
 

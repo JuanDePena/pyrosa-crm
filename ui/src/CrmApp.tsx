@@ -478,6 +478,7 @@ export function CrmApp() {
         alertsCount={0}
         alertsExpanded={openDrawer === "alerts"}
         alertsLabel="Notificaciones"
+        backPlacement={canGoBack ? "detail" : "topbar"}
         branch={bootstrap.app?.branch}
         brandLogoAlt=""
         brandLogoSrc="/public/assets/brand/crm-logo.png"

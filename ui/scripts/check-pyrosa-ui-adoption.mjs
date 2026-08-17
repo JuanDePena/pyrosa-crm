@@ -27,6 +27,14 @@ const resourceListSource = sources.resources.slice(
   sources.resources.indexOf("function ResourceList("),
   sources.resources.indexOf("function ResourceDetail(")
 );
+const resourceDetailSource = sources.resources.slice(
+  sources.resources.indexOf("function ResourceDetail("),
+  sources.resources.indexOf("function EntityDetails(")
+);
+const resourceEditorSource = sources.resources.slice(
+  sources.resources.indexOf("function ResourceEditor("),
+  sources.resources.indexOf("function editorFieldsForMode(")
+);
 const checks = [];
 
 check("contract schema and application identity are ready", () =>
@@ -167,6 +175,24 @@ check("primary resource lists use one provider-owned inventory table container",
   (resourceListSource.match(/<\/InventoryTablePanel>/gu)?.length ?? 0) === 1 &&
   !resourceListSource.includes("<Panel")
 );
+check("resource details and editors delegate canonical action order to provider role slots", () =>
+  resourceDetailSource.includes("<RecordActionCluster") &&
+  resourceDetailSource.includes('secondary: <IconAction label={`Volver a ${config.title}`}') &&
+  resourceDetailSource.includes("primary: entity && !config.readOnly") &&
+  resourceDetailSource.includes('marker="democrm-detail-action-order"') &&
+  resourceEditorSource.includes("<RecordActionCluster") &&
+  resourceEditorSource.includes('semanticId="record.cancel"') &&
+  resourceEditorSource.includes('semanticId="record.save"') &&
+  resourceEditorSource.includes('marker="democrm-editor-action-order"') &&
+  !resourceEditorSource.includes("crm-editor__actions")
+);
+check("CRM recycle actions remain blocked by domain rather than fabricated in the UI", () =>
+  contract.detailActions?.trash?.classification === "blocked-domain" &&
+  contract.detailActions?.trash?.owner === "pyrosa-democrm" &&
+  contract.detailActions?.trash?.reason?.includes("tombstones") &&
+  !sources.resources.includes("record.move-to-trash") &&
+  !sources.routes.includes("governance.trash")
+);
 
 for (const route of contract.resourceViews.routes) {
   check(`resource ${route} maps to a CRM v1 endpoint`, () =>
@@ -274,6 +300,8 @@ check("shell persists workspace scroll by route and mode", () =>
 check("Overview hides the back action while nested views have deterministic back", () =>
   contract.shell.overviewBackAction === "hidden" &&
   sources.app.includes("leadingAction={canGoBack ? undefined : false}") &&
+  contract.detailActions?.nestedBackPlacement === "detail" &&
+  sources.app.includes('backPlacement={canGoBack ? "detail" : "topbar"}') &&
   sources.app.includes("function navigateBack()")
 );
 check("each view owns WorkspaceLayout and StatusStrip", () =>
