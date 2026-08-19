@@ -1,0 +1,21 @@
+{
+  "schemaVersion": "pyrosa-inventory-record-deletion-inventory-v1",
+  "application": "pyrosa-democrm",
+  "environmentSource": "APP_ENV",
+  "environmentAllowlist": ["development", "production"],
+  "strategy": "trash",
+  "restoreSurface": "#papelera",
+  "permanentPurge": false,
+  "bulkDelete": false,
+  "resources": [
+    { "route": "cuentas", "resource": "accounts", "class": "master", "capability": "crm.accounts.recycle", "command": "POST /api/crm/v1/accounts/:id/trash", "restoreCommand": "POST /api/crm/v1/recycle-bin/accounts/:entryId/restore", "dependencies": ["cases.account_id", "activities.account_id", "appointments.account_id", "opportunities.account_id"], "development": "allowed", "production": "allowed-when-unreferenced", "lifecycle": "enabled", "owner": "pyrosa-democrm" },
+    { "route": "contactos", "resource": "contacts", "class": "master", "capability": "crm.contacts.recycle", "command": "POST /api/crm/v1/contacts/:id/trash", "restoreCommand": "POST /api/crm/v1/recycle-bin/contacts/:entryId/restore", "dependencies": ["cases.contact_id", "activities.contact_id", "appointments.contact_id", "opportunities.primary_contact_id"], "development": "allowed", "production": "allowed-when-unreferenced", "lifecycle": "enabled", "owner": "pyrosa-democrm" },
+    { "route": "casos", "resource": "cases", "class": "transaction", "capability": "crm.cases.recycle", "command": "POST /api/crm/v1/cases/:id/trash", "restoreCommand": "POST /api/crm/v1/recycle-bin/cases/:entryId/restore", "dependencies": ["activities.case_id", "appointments.case_id"], "development": "allowed-preserve-related-records", "production": "hidden-and-rejected", "lifecycle": "enabled", "owner": "pyrosa-democrm" },
+    { "route": "actividades", "resource": "activities", "class": "transaction", "capability": "crm.activities.recycle", "command": "POST /api/crm/v1/activities/:id/trash", "restoreCommand": "POST /api/crm/v1/recycle-bin/activities/:entryId/restore", "dependencies": [], "development": "allowed", "production": "hidden-and-rejected", "lifecycle": "enabled", "owner": "pyrosa-democrm" },
+    { "route": "agenda", "resource": "appointments", "class": "transaction", "capability": "crm.appointments.recycle", "command": "POST /api/crm/v1/appointments/:id/trash", "restoreCommand": "POST /api/crm/v1/recycle-bin/appointments/:entryId/restore", "dependencies": [], "development": "allowed", "production": "hidden-and-rejected", "lifecycle": "enabled", "owner": "pyrosa-democrm" },
+    { "route": "oportunidades", "resource": "opportunities", "class": "transaction", "capability": "crm.opportunities.recycle", "command": "POST /api/crm/v1/opportunities/:id/trash", "restoreCommand": "POST /api/crm/v1/recycle-bin/opportunities/:entryId/restore", "dependencies": [], "development": "allowed", "production": "hidden-and-rejected", "lifecycle": "enabled", "owner": "pyrosa-democrm" },
+    { "route": "reportes", "resource": "reports", "class": "evidence", "capability": null, "command": null, "restoreCommand": null, "dependencies": [], "development": "not-applicable", "production": "not-applicable", "lifecycle": "no-delete-surface", "owner": "pyrosa-democrm" },
+    { "route": "importaciones", "resource": "imports", "class": "artifact", "capability": null, "command": null, "restoreCommand": null, "dependencies": [], "development": "governed-by-import-batch-lifecycle", "production": "governed-by-import-batch-lifecycle", "lifecycle": "outside-shared-inventory-delete", "owner": "pyrosa-democrm" },
+    { "route": "configuracion", "resource": "configuration", "class": "definition", "capability": null, "command": null, "restoreCommand": null, "dependencies": [], "development": "versioned-update-only", "production": "versioned-update-only", "lifecycle": "no-delete-surface", "owner": "pyrosa-democrm" }
+  ]
+}

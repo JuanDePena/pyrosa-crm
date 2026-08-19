@@ -25,6 +25,7 @@ import type { PyrosaThemeMode } from "@pyrosa/ui-theme";
 import { ConfigurationView } from "./ConfigurationView";
 import { DashboardView, useDashboardSummary } from "./DashboardView";
 import { FatalErrorLanding } from "./FatalErrorLanding";
+import { RecycleBinView } from "./RecycleBinView";
 import { ResourceView } from "./ResourceViews";
 import {
   CrmApiError,
@@ -734,6 +735,9 @@ function renderView(
   if (location.routeId === "configuracion") {
     return <ConfigurationView tenantId={tenantId} tenantLabel={tenantLabel} />;
   }
+  if (location.routeId === "papelera") {
+    return <RecycleBinView mode={location.mode} recordId={location.recordId} tenantId={tenantId} />;
+  }
   if (isResourceRoute(location.routeId)) {
     return <ResourceView initialAttention={location.attentionFilter} initialDirection={location.direction} initialSort={location.sort} initialStatus={location.statusFilter} mode={location.mode} recordId={location.recordId} routeId={location.routeId} tenantId={tenantId} tenantLabel={tenantLabel} />;
   }
@@ -751,7 +755,7 @@ function navigationStatuses(
     for (const domain of dashboardState.summary.domains) {
       if (!domain.route) continue;
       const routeId = locationFromHash(domain.route.startsWith("#") ? domain.route : `#${domain.route}`).routeId;
-      if (routeId === "dashboard" || routeId === "configuracion") continue;
+      if (routeId === "dashboard" || routeId === "configuracion" || routeId === "papelera") continue;
       statuses[routeId] = <StatusBadge tone={domain.status === "ready" || domain.status === "live" ? "success" : "info"}>{domain.status ?? "live"}</StatusBadge>;
     }
   } else if (dashboardState.kind === "error") {

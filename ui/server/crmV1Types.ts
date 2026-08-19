@@ -73,6 +73,30 @@ export type CrmPage = {
   total: number;
 };
 
+export type CrmRecycleBinEntry = {
+  id: string;
+  tenantId: string;
+  resourceType: CrmResource;
+  resourceId: string;
+  resourceLabel: string;
+  resourceClass: "master" | "transaction";
+  previousStatus: string;
+  previousVersion: number;
+  dependencyCount: number;
+  policyReasonCode: string;
+  status: "active" | "restored";
+  version: number;
+  createdAt: string;
+  updatedAt: string;
+  restoredAt: string | null;
+};
+
+export type CrmRecycleBinPage = {
+  data: CrmRecycleBinEntry[];
+  nextCursor: string | null;
+  total: number;
+};
+
 export type CrmMutationContext = {
   correlationId: string;
   requestId: string;

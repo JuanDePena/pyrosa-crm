@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import { crmTenantSearchPath } from "./db.js";
-import { listFilterSql, recordPersistenceFields } from "./crmV1Postgres.js";
+import { deletionDependencyExpression, listFilterSql, recordPersistenceFields } from "./crmV1Postgres.js";
 import type { CrmAccessContext } from "./crmV1Types.js";
 
 function tenantAccess(tenantKey: string): CrmAccessContext {
@@ -129,4 +129,20 @@ test("PostgreSQL list filters use physical columns and one parameter per value",
     predicates: ["$1 = 'pending' AND status IN ('open','in_progress')"],
     values: ["pending"]
   });
+});
+
+test("deletion eligibility is projected by one correlated expression per inventory row", () => {
+  const accounts = deletionDependencyExpression("accounts");
+  assert.match(accounts, /crm_cases/u);
+  assert.match(accounts, /crm_activities/u);
+  assert.match(accounts, /crm_appointments/u);
+  assert.match(accounts, /crm_opportunities/u);
+  assert.doesNotMatch(accounts, /archived_at\s+IS\s+NULL/iu);
+  assert.equal((accounts.match(/SELECT count\(\*\)/gu) ?? []).length, 4);
+  assert.doesNotMatch(accounts, /\$\d+/u);
+
+  const contacts = deletionDependencyExpression("contacts");
+  assert.match(contacts, /primary_contact_id/u);
+  assert.equal((contacts.match(/SELECT count\(\*\)/gu) ?? []).length, 4);
+  assert.equal(deletionDependencyExpression("activities"), "0");
 });

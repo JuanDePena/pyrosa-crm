@@ -10,6 +10,7 @@
     "dashboard": "src/DashboardView.tsx",
     "fatalError": "src/FatalErrorLanding.tsx",
     "resourceConfig": "src/resourceConfig.tsx",
+    "recycleBin": "src/RecycleBinView.tsx",
     "resources": "src/ResourceViews.tsx",
     "routes": "src/routeRegistry.tsx",
     "routing": "src/crmRouting.ts",
@@ -17,46 +18,46 @@
     "visualQa": "scripts/qa-visual-smoke.mjs"
   },
   "sharedDependencies": {
-    "@pyrosa/ui": "0.2.22",
-    "@pyrosa/ui-icons": "0.2.22",
-    "@pyrosa/ui-layouts": "0.2.22",
-    "@pyrosa/ui-templates": "0.2.22",
-    "@pyrosa/ui-theme": "0.2.22",
-    "@pyrosa/ui-tokens": "0.2.22"
+    "@pyrosa/ui": "0.2.24",
+    "@pyrosa/ui-icons": "0.2.24",
+    "@pyrosa/ui-layouts": "0.2.24",
+    "@pyrosa/ui-templates": "0.2.24",
+    "@pyrosa/ui-theme": "0.2.24",
+    "@pyrosa/ui-tokens": "0.2.24"
   },
   "packageProvenance": {
-    "aggregateSha256": "2379901e4b060d5cec2595a8ae17c7bf5cba11d94c8b8f2de216ea386d4a21c5",
+    "aggregateSha256": "8bb8e808465ed4329f319212600b5ab935dad8795411d4d7923ee70e178ddc12",
     "baseUrl": "https://ui.pyrosa.com.do/public/packages/tarballs",
     "packages": {
       "@pyrosa/ui": {
-        "integrity": "sha512-zP3nwVTw7agcJz1eY3kvvR+euAnt2KmmZN+5VDnCVehjwRIYPQMCCITkMRslo6rxUgAFTinwcCXGfhtqKfDpfw==",
-        "sha256": "2bdb40f4640f6b0b11edb8cebaaaf817781f8a0f3cec9b3c03c85bde9060132e",
-        "tarball": "pyrosa-ui-0.2.22.tgz"
+        "integrity": "sha512-z/vy/3sQt61XZCeDNJLZHJlmerwpthRDCRv9qIbOPwpQaUQNWqV7tmrUdyOvxnp8JuYJxjLn9NufIgI/1weiLQ==",
+        "sha256": "5c1390bf327b903fd9e6afea3dd9536565cb4ba264150f09e26e5eb1d10771c5",
+        "tarball": "pyrosa-ui-0.2.24.tgz"
       },
       "@pyrosa/ui-icons": {
-        "integrity": "sha512-SuqJMS26yRJjsCu8cHnMzXmKuTt0Mini6c1aZsudLgPS2RocJOAOGFF/7h/r2gX1C574V6aaKoRnQB0vsI9qTA==",
-        "sha256": "b066057d1bd5248a94c01e4c7886a867ab5ddbb7efc1179855f2e8f3278dc0ec",
-        "tarball": "pyrosa-ui-icons-0.2.22.tgz"
+        "integrity": "sha512-8dQtXeKW+EPb0NCN+avScqt1sef4/y8z7phQ9omOALBAwukj8aXoPm5b2IvUZloXkNK0SJNXtykjkUv1QWmxGA==",
+        "sha256": "0ab1dc4b9a96f4df5b762f1a2803ed478e67d35ff176d91dabd8606ee0531080",
+        "tarball": "pyrosa-ui-icons-0.2.24.tgz"
       },
       "@pyrosa/ui-layouts": {
-        "integrity": "sha512-/t0tIzSYhsRrEMzKU6HJcBOadd2u/2ZoyXafDR4/S8aTjJzf5evhZWc6K5k+cd8rpm922hgnc2s5VsFugxT+2w==",
-        "sha256": "f61e2caf8f4c15f620aac9489c95bc8b6a7579fa978cded977dfa99fbc6be44e",
-        "tarball": "pyrosa-ui-layouts-0.2.22.tgz"
+        "integrity": "sha512-Nk/LGmsZYIgJaVytai/pUQ85a9pV09Zp1VWj1M9SMlcTWG/5UtJ/2wgknoa85pscm3Tgm0HXA6lZPmmeOlYRPA==",
+        "sha256": "6703b6cb24f973a66f3638306c3062d5cfc4e8216d8f536fb599fcc1b562f18d",
+        "tarball": "pyrosa-ui-layouts-0.2.24.tgz"
       },
       "@pyrosa/ui-templates": {
-        "integrity": "sha512-TOSPRjuv4jl8406oxOb0QknLdHrOxK/ESD5/s74ImSqLAZupKyMSD9NHCVxWXDTkyD4TJXXGx28gH4Dob6Ot4Q==",
-        "sha256": "d28bbb8aa7500756f579455ec65e8e397ed642b65ae029220a7646ab1ef3e9c8",
-        "tarball": "pyrosa-ui-templates-0.2.22.tgz"
+        "integrity": "sha512-P6HICBfRNqC6P+sShSAB1DClNaENfp3ifY3Tf/yMoNh44Bl12gsOSjjJR/kRwjov+ZfJ6HxVX4qnx76K/ymvaw==",
+        "sha256": "71b4fb465c20ab80d29f73b680890cbcd31da202cc1babc1434a0cbb1830a58e",
+        "tarball": "pyrosa-ui-templates-0.2.24.tgz"
       },
       "@pyrosa/ui-theme": {
-        "integrity": "sha512-WjT/bF8IA6kq9mpL3CfgSE+ArFKo7xNEmA2G36+/S6DajPnvoCqTJSFasE/OmLtoFy5zRYyNqD1j49v36nfENA==",
-        "sha256": "2a50cdeeb49501c3022f6f92069fea59a6290a146fb20240e921d4e07a22deec",
-        "tarball": "pyrosa-ui-theme-0.2.22.tgz"
+        "integrity": "sha512-I2lX2A4k1u/bE8ssBZl5CBhtRyvfMlszST9qMPSqwm2WydGlDj5TBGLmrU//9cbtgBn9t33LUVYkvzyXpljx2Q==",
+        "sha256": "257d1bb0ef5ca7ec74e8363dc9d7f77eb0ae87fdeef6d3b93c1ccf669c775936",
+        "tarball": "pyrosa-ui-theme-0.2.24.tgz"
       },
       "@pyrosa/ui-tokens": {
-        "integrity": "sha512-uVf/qYbA6U9rwhFNWh5zGyLcjPLsWDGRfJ46xnLiEtQr32dfkNKlrf6czwfV7BWzd2DgFloZ/xmIpTrCiZApOg==",
-        "sha256": "71ad51ad9a6856c6bc5bdcef6c08ba4a9fca207940188305d53cf88c8bb04e91",
-        "tarball": "pyrosa-ui-tokens-0.2.22.tgz"
+        "integrity": "sha512-HZ5b6qyTqysE/Easuf8gkSEwzAh8OGXGG9cJ+E9aHMYZm89BlJwdpnPYCHTaKarimm1bXXK6wK1yY026k8NAFg==",
+        "sha256": "3d8aa502b23380cfaf8b017fdede246d853268caaf2e25758a30cf4d1c017718",
+        "tarball": "pyrosa-ui-tokens-0.2.24.tgz"
       }
     }
   },
@@ -78,7 +79,8 @@
     { "id": "actividades", "hash": "actividades", "groupId": "operacion", "groupLabel": "Operacion", "groupOrder": 3, "itemOrder": 2 },
     { "id": "agenda", "hash": "agenda", "groupId": "operacion", "groupLabel": "Operacion", "groupOrder": 3, "itemOrder": 3 },
     { "id": "reportes", "hash": "reportes", "groupId": "analitica", "groupLabel": "Analitica", "groupOrder": 4, "itemOrder": 1 },
-    { "id": "configuracion", "hash": "configuracion", "groupId": "gobierno", "groupLabel": "Gobierno", "groupOrder": 5, "itemOrder": 1 }
+    { "id": "papelera", "hash": "papelera", "groupId": "gobierno", "groupLabel": "Gobierno", "groupOrder": 5, "itemOrder": 1 },
+    { "id": "configuracion", "hash": "configuracion", "groupId": "gobierno", "groupLabel": "Gobierno", "groupOrder": 5, "itemOrder": 2 }
   ],
   "routeRequiredFields": [
     "id",
@@ -109,19 +111,19 @@
     "markers": ["democrm-detail-action-order", "democrm-editor-action-order"],
     "nestedBackPlacement": "detail",
     "trash": {
-      "classification": "blocked-domain",
+      "classification": "enabled",
       "owner": "pyrosa-democrm",
-      "reason": "CRM no tiene comandos, capability, tombstones ni restore para sus recursos actuales.",
-      "rollback": "Restaurar solo el adaptador visual 0.2.20 sin agregar mutaciones.",
-      "removalCondition": "Adoptar record.move-to-trash solo despues de cerrar lifecycle, capability, auditoria y restore CRM."
+      "providerPrimitive": "BusinessRecordInventoryTemplate",
+      "recyclePrimitive": "BusinessRecordRecycleBinTemplate",
+      "policyInventory": "scripts/inventory-record-deletion-policy.json"
     }
   },
   "semanticVisual": {
     "catalogVersion": "1.1.0",
     "applicableInventoryDetail": ["cuentas", "contactos", "casos", "actividades", "agenda", "oportunidades"],
     "partialReadOnly": ["reportes"],
-    "requiredProviderPrimitives": ["CountBar", "EntitySemanticIcon", "FilterSubmitActions", "IconAction", "InventoryTablePanel", "RecordActionCluster"],
-    "requiredActionIds": ["collection.create", "collection.refresh", "filter.apply", "filter.clear", "navigation.back", "pagination.next", "pagination.previous", "record.cancel", "record.edit", "record.save", "record.view"]
+    "requiredProviderPrimitives": ["BusinessRecordInventoryTemplate", "EntitySemanticIcon", "IconAction", "RecordActionCluster"],
+    "requiredActionIds": ["collection.create", "collection.refresh", "navigation.back", "record.cancel", "record.edit", "record.save", "record.view"]
   },
   "dashboard": {
     "component": "DashboardView",

@@ -9,6 +9,8 @@
     "server/db.ts",
     "server/crmV1Access.ts",
     "server/crmV1Domain.ts",
+    "server/crmV1DeletionPolicy.ts",
+    "server/crmV1DeletionPolicy.test.ts",
     "server/crmV1Store.ts",
     "server/crmV1Postgres.ts",
     "server/crmV1Postgres.test.ts",

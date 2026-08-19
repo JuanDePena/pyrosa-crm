@@ -191,6 +191,40 @@ test("CRM genesis bundle binds one target-neutral source to separate app identit
   assert.notEqual(bundle.manifests[0].sha256, bundle.manifests[1].sha256);
 });
 
+test("CRM recycle-bin successor is target-neutral, additive and bound to separate owners", async () => {
+  const version = "2026.08.19.0";
+  const bundle = JSON.parse(await readFile(resolve(repoRoot, `database/dictionaries/manifest.${version}.json`), "utf8"));
+  const sourceRaw = await readFile(resolve(repoRoot, bundle.source.path), "utf8");
+  const source = JSON.parse(sourceRaw);
+
+  assert.equal(bundle.schemaVersion, "pyrosa-platform-dictionary-successor-owner-bundle-v1");
+  assert.equal(bundle.predecessorVersion, "2026.07.17.0");
+  assert.equal(bundle.runtimeDdlAllowed, false);
+  assert.equal(source.version, version);
+  assert.equal(source.runtimeDdlAllowed, false);
+  assert.equal(source.objectCount, 439);
+  assert.equal(source.objects.length, 439);
+  assert.equal(source.objects.filter((object) => object.objectType === "table" && object.objectName === "crm_recycle_bin_entries").length, 1);
+  assert.equal(source.objects.filter((object) => object.parentObjectName === "crm_recycle_bin_entries" && object.objectType === "column").length, 19);
+  assert.doesNotMatch(JSON.stringify(source.objects), /\bpublic\b|app_pyrosa_(?:demo)?crm|pyrosa_(?:demo)?crm_[0-9a-f]{12}/i);
+  assert.equal(bundle.source.sha256, `sha256:${createHash("sha256").update(sourceRaw).digest("hex")}`);
+  assert.deepEqual(bundle.manifests.map((entry) => entry.appSlug), ["pyrosa-democrm", "pyrosa-crm"]);
+
+  for (const entry of bundle.manifests) {
+    const raw = await readFile(resolve(repoRoot, entry.path), "utf8");
+    const manifest = JSON.parse(raw);
+    assert.equal(entry.sha256, `sha256:${createHash("sha256").update(raw).digest("hex")}`);
+    assert.equal(manifest.version, version);
+    assert.equal(manifest.runtimeDdlAllowed, false);
+    assert.equal(manifest.migrationBaseVersion, bundle.predecessorVersion);
+    assert.equal(manifest.objectCount, source.objectCount);
+    assert.equal(manifest.objects.length, source.objectCount);
+    assert.equal(manifest.checksum, dictionaryChecksum(manifest));
+    assert.equal(manifest.release.checksum, manifest.checksum);
+    assert.ok(manifest.predecessors.some((predecessor) => predecessor.relation === "supersedes"));
+  }
+});
+
 test("checksum v2 retains temporal-looking dictionary semantics", () => {
   const checksumForDefinition = (definition) => dictionaryChecksum({
     appSlug: "pyrosa-test",

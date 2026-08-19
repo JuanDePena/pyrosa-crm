@@ -16,6 +16,7 @@ import {
   requireIdempotencyKey,
   resourceCapabilities
 } from "./crmV1Domain.js";
+import { crmDeletionPolicies } from "./crmV1DeletionPolicy.js";
 import { PostgresCrmV1Store } from "./crmV1Postgres.js";
 import type { CrmV1Store } from "./crmV1Store.js";
 import { crmResources, type CrmAccessContext, type CrmIdentity, type CrmResource } from "./crmV1Types.js";
@@ -204,6 +205,31 @@ async function dispatch(
     methodNotAllowed();
   }
 
+  if (segments[0] === "recycle-bin") {
+    if (segments.length === 1 && method === "GET") {
+      const access = await resolveAccess("crm.recycle-bin.read");
+      const page = await store.listRecycleBin(access, parseListQuery("accounts", context.url));
+      sendJson(res, 200, { data: page.data, page: { limit: Number(context.url.searchParams.get("limit") ?? 25), nextCursor: page.nextCursor, total: page.total }, meta: meta(context, access) }, context.headOnly);
+      return;
+    }
+    if (segments.length === 2 && method === "GET") {
+      const access = await resolveAccess("crm.recycle-bin.read");
+      const entry = await store.getRecycleBin(access, segments[1]);
+      if (!entry) notFound("crm.recycle_bin.not_found", "No existe la entrada solicitada en la papelera.");
+      sendData(res, context, access, entry, 200, { ETag: etagFor(entry) });
+      return;
+    }
+    if (segments.length === 4 && isResource(segments[1]) && segments[3] === "restore" && method === "POST") {
+      const resource = segments[1];
+      const access = await resolveAccess(crmDeletionPolicies[resource].capability);
+      const body = await readJson(req);
+      const result = await store.restore(resource, segments[2], parseIfMatch(header(req, "if-match")), mutationContext(req, context, identity, access, body));
+      sendData(res, context, access, result.entry, 200, { "Idempotency-Replayed": String(result.replayed), ETag: etagFor(result.entry) });
+      return;
+    }
+    methodNotAllowed();
+  }
+
   if (isResource(segments[0])) {
     await handleResource(
       req,
@@ -234,7 +260,11 @@ async function handleResource(
 ): Promise<void> {
   const command = rest[1] ?? null;
   const write = method === "POST" || method === "PATCH";
-  const required = command === "assign" && resource === "cases" ? "crm.cases.assign" : write ? resourceCapabilities[resource].write : resourceCapabilities[resource].read;
+  const required = command === "trash"
+    ? crmDeletionPolicies[resource].capability
+    : command === "assign" && resource === "cases"
+      ? "crm.cases.assign"
+      : write ? resourceCapabilities[resource].write : resourceCapabilities[resource].read;
   const access = await resolveAccess(required);
   if (rest.length === 0 && method === "GET") {
     const page = await store.list(access, resource, parseListQuery(resource, context.url));
@@ -263,6 +293,12 @@ async function handleResource(
     const body = normalizePayload(resource, await readJson(req), true);
     const result = await store.update(resource, id, body, parseIfMatch(header(req, "if-match")), mutationContext(req, context, identity, access, body));
     sendData(res, context, access, result.record, 200, { "Idempotency-Replayed": String(result.replayed), ETag: etagFor(result.record) });
+    return;
+  }
+  if (rest.length === 2 && method === "POST" && command === "trash") {
+    const body = await readJson(req);
+    const result = await store.trash(resource, id, parseIfMatch(header(req, "if-match")), mutationContext(req, context, identity, access, body));
+    sendData(res, context, access, result.entry, 200, { "Idempotency-Replayed": String(result.replayed), ETag: etagFor(result.entry) });
     return;
   }
   if (rest.length === 2 && method === "POST" && isCommand(resource, command)) {

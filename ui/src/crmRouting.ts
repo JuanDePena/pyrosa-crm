@@ -27,12 +27,13 @@ export function locationFromHash(hash: string): CrmLocation {
     return { attentionFilter, direction, mode: "list", routeId, sort, statusFilter };
   }
   if (second === "new") {
+    if (routeId === "papelera") return { mode: "list", routeId };
     return { mode: "new", routeId };
   }
   if (!safeRecordIdPattern.test(second)) {
     return { mode: "list", routeId };
   }
-  const mode: ResourceViewMode = segments[2] === "edit" ? "edit" : "detail";
+  const mode: ResourceViewMode = routeId !== "papelera" && segments[2] === "edit" ? "edit" : "detail";
   return { mode, recordId: second, routeId };
 }
 
@@ -41,6 +42,7 @@ export function routeHash(routeId: CrmRouteId, mode: ResourceViewMode = "list", 
   if (routeId === "dashboard" || routeId === "configuracion" || mode === "list") {
     return root;
   }
+  if (routeId === "papelera" && mode === "new") return root;
   if (mode === "new") {
     return `${root}/new`;
   }
@@ -71,7 +73,7 @@ export function allowedDashboardRoute(rawRoute: string | undefined): string | un
 }
 
 export function isResourceRoute(routeId: CrmRouteId): routeId is ResourceRouteId {
-  return routeId !== "dashboard" && routeId !== "configuracion";
+  return routeId !== "dashboard" && routeId !== "configuracion" && routeId !== "papelera";
 }
 
 function safeDecode(value: string): string {

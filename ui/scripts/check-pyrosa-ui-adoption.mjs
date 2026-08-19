@@ -19,6 +19,7 @@ const productSources = [
   sources.dashboard,
   sources.fatalError,
   sources.resourceConfig,
+  sources.recycleBin,
   sources.resources,
   sources.routes,
   sources.routing
@@ -97,7 +98,7 @@ const routesById = new Map(
     .filter(({ id }) => Boolean(id))
     .map((route) => [route.id, route])
 );
-check("route registry contains only the nine governed v2607 routes", () =>
+check("route registry contains only the governed routes", () =>
   routesById.size === contract.routes.length &&
   contract.routes.every((route) => routesById.has(route.id))
 );
@@ -154,15 +155,13 @@ for (const primitive of contract.semanticVisual?.requiredProviderPrimitives ?? [
 }
 for (const semanticId of contract.semanticVisual?.requiredActionIds ?? []) {
   check(`resource views use semantic action ${semanticId}`, () =>
-    semanticId.startsWith("filter.")
-      ? sources.resources.includes("<FilterSubmitActions")
-      : sources.resources.includes(`"${semanticId}"`)
+    sources.resources.includes(`"${semanticId}"`) || sources.recycleBin.includes(`"${semanticId}"`)
   );
 }
 check("resource filters use neutral provider fields and compact semantic actions", () =>
-  sources.resources.includes("<TextField") &&
-  sources.resources.includes("<SelectField") &&
-  sources.resources.includes("<FilterSubmitActions") &&
+  resourceListSource.includes('kind: "text"') &&
+  resourceListSource.includes('kind: "select"') &&
+  resourceListSource.includes("onApply: applyFilters") &&
   sources.resources.includes("compact")
 );
 check("inventory indicators and entity glyphs resolve through the provider", () =>
@@ -171,9 +170,10 @@ check("inventory indicators and entity glyphs resolve through the provider", () 
   sources.resources.includes("config.entitySemanticId")
 );
 check("primary resource lists use one provider-owned inventory table container", () =>
-  (resourceListSource.match(/<InventoryTablePanel\b/gu)?.length ?? 0) === 1 &&
-  (resourceListSource.match(/<\/InventoryTablePanel>/gu)?.length ?? 0) === 1 &&
-  !resourceListSource.includes("<Panel")
+  (resourceListSource.match(/<BusinessRecordInventoryTemplate\b/gu)?.length ?? 0) === 1 &&
+  !resourceListSource.includes("<InventoryTablePanel") &&
+  !resourceListSource.includes("<DataTable") &&
+  !resourceListSource.includes("<TableActionGroup")
 );
 check("resource details and editors delegate canonical action order to provider role slots", () =>
   resourceDetailSource.includes("<RecordActionCluster") &&
@@ -186,12 +186,14 @@ check("resource details and editors delegate canonical action order to provider 
   resourceEditorSource.includes('marker="democrm-editor-action-order"') &&
   !resourceEditorSource.includes("crm-editor__actions")
 );
-check("CRM recycle actions remain blocked by domain rather than fabricated in the UI", () =>
-  contract.detailActions?.trash?.classification === "blocked-domain" &&
+check("CRM recycle actions are config-only and provider-owned", () =>
+  contract.detailActions?.trash?.classification === "enabled" &&
   contract.detailActions?.trash?.owner === "pyrosa-democrm" &&
-  contract.detailActions?.trash?.reason?.includes("tombstones") &&
-  !sources.resources.includes("record.move-to-trash") &&
-  !sources.routes.includes("governance.trash")
+  resourceListSource.includes("deletion:") &&
+  sources.recycleBin.includes("BusinessRecordRecycleBinTemplate") &&
+  sources.routes.includes("governance.trash") &&
+  !resourceListSource.includes("ConfirmActionDialog") &&
+  !sources.recycleBin.includes("record.delete")
 );
 
 for (const route of contract.resourceViews.routes) {
@@ -218,7 +220,7 @@ check("related record actions remain explicitly not applicable without fabricate
   !sources.resources.includes("relatedCollections")
 );
 check("resource lists request backend pagination and typed filters", () =>
-  sources.resources.includes('new URLSearchParams({ limit: "25" })') &&
+  sources.resources.includes('new URLSearchParams({ limit: String(pageSize) })') &&
   sources.resources.includes('parameters.set("q", query)') &&
   sources.resources.includes('parameters.set("status", status)') &&
   sources.resources.includes('parameters.set("cursor", cursor)')
@@ -229,11 +231,10 @@ check("resource writes protect create and update operations", () =>
   sources.resources.includes('method: isEdit ? "PATCH" : "POST"')
 );
 check("inventory row navigation uses semantic icon-only anchors", () =>
-  sources.resources.includes("<IconAction") &&
-  sources.resources.includes('semanticId="record.view"') &&
-  sources.resources.includes('semanticId="record.edit"') &&
-  sources.resources.includes('href={routeHash(config.id, "detail", row.id)}') &&
-  sources.resources.includes('href={routeHash(config.id, "edit", row.id)}') &&
+  resourceListSource.includes('actionSemanticId: "record.view"') &&
+  resourceListSource.includes('actionSemanticId: "record.edit"') &&
+  resourceListSource.includes('href: routeHash(config.id, "detail", row.id)') &&
+  resourceListSource.includes('href: routeHash(config.id, "edit", row.id)') &&
   !sources.resources.includes('label={`Ver ${config.singular}`}')
 );
 check("cases appointments opportunities and reports expose typed command endpoints", () =>

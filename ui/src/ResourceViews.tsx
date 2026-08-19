@@ -5,29 +5,26 @@ import {
 } from "lucide-react";
 import {
   Button,
-  CountBar,
-  DataTable,
   DataTableInline,
   EmptyState,
   EntityCell,
   ErrorState,
-  FilterPanel,
-  FilterSubmitActions,
   IconAction,
-  InventoryTablePanel,
   LoadingState,
   Panel,
   RecordActionCluster,
-  SelectField,
   StatusBadge,
   StatusStrip,
-  TableActionGroup,
-  TextField,
   ViewNotice
 } from "@pyrosa/ui";
-import type { DataTableColumn } from "@pyrosa/ui";
+import type { PageSize } from "@pyrosa/ui";
 import { EntitySemanticIcon } from "@pyrosa/ui-icons";
 import { WorkspaceLayout } from "@pyrosa/ui-layouts";
+import {
+  BusinessRecordInventoryTemplate,
+  type BusinessRecordInventoryConfig,
+  type InventoryDeletionDecision
+} from "@pyrosa/ui-templates";
 import {
   CrmApiError,
   entityEtag,
@@ -99,6 +96,7 @@ function ResourceList({ config, initialAttention, initialDirection, initialSort,
   const [attention, setAttention] = React.useState(initialAttention);
   const [cursor, setCursor] = React.useState<string | undefined>();
   const [cursorHistory, setCursorHistory] = React.useState<Array<string | undefined>>([]);
+  const [pageSize, setPageSize] = React.useState<PageSize>(25);
   const [reloadKey, setReloadKey] = React.useState(0);
   const [state, setState] = React.useState<ResourceListState>({ kind: "loading" });
 
@@ -112,7 +110,7 @@ function ResourceList({ config, initialAttention, initialDirection, initialSort,
 
   React.useEffect(() => {
     const controller = new AbortController();
-    const parameters = new URLSearchParams({ limit: "25" });
+    const parameters = new URLSearchParams({ limit: String(pageSize) });
     if (query) parameters.set("q", query);
     if (status !== "all") parameters.set("status", status);
     if (attention) parameters.set("attention", attention);
@@ -135,12 +133,15 @@ function ResourceList({ config, initialAttention, initialDirection, initialSort,
       setState({ error, kind: "error" });
     });
     return () => controller.abort();
-  }, [attention, config.endpoint, cursor, initialDirection, initialSort, query, reloadKey, status, tenantId]);
+  }, [attention, config.endpoint, cursor, initialDirection, initialSort, pageSize, query, reloadKey, status, tenantId]);
 
   const response = state.kind === "ready" || state.kind === "empty" ? state.response : null;
   const total = response?.page.total;
   const rows = response?.data ?? [];
-  const columns = resourceColumns(config);
+  const inventoryRows = rows.map((row) => Object.fromEntries([
+    ...Object.entries(row),
+    ...config.fields.slice(0, 5).map((field) => [`inventory_${field.name}`, formatEntityValue(row, field)])
+  ]) as CrmEntity);
 
   function applyFilters() {
     setCursor(undefined);
@@ -159,119 +160,108 @@ function ResourceList({ config, initialAttention, initialDirection, initialSort,
     setCursorHistory([]);
   }
 
-  return (
-    <WorkspaceLayout className="crm-workspace">
-      <StatusStrip items={[
-        { key: "tenant", label: "Tenant", tone: "info", value: tenantLabel },
-        { key: "resource", label: "Recurso", tone: "info", value: config.title },
-        { key: "records", label: "Registros", tone: "success", value: total ?? rows.length },
-        { key: "state", label: "Estado", tone: state.kind === "error" ? "warning" : "success", value: state.kind }
-      ]} />
-      <CountBar items={[
-        { indicatorSemanticId: "indicator.total", key: "total", label: "Total", value: total ?? rows.length },
-        { indicatorSemanticId: "indicator.filtered", key: "filtered", label: "Filtrados", value: rows.length }
-      ]} />
-      <FilterPanel
-        actions={
-          <FilterSubmitActions
-            applyLabel="Buscar"
-            clearButtonProps={{ disabled: !attention && !query && status === "all" && !queryInput && statusInput === "all" }}
-            clearLabel="Limpiar"
-            compact
-            onApply={applyFilters}
-            onClear={clearFilters}
-          />
+  const currentPage = cursorHistory.length + 1;
+  const inventoryConfig: BusinessRecordInventoryConfig<CrmEntity> = {
+    deletion: config.readOnly ? undefined : {
+      getDecision: (row) => deletionDecisionFrom(row),
+      getRecordLabel: (row) => entityTitle(config, row),
+      getRestoreDestination: () => "Gobierno > Papelera",
+      onConfirm: async (row, decision) => {
+        await fetchCrmJson<ApiDetailResponse<unknown>>(`${config.endpoint}/${encodeURIComponent(row.id)}/trash`, {
+          body: {},
+          etag: entityEtag(decision.expectedVersion),
+          idempotencyKey: newIdempotencyKey(),
+          method: "POST"
+        });
+        setReloadKey((value) => value + 1);
+      }
+    },
+    filters: {
+      applyLabel: "Buscar",
+      clearLabel: "Limpiar",
+      fields: [
+        {
+          id: "query",
+          kind: "text",
+          label: "Buscar",
+          onValueChange: setQueryInput,
+          placeholder: config.searchPlaceholder,
+          value: queryInput
+        },
+        ...(config.statusOptions ? [{
+          id: "status",
+          kind: "select" as const,
+          label: "Estado",
+          onValueChange: setStatusInput,
+          options: [
+            { label: "Todos", value: "all" },
+            ...(statusInput !== "all" && !config.statusOptions.some((option) => option.value === statusInput) ? [{ label: statusInput, value: statusInput }] : []),
+            ...config.statusOptions
+          ],
+          value: statusInput
+        }] : [])
+      ],
+      onApply: applyFilters,
+      onClear: clearFilters,
+      showApply: true,
+      title: attention ? "Vista filtrada" : "Filtros"
+    },
+    metrics: [
+      { id: "total", indicatorSemanticId: "indicator.total", label: "Total", value: total ?? rows.length },
+      { id: "filtered", indicatorSemanticId: "indicator.filtered", label: "Filtrados", value: rows.length }
+    ],
+    pagination: {
+      disabled: state.kind === "loading",
+      onPageChange: (page) => {
+        if (page === currentPage - 1 && cursorHistory.length > 0) {
+          const previous = cursorHistory[cursorHistory.length - 1];
+          setCursorHistory((history) => history.slice(0, -1));
+          setCursor(previous);
+        } else if (page === currentPage + 1 && response?.page.nextCursor) {
+          setCursorHistory((history) => [...history, cursor]);
+          setCursor(response.page.nextCursor);
         }
-        onEscapeClear={clearFilters}
-      >
-        {attention ? <ViewNotice message={attention === "overdue" ? "Mostrando solo casos vencidos que requieren atencion." : attention === "exception" ? "Mostrando solo citas con excepciones operacionales." : "Mostrando solo actividades abiertas o en progreso."} title="Vista filtrada" tone="info" /> : null}
-        <TextField
-          active={Boolean(queryInput)}
-          label="Buscar"
-          onChange={(event) => setQueryInput(event.currentTarget.value)}
-          onKeyDown={(event) => {
-            if (event.key === "Enter") applyFilters();
-          }}
-          placeholder={config.searchPlaceholder}
-          type="search"
-          value={queryInput}
-        />
-        {config.statusOptions ? (
-          <SelectField
-            active={statusInput !== "all"}
-            label="Estado"
-            onValueChange={setStatusInput}
-            options={[
-              { label: "Todos", value: "all" },
-              ...(statusInput !== "all" && !config.statusOptions.some((option) => option.value === statusInput) ? [{ label: statusInput, value: statusInput }] : []),
-              ...config.statusOptions
-            ]}
-            value={statusInput}
-          />
-        ) : null}
-      </FilterPanel>
+      },
+      onPageSizeChange: (nextPageSize) => {
+        setPageSize(nextPageSize);
+        setCursor(undefined);
+        setCursorHistory([]);
+      },
+      page: currentPage,
+      pageSize,
+      pageSizePersistenceKey: `democrm-${config.id}-inventory`,
+      totalPages: response?.page.nextCursor ? currentPage + 1 : currentPage
+    },
+    table: {
+      actions: [
+        { actionSemanticId: "collection.refresh", id: "refresh", label: `Actualizar ${config.title}`, onAction: () => setReloadKey((value) => value + 1), variant: "secondary" },
+        ...(!config.readOnly ? [{ actionSemanticId: "collection.create" as const, id: "create", label: `Nueva ${config.singular}`, onAction: () => navigateToLocation(config.id, "new"), role: "primary" as const, variant: "primary" as const }] : [])
+      ],
+      columns: config.fields.slice(0, 5).map((field, index) => ({
+        key: field.name,
+        label: field.label,
+        valueKey: `inventory_${field.name}`,
+        width: index === 0 ? "30%" : undefined
+      })),
+      density: "compact",
+      emptyMessage: `No hay ${config.title.toLowerCase()} para los filtros actuales.`,
+      getRowActions: (row) => [
+        { actionSemanticId: "record.view", href: routeHash(config.id, "detail", row.id), id: "view", label: `Ver ${config.singular} ${entityTitle(config, row)}` },
+        ...(!config.readOnly ? [{ actionSemanticId: "record.edit" as const, href: routeHash(config.id, "edit", row.id), id: "edit", label: `Editar ${config.singular} ${entityTitle(config, row)}` }] : [])
+      ],
+      getRowId: (row) => row.id,
+      onRowActivate: (row) => navigateToLocation(config.id, "detail", row.id),
+      recordCount: total ?? rows.length,
+      rows: inventoryRows,
+      scrollPersistenceKey: `democrm-${config.id}`,
+      state: state.kind === "ready" ? "ready" : state.kind === "empty" ? "empty" : state.kind,
+      stateMessage: state.kind === "error" ? publicMessageFrom(state.error) : undefined,
+      tableMinWidth: "860px",
+      title: config.title
+    }
+  };
 
-      <InventoryTablePanel
-        actions={
-          <div className="crm-panel-actions">
-            <IconAction label={`Actualizar ${config.title}`} onAction={() => setReloadKey((value) => value + 1)} semanticId="collection.refresh" variant="secondary" />
-            {!config.readOnly ? <IconAction label={`Nueva ${config.singular}`} onAction={() => navigateToLocation(config.id, "new")} semanticId="collection.create" variant="primary" /> : null}
-          </div>
-        }
-        description={config.description}
-        eyebrow={config.eyebrow}
-        title={config.title}
-      >
-        {state.kind === "loading" ? <LoadingState>Cargando {config.title.toLowerCase()}.</LoadingState> : null}
-        {state.kind === "error" ? (
-          <RegionalError error={state.error} onRetry={() => setReloadKey((value) => value + 1)} />
-        ) : null}
-        {state.kind === "empty" ? (
-          <EmptyState action={!config.readOnly ? { label: `Crear ${config.singular}`, onClick: () => navigateToLocation(config.id, "new") } : undefined}>
-            No hay {config.title.toLowerCase()} para los filtros actuales.
-          </EmptyState>
-        ) : null}
-        {state.kind === "ready" ? (
-          <DataTable<CrmEntity>
-            columns={columns}
-            density="compact"
-            getRowId={(row) => row.id}
-            onRowClick={(row) => navigateToLocation(config.id, "detail", row.id)}
-            rows={rows}
-            scrollPersistenceKey={`democrm-${config.id}`}
-            tableMinWidth="860px"
-          />
-        ) : null}
-        {state.kind === "ready" || state.kind === "empty" ? (
-          <nav aria-label={`Paginacion de ${config.title}`} className="crm-pagination">
-            <IconAction
-              disabled={cursorHistory.length === 0}
-              label={`Pagina anterior de ${config.title}`}
-              onAction={() => {
-                const previous = cursorHistory[cursorHistory.length - 1];
-                setCursorHistory((history) => history.slice(0, -1));
-                setCursor(previous);
-              }}
-              semanticId="pagination.previous"
-              variant="secondary"
-            />
-            <span>{typeof total === "number" ? `${total} registros` : `${rows.length} en esta pagina`}</span>
-            <IconAction
-              disabled={!response?.page.nextCursor}
-              label={`Pagina siguiente de ${config.title}`}
-              onAction={() => {
-                if (!response?.page.nextCursor) return;
-                setCursorHistory((history) => [...history, cursor]);
-                setCursor(response.page.nextCursor);
-              }}
-              semanticId="pagination.next"
-              variant="secondary"
-            />
-          </nav>
-        ) : null}
-      </InventoryTablePanel>
-    </WorkspaceLayout>
-  );
+  return <BusinessRecordInventoryTemplate config={inventoryConfig} />;
 }
 
 function ResourceDetail({
@@ -738,54 +728,16 @@ function RegionalError({ error, onRetry }: { error: unknown; onRetry?: () => voi
   );
 }
 
-function resourceColumns(config: ResourceConfig): Array<DataTableColumn<CrmEntity>> {
-  const visibleFields = config.fields.slice(0, 5);
-  return [
-    ...visibleFields.map((field, index): DataTableColumn<CrmEntity> => ({
-      key: field.name,
-      label: field.label,
-      render: (row) => index === 0 ? (
-        <EntityCell
-          description={secondaryDescription(config, row)}
-          icon={<EntitySemanticIcon semanticId={config.entitySemanticId} size={18} />}
-          meta={<DataTableInline>{row.id}</DataTableInline>}
-          title={formatEntityValue(row, field)}
-        />
-      ) : field.format === "status" ? (
-        <StatusBadge tone={statusTone(String(row[field.name] ?? ""))}>{formatEntityValue(row, field)}</StatusBadge>
-      ) : <DataTableInline strong={field.format === "currency-minor"}>{formatEntityValue(row, field)}</DataTableInline>,
-      width: index === 0 ? "30%" : undefined
-    })),
-    {
-      key: "actions",
-      kind: "actions",
-      label: "Acciones",
-      render: (row) => (
-        <TableActionGroup onClick={(event) => event.stopPropagation()}>
-          <IconAction
-            href={routeHash(config.id, "detail", row.id)}
-            label={`Ver ${config.singular} ${entityTitle(config, row)}`}
-            semanticId="record.view"
-            variant="secondary"
-          />
-          {!config.readOnly ? (
-            <IconAction
-              href={routeHash(config.id, "edit", row.id)}
-              label={`Editar ${config.singular} ${entityTitle(config, row)}`}
-              semanticId="record.edit"
-              variant="secondary"
-            />
-          ) : null}
-        </TableActionGroup>
-      )
-    }
-  ];
-}
-
-function secondaryDescription(config: ResourceConfig, entity: CrmEntity): string {
-  const status = String(entity.status ?? "sin estado");
-  const second = config.fields[1] ? formatEntityValue(entity, config.fields[1]) : config.singular;
-  return `${second} · ${status}`;
+function deletionDecisionFrom(row: CrmEntity): InventoryDeletionDecision {
+  const decision = row.deletionDecision;
+  if (decision && decision.strategy === "trash") return decision;
+  return {
+    environmentClass: "production",
+    reasonCode: "policy_unavailable",
+    resourceClass: "transaction",
+    state: "hidden",
+    strategy: "trash"
+  };
 }
 
 function entityTitle(config: ResourceConfig, entity: CrmEntity): string {
@@ -814,13 +766,6 @@ function formatEntityValue(entity: CrmEntity, field: ResourceField): string {
   if (typeof value === "object") return `${Object.keys(value as object).length} valores`;
   if (typeof value === "boolean") return value ? "Si" : "No";
   return String(value);
-}
-
-function statusTone(status: string): "neutral" | "success" | "warning" | "info" {
-  if (["active", "completed", "confirmed", "closed", "resolved", "won"].includes(status)) return "success";
-  if (["pending", "waiting_external", "rescheduled", "stale"].includes(status)) return "warning";
-  if (["new", "open", "in_progress", "scheduled"].includes(status)) return "info";
-  return "neutral";
 }
 
 function emptyForm(fields: EditorField[]): Record<string, string> {

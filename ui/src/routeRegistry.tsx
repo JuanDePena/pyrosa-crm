@@ -11,6 +11,7 @@ export type CrmRouteId =
   | "agenda"
   | "oportunidades"
   | "reportes"
+  | "papelera"
   | "configuracion";
 
 export type CrmRouteDefinition = {
@@ -133,6 +134,19 @@ export const routeDefinitions: CrmRouteDefinition[] = [
     title: "Reportes"
   },
   {
+    description: "Registros retirados de forma lógica y disponibles para restauración autorizada.",
+    groupId: "gobierno",
+    groupLabel: "Gobierno",
+    groupOrder: 5,
+    hash: "papelera",
+    navigationSemanticId: "governance.trash",
+    id: "papelera",
+    itemOrder: 1,
+    keywords: ["papelera", "restaurar", "retirados", "archivados"],
+    label: "Papelera",
+    title: "Papelera de reciclaje"
+  },
+  {
     description: "Perfil efectivo, vocabulario, SLA, metricas e integraciones declarativas.",
     groupId: "gobierno",
     groupLabel: "Gobierno",
@@ -140,7 +154,7 @@ export const routeDefinitions: CrmRouteDefinition[] = [
     hash: "configuracion",
     navigationSemanticId: "configuration.general",
     id: "configuracion",
-    itemOrder: 1,
+    itemOrder: 2,
     keywords: ["configuracion", "perfil", "tenant", "integraciones", "sla", "voix"],
     label: "Configuracion",
     title: "Configuracion CRM"

@@ -116,7 +116,44 @@ export type CrmEntity = {
   status?: string;
   updatedAt?: string;
   version?: number;
+  deletionDecision?: InventoryDeletionDecision;
   [key: string]: unknown;
+};
+
+export type InventoryDeletionDecision = {
+  dependencyCount?: number;
+  disabledReason?: string;
+  environmentClass: "development" | "production";
+  expectedVersion?: number;
+  reasonCode:
+    | "allowed_development"
+    | "master_unreferenced"
+    | "master_has_transactions"
+    | "transaction_delete_forbidden"
+    | "capability_missing"
+    | "environment_unknown"
+    | "policy_unavailable"
+    | "deletion_policy_changed";
+  resourceClass: "master" | "definition" | "transaction";
+  state: "allowed" | "blocked" | "hidden";
+  strategy: "trash";
+};
+
+export type RecycleBinEntry = {
+  id: string;
+  resourceType: "accounts" | "contacts" | "cases" | "activities" | "appointments" | "opportunities";
+  resourceId: string;
+  resourceLabel: string;
+  resourceClass: "master" | "transaction";
+  previousStatus: string;
+  previousVersion: number;
+  dependencyCount: number;
+  policyReasonCode: string;
+  status: "active" | "restored";
+  version: number;
+  createdAt: string;
+  updatedAt: string;
+  restoredAt: string | null;
 };
 
 export type DashboardFreshness = {
@@ -229,7 +266,7 @@ export type TenantConfiguration = {
   vocabulary?: Record<string, string>;
 };
 
-export type ResourceRouteId = Exclude<CrmRouteId, "dashboard" | "configuracion">;
+export type ResourceRouteId = Exclude<CrmRouteId, "dashboard" | "configuracion" | "papelera">;
 
 export type ResourceViewMode = "list" | "new" | "detail" | "edit";
 

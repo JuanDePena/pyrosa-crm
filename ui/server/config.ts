@@ -2,6 +2,7 @@ import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 import type { DirectoryInvalidationConsumerConfig } from "./tenantContextInvalidationConsumer.js";
+import { normalizeEnvironmentClass, type CrmEnvironmentClass } from "./crmV1DeletionPolicy.js";
 
 export type CrmServerConfig = {
   appRoot: string;
@@ -13,6 +14,7 @@ export type CrmServerConfig = {
   healthPath: string;
   healthDetails: boolean;
   accessLog: boolean;
+  environmentClass: CrmEnvironmentClass | null;
   dbDsn: string | null;
   dbHost: string;
   dbPort: number;
@@ -122,6 +124,7 @@ export function loadConfig(): CrmServerConfig {
     healthPath: process.env.PYROSA_CRM_UI_HEALTH_PATH || "/__pyrosa_crm_health",
     healthDetails: parseBoolean(process.env.PYROSA_CRM_UI_HEALTH_DETAILS, false),
     accessLog: process.env.PYROSA_CRM_UI_ACCESS_LOG !== "0",
+    environmentClass: normalizeEnvironmentClass(process.env.APP_ENV),
     dbDsn: dsn,
     dbHost: process.env.PYROSA_CRM_DB_HOST || discreteDb?.host || "127.0.0.1",
     dbPort: parsePositiveInteger(process.env.PYROSA_CRM_DB_PORT, Number(discreteDb?.port ?? 5432)),

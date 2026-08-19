@@ -8,6 +8,11 @@ import {
   tenantNamespace
 } from "./tenantContext.js";
 import { CrmV1Error, defaultTenantConfiguration, deriveLifecycleFields, opaqueId, resolveIndustryProfile } from "./crmV1Domain.js";
+import {
+  assertDeletionAllowed,
+  crmDeletionPolicies,
+  deletionDecision
+} from "./crmV1DeletionPolicy.js";
 import { commandPatch, reportCatalog, type CrmCommand, type CrmV1Store } from "./crmV1Store.js";
 import type {
   CrmAccessContext,
@@ -15,6 +20,8 @@ import type {
   CrmListQuery,
   CrmMutationContext,
   CrmPage,
+  CrmRecycleBinEntry,
+  CrmRecycleBinPage,
   CrmRecord,
   CrmResource,
   DashboardSummary,
@@ -38,6 +45,22 @@ type RecordRow = {
 };
 
 type IdempotencyRow = { request_checksum: string; response_json: unknown };
+type RecycleBinRow = {
+  id: string;
+  resource_type: string;
+  resource_id: string;
+  resource_label: string;
+  resource_class: string;
+  previous_status: string;
+  previous_version: string | number;
+  dependency_count: string | number;
+  policy_reason_code: string;
+  status: string;
+  version: string | number;
+  created_at: Date | string;
+  updated_at: Date | string;
+  restored_at: Date | string | null;
+};
 
 const tables: Record<CrmResource, string> = {
   accounts: "crm_accounts",
@@ -85,17 +108,28 @@ export class PostgresCrmV1Store implements CrmV1Store {
     const offset = decodeCursor(query.cursor);
     values.push(query.limit, offset);
     const order = sortExpressions[resource][query.sort];
-    const result = await this.query<RecordRow & { full_count: string | number }>(
+    const result = await this.query<RecordRow & { deletion_dependency_count: string | number; full_count: string | number }>(
       access,
       `SELECT ${recordProjection(resource)},
+              ${deletionDependencyExpression(resource, "source")} AS deletion_dependency_count,
               count(*) OVER() AS full_count
-         FROM ${schema}.${table}
+         FROM ${schema}.${table} AS source
         WHERE ${predicates.join(" AND ")}
         ORDER BY ${order} ${query.direction.toUpperCase()} NULLS LAST, id ASC
         LIMIT $${values.length - 1} OFFSET $${values.length}`,
       values
     );
-    const data = result.rows.map((row) => project(rowToRecord(access, row), access));
+    const data = result.rows.map((row) => {
+      const record = project(rowToRecord(access, row), access);
+      record.deletionDecision = deletionDecision({
+        access,
+        dependencyCount: Number(row.deletion_dependency_count ?? 0),
+        environmentClass: this.config.environmentClass,
+        record,
+        resource
+      });
+      return record;
+    });
     const total = Number(result.rows[0]?.full_count ?? 0);
     return { data, total, nextCursor: offset + data.length < total ? encodeCursor(offset + data.length) : null };
   }
@@ -191,6 +225,103 @@ export class PostgresCrmV1Store implements CrmV1Store {
       }
       throw error;
     }
+  }
+
+  async trash(resource: CrmResource, id: string, expectedVersion: number, mutation: CrmMutationContext): Promise<{ entry: CrmRecycleBinEntry; record: CrmRecord; replayed: boolean }> {
+    return this.mutate(mutation, `${resource}:${id}:trash`, async (client, schema) => {
+      const current = await lockRecord(client, mutation.access, schema, resource, id);
+      assertDeletionVersion(current, expectedVersion);
+      const dependencyCount = await deletionDependencyCount(client, schema, resource, id);
+      const decision = assertDeletionAllowed({ access: mutation.access, dependencyCount, environmentClass: this.config.environmentClass, record: current, resource });
+      const entryId = opaqueId("trash");
+      const label = resourceLabel(resource, current);
+      const insert = await client.query<RecycleBinRow>(
+        `INSERT INTO ${schema}.crm_recycle_bin_entries
+           (id,resource_type,resource_id,resource_label,resource_class,previous_status,previous_version,
+            snapshot_json,dependency_count,policy_reason_code,trashed_by,trash_operation_ref,status,version,created_at,updated_at)
+         VALUES ($1,$2,$3,$4,$5,$6,$7,$8::jsonb,$9,$10,$11,$12,'active',1,NOW(),NOW())
+         RETURNING *`,
+        [entryId, resource, id, label, crmDeletionPolicies[resource].resourceClass, String(current.status ?? "active"),
+          current.version, JSON.stringify(current), dependencyCount, decision.reasonCode, mutation.actor.subject,
+          mutation.idempotencyKey]
+      );
+      const archived = await client.query<RecordRow>(
+        `UPDATE ${schema}.${tables[resource]}
+            SET archived_at=NOW(), version=version+1, updated_at=NOW()
+          WHERE id=$1 AND archived_at IS NULL
+          RETURNING ${recordProjection(resource)}`,
+        [id]
+      );
+      const record = rowToRecord(mutation.access, archived.rows[0]);
+      const entry = recycleRow(mutation.access, insert.rows[0]);
+      await appendAuditAndOutbox(client, schema, mutation, `${resource}.trashed`, resource, id, {
+        entryId, reasonCode: decision.reasonCode, version: record.version
+      });
+      return { entry, record: project(record, mutation.access), replayed: false };
+    });
+  }
+
+  async restore(resource: CrmResource, entryId: string, expectedVersion: number, mutation: CrmMutationContext): Promise<{ entry: CrmRecycleBinEntry; record: CrmRecord; replayed: boolean }> {
+    return this.mutate(mutation, `${resource}:${entryId}:restore`, async (client, schema) => {
+      const tombstone = await client.query<RecycleBinRow>(
+        `SELECT * FROM ${schema}.crm_recycle_bin_entries WHERE id=$1 AND resource_type=$2 FOR UPDATE`,
+        [entryId, resource]
+      );
+      if (!tombstone.rows[0]) throw new CrmV1Error(404, "crm.recycle_bin.not_found", "No existe la entrada solicitada en la papelera.");
+      const currentEntry = recycleRow(mutation.access, tombstone.rows[0]);
+      if (currentEntry.status !== "active") throw new CrmV1Error(409, "crm.recycle_bin.already_restored", "La entrada ya fue restaurada.");
+      if (currentEntry.version !== expectedVersion) throw new CrmV1Error(412, "crm.version.conflict", "La entrada fue modificada por otra operación.");
+      const current = await lockArchivedRecord(client, mutation.access, schema, resource, currentEntry.resourceId);
+      const restored = await client.query<RecordRow>(
+        `UPDATE ${schema}.${tables[resource]}
+            SET status=$2, archived_at=NULL, version=version+1, updated_at=NOW()
+          WHERE id=$1 AND archived_at IS NOT NULL
+          RETURNING ${recordProjection(resource)}`,
+        [current.id, currentEntry.previousStatus]
+      );
+      if (!restored.rows[0]) throw new CrmV1Error(409, "crm.recycle_bin.restore_conflict", "El registro no conserva un estado restaurable.");
+      const updatedEntry = await client.query<RecycleBinRow>(
+        `UPDATE ${schema}.crm_recycle_bin_entries
+            SET status='restored', restored_at=NOW(), restored_by=$2, restore_operation_ref=$3,
+                version=version+1, updated_at=NOW()
+          WHERE id=$1
+          RETURNING *`,
+        [entryId, mutation.actor.subject, mutation.idempotencyKey]
+      );
+      const record = rowToRecord(mutation.access, restored.rows[0]);
+      const entry = recycleRow(mutation.access, updatedEntry.rows[0]);
+      await appendAuditAndOutbox(client, schema, mutation, `${resource}.restored`, resource, record.id, { entryId, version: record.version });
+      return { entry, record: project(record, mutation.access), replayed: false };
+    });
+  }
+
+  async listRecycleBin(access: CrmAccessContext, query: CrmListQuery): Promise<CrmRecycleBinPage> {
+    const schema = schemaIdent(access);
+    const values: unknown[] = [];
+    const predicates = ["status='active'"];
+    if (query.q) {
+      values.push(`%${escapeLike(query.q)}%`);
+      predicates.push(`(resource_label ILIKE $${values.length} ESCAPE '\\' OR resource_type ILIKE $${values.length} ESCAPE '\\')`);
+    }
+    const offset = decodeCursor(query.cursor);
+    values.push(query.limit, offset);
+    const result = await this.query<RecycleBinRow & { full_count: string | number }>(access,
+      `SELECT *, count(*) OVER() AS full_count
+         FROM ${schema}.crm_recycle_bin_entries
+        WHERE ${predicates.join(" AND ")}
+        ORDER BY created_at DESC, id ASC
+        LIMIT $${values.length - 1} OFFSET $${values.length}`,
+      values
+    );
+    const data = result.rows.map((row) => recycleRow(access, row));
+    const total = Number(result.rows[0]?.full_count ?? 0);
+    return { data, total, nextCursor: offset + data.length < total ? encodeCursor(offset + data.length) : null };
+  }
+
+  async getRecycleBin(access: CrmAccessContext, id: string): Promise<CrmRecycleBinEntry | null> {
+    const result = await this.query<RecycleBinRow>(access,
+      `SELECT * FROM ${schemaIdent(access)}.crm_recycle_bin_entries WHERE id=$1 LIMIT 1`, [id]);
+    return result.rows[0] ? recycleRow(access, result.rows[0]) : null;
   }
 
   async dashboard(access: CrmAccessContext, period: { from: string; to: string }): Promise<DashboardSummary> {
@@ -604,6 +735,58 @@ async function rollbackImportRows(client: pg.PoolClient, schema: string, batchId
 }
 
 async function lockRecord(client:pg.PoolClient,access:CrmAccessContext,schema:string,resource:CrmResource,id:string):Promise<CrmRecord>{const result=await client.query<RecordRow>(`SELECT ${recordProjection(resource)} FROM ${schema}.${tables[resource]} WHERE id=$1 AND archived_at IS NULL FOR UPDATE`,[id]);if(!result.rows[0])throw new CrmV1Error(404,`crm.${resource.slice(0,-1)}.not_found`,`No existe el recurso solicitado.`);return rowToRecord(access,result.rows[0]);}
+function assertDeletionVersion(record: CrmRecord, expectedVersion: number): void { if (record.version !== expectedVersion) throw new CrmV1Error(409,"crm.deletion.deletion_policy_changed","La elegibilidad del registro cambió; actualiza el inventario."); }
+async function lockArchivedRecord(client:pg.PoolClient,access:CrmAccessContext,schema:string,resource:CrmResource,id:string):Promise<CrmRecord>{const result=await client.query<RecordRow>(`SELECT ${recordProjection(resource)} FROM ${schema}.${tables[resource]} WHERE id=$1 AND archived_at IS NOT NULL FOR UPDATE`,[id]);if(!result.rows[0])throw new CrmV1Error(409,"crm.recycle_bin.restore_conflict","El registro no conserva un estado restaurable.");return rowToRecord(access,result.rows[0]);}
+async function deletionDependencyCount(client: pg.PoolClient, schema: string, resource: CrmResource, id: string): Promise<number> {
+  if (resource !== "accounts" && resource !== "contacts") return 0;
+  const result = await client.query<{ dependency_count: string | number }>(
+    `SELECT ${deletionDependencyExpression(resource, "source")} AS dependency_count
+       FROM ${schema}.${tables[resource]} AS source
+      WHERE source.id=$1`, [id]
+  );
+  return Number(result.rows[0]?.dependency_count ?? 0);
+}
+
+export function deletionDependencyExpression(resource: CrmResource, alias = "source"): string {
+  if (resource === "accounts") {
+    return `((SELECT count(*) FROM crm_cases dependency WHERE dependency.account_id=${alias}.id)
+      + (SELECT count(*) FROM crm_activities dependency WHERE dependency.account_id=${alias}.id)
+      + (SELECT count(*) FROM crm_appointments dependency WHERE dependency.account_id=${alias}.id)
+      + (SELECT count(*) FROM crm_opportunities dependency WHERE dependency.account_id=${alias}.id))`;
+  }
+  if (resource === "contacts") {
+    return `((SELECT count(*) FROM crm_cases dependency WHERE dependency.contact_id=${alias}.id)
+      + (SELECT count(*) FROM crm_activities dependency WHERE dependency.contact_id=${alias}.id)
+      + (SELECT count(*) FROM crm_appointments dependency WHERE dependency.contact_id=${alias}.id)
+      + (SELECT count(*) FROM crm_opportunities dependency WHERE dependency.primary_contact_id=${alias}.id))`;
+  }
+  return "0";
+}
+
+function recycleRow(access: CrmAccessContext, row: RecycleBinRow): CrmRecycleBinEntry {
+  if (!Object.hasOwn(crmDeletionPolicies, row.resource_type)) throw new CrmV1Error(500, "crm.recycle_bin.resource_invalid", "La papelera contiene un recurso no soportado.");
+  return {
+    id: row.id,
+    tenantId: access.tenantId,
+    resourceType: row.resource_type as CrmResource,
+    resourceId: row.resource_id,
+    resourceLabel: row.resource_label,
+    resourceClass: row.resource_class as "master" | "transaction",
+    previousStatus: row.previous_status,
+    previousVersion: Number(row.previous_version),
+    dependencyCount: Number(row.dependency_count),
+    policyReasonCode: row.policy_reason_code,
+    status: row.status as "active" | "restored",
+    version: Number(row.version),
+    createdAt: isoDate(row.created_at),
+    updatedAt: isoDate(row.updated_at),
+    restoredAt: row.restored_at ? isoDate(row.restored_at) : null
+  };
+}
+
+function resourceLabel(resource: CrmResource, record: CrmRecord): string {
+  return String(record.name ?? record.displayName ?? record.subject ?? record.id).trim().slice(0, 240) || record.id;
+}
 async function validateReferences(client:pg.PoolClient,schema:string,input:Record<string,unknown>):Promise<void>{const refs:[[unknown,string],...[unknown,string][]]=[[input.accountId,"crm_accounts"],[input.contactId,"crm_contacts"],[input.primaryContactId,"crm_contacts"],[input.caseId,"crm_cases"]];for(const[id,table]of refs){if(!id)continue;const found=await client.query(`SELECT 1 FROM ${schema}.${table} WHERE id=$1 AND archived_at IS NULL`,[id]);if(found.rowCount!==1)throw new CrmV1Error(409,"crm.reference.invalid","Una referencia no existe en el tenant.");}if(input.pipelineId||input.stageId){const catalog=await client.query(`SELECT 1 FROM ${schema}.crm_pipeline_stages WHERE id=$1 AND pipeline_id=$2`,[input.stageId,input.pipelineId]);if(catalog.rowCount!==1)throw new CrmV1Error(409,"crm.pipeline.reference_invalid","El pipeline o la etapa no existe en el tenant.");}}
 async function assertAppointmentAvailable(client:pg.PoolClient,schema:string,input:Record<string,unknown>,excludingId?:string):Promise<void>{if(!input.startAt&&!input.endAt)return;if(!input.startAt||!input.endAt)throw new CrmV1Error(400,"crm.appointment.range_invalid","Inicio y fin deben declararse juntos.");const start=new Date(String(input.startAt));const end=new Date(String(input.endAt));if(Number.isNaN(start.valueOf())||Number.isNaN(end.valueOf())||end<=start)throw new CrmV1Error(400,"crm.appointment.range_invalid","El rango de la cita no es valido.");if(!input.resourceId)return;const result=await client.query(`SELECT 1 FROM ${schema}.crm_appointments WHERE archived_at IS NULL AND id<>COALESCE($1,'') AND status NOT IN ('cancelled','no_show') AND resource_id=$2 AND start_at<$4 AND end_at>$3 LIMIT 1`,[excludingId??null,input.resourceId,start.toISOString(),end.toISOString()]);if(result.rowCount)throw new CrmV1Error(409,"crm.appointment.conflict","El recurso ya tiene una cita en ese rango.");}
 

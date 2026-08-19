@@ -8,6 +8,12 @@ import {
   opaqueId,
   resolveIndustryProfile
 } from "./crmV1Domain.js";
+import {
+  assertDeletionAllowed,
+  crmDeletionPolicies,
+  deletionDecision,
+  type CrmEnvironmentClass
+} from "./crmV1DeletionPolicy.js";
 import type {
   CrmAccessContext,
   CrmAuditEvent,
@@ -16,6 +22,8 @@ import type {
   CrmMutationContext,
   CrmOutboxEvent,
   CrmPage,
+  CrmRecycleBinEntry,
+  CrmRecycleBinPage,
   CrmRecord,
   CrmResource,
   DashboardSummary,
@@ -37,6 +45,10 @@ export interface CrmV1Store {
   create(resource: CrmResource, input: Record<string, unknown>, mutation: CrmMutationContext): Promise<{ record: CrmRecord; replayed: boolean }>;
   update(resource: CrmResource, id: string, input: Record<string, unknown>, expectedVersion: number, mutation: CrmMutationContext): Promise<{ record: CrmRecord; replayed: boolean }>;
   command(resource: CrmResource, id: string, command: CrmCommand, mutation: CrmMutationContext): Promise<{ record: CrmRecord; replayed: boolean }>;
+  trash(resource: CrmResource, id: string, expectedVersion: number, mutation: CrmMutationContext): Promise<{ entry: CrmRecycleBinEntry; record: CrmRecord; replayed: boolean }>;
+  restore(resource: CrmResource, entryId: string, expectedVersion: number, mutation: CrmMutationContext): Promise<{ entry: CrmRecycleBinEntry; record: CrmRecord; replayed: boolean }>;
+  listRecycleBin(access: CrmAccessContext, query: CrmListQuery): Promise<CrmRecycleBinPage>;
+  getRecycleBin(access: CrmAccessContext, id: string): Promise<CrmRecycleBinEntry | null>;
   dashboard(access: CrmAccessContext, period: { from: string; to: string }): Promise<DashboardSummary>;
   profiles(): Promise<IndustryProfile[]>;
   effectiveProfile(access: CrmAccessContext): Promise<IndustryProfile>;
@@ -60,6 +72,7 @@ type TenantState = {
   outbox: CrmOutboxEvent[];
   jobs: Map<string, CrmJob>;
   imports: Map<string, ImportInternal>;
+  recycleBin: Map<string, CrmRecycleBinEntry & { snapshot: CrmRecord }>;
 };
 
 export const reportCatalog: ReportDefinition[] = [
@@ -96,6 +109,8 @@ const opportunityStageTransitions: Record<string, string[]> = {
 export class MemoryCrmV1Store implements CrmV1Store {
   private readonly tenants = new Map<string, TenantState>();
 
+  constructor(private readonly environmentClass: CrmEnvironmentClass | null = "development") {}
+
   async list(access: CrmAccessContext, resource: CrmResource, query: CrmListQuery): Promise<CrmPage> {
     const state = this.state(access);
     let rows = [...state.resources[resource].values()].filter((record) => record.archivedAt === null);
@@ -120,7 +135,17 @@ export class MemoryCrmV1Store implements CrmV1Store {
     }
     rows.sort((left, right) => compare(left[query.sort], right[query.sort]) * (query.direction === "asc" ? 1 : -1));
     const offset = decodeCursor(query.cursor);
-    const page = rows.slice(offset, offset + query.limit).map((record) => projectRecord(record, access));
+    const page = rows.slice(offset, offset + query.limit).map((record) => {
+      const projected = projectRecord(record, access);
+      projected.deletionDecision = deletionDecision({
+        access,
+        dependencyCount: memoryDependencyCount(state, resource, record.id),
+        environmentClass: this.environmentClass,
+        record,
+        resource
+      });
+      return projected;
+    });
     return {
       data: page,
       total: rows.length,
@@ -193,6 +218,69 @@ export class MemoryCrmV1Store implements CrmV1Store {
         throw error;
       }
     });
+  }
+
+  async trash(resource: CrmResource, id: string, expectedVersion: number, mutation: CrmMutationContext): Promise<{ entry: CrmRecycleBinEntry; record: CrmRecord; replayed: boolean }> {
+    return this.idempotent(mutation, `${resource}:${id}:trash`, () => {
+      const state = this.state(mutation.access);
+      const current = requireRecord(state, resource, id, mutation.access.tenantId);
+      if (current.archivedAt !== null) throw new CrmV1Error(409, "crm.deletion.already_trashed", "El registro ya está en la papelera.");
+      assertDeletionVersion(current, expectedVersion);
+      const dependencyCount = memoryDependencyCount(state, resource, id);
+      const decision = assertDeletionAllowed({ access: mutation.access, dependencyCount, environmentClass: this.environmentClass, record: current, resource });
+      const now = new Date().toISOString();
+      const record = { ...current, archivedAt: now, updatedAt: now, version: current.version + 1 };
+      const entry: CrmRecycleBinEntry & { snapshot: CrmRecord } = {
+        id: opaqueId("trash"), tenantId: mutation.access.tenantId, resourceType: resource,
+        resourceId: id, resourceLabel: resourceLabel(resource, current), resourceClass: crmDeletionPolicies[resource].resourceClass,
+        previousStatus: String(current.status ?? "active"), previousVersion: current.version, dependencyCount,
+        policyReasonCode: decision.reasonCode, status: "active", version: 1, createdAt: now, updatedAt: now,
+        restoredAt: null, snapshot: structuredClone(current)
+      };
+      state.resources[resource].set(id, record);
+      state.recycleBin.set(entry.id, entry);
+      this.accept(state, mutation, `${resource}.trashed`, resource, id, { entryId: entry.id, reasonCode: decision.reasonCode, version: record.version });
+      return { entry: publicRecycleEntry(entry), record: projectRecord(record, mutation.access), replayed: false };
+    });
+  }
+
+  async restore(resource: CrmResource, entryId: string, expectedVersion: number, mutation: CrmMutationContext): Promise<{ entry: CrmRecycleBinEntry; record: CrmRecord; replayed: boolean }> {
+    return this.idempotent(mutation, `${resource}:${entryId}:restore`, () => {
+      const state = this.state(mutation.access);
+      const currentEntry = state.recycleBin.get(entryId);
+      if (!currentEntry || currentEntry.tenantId !== mutation.access.tenantId || currentEntry.resourceType !== resource) {
+        throw new CrmV1Error(404, "crm.recycle_bin.not_found", "No existe la entrada solicitada en la papelera.");
+      }
+      if (currentEntry.status !== "active") throw new CrmV1Error(409, "crm.recycle_bin.already_restored", "La entrada ya fue restaurada.");
+      if (currentEntry.version !== expectedVersion) throw new CrmV1Error(412, "crm.version.conflict", "La entrada fue modificada por otra operación.");
+      const current = requireRecord(state, resource, currentEntry.resourceId, mutation.access.tenantId);
+      if (current.archivedAt === null) throw new CrmV1Error(409, "crm.recycle_bin.restore_conflict", "El registro ya está activo.");
+      const now = new Date().toISOString();
+      const record = { ...currentEntry.snapshot, archivedAt: null, status: currentEntry.previousStatus, updatedAt: now, version: current.version + 1 };
+      const entry = { ...currentEntry, status: "restored" as const, restoredAt: now, updatedAt: now, version: currentEntry.version + 1 };
+      state.resources[resource].set(record.id, record);
+      state.recycleBin.set(entry.id, entry);
+      this.accept(state, mutation, `${resource}.restored`, resource, record.id, { entryId, version: record.version });
+      return { entry: publicRecycleEntry(entry), record: projectRecord(record, mutation.access), replayed: false };
+    });
+  }
+
+  async listRecycleBin(access: CrmAccessContext, query: CrmListQuery): Promise<CrmRecycleBinPage> {
+    const state = this.state(access);
+    let rows = [...state.recycleBin.values()].filter((entry) => entry.status === "active");
+    if (query.q) {
+      const needle = query.q.toLocaleLowerCase();
+      rows = rows.filter((entry) => `${entry.resourceType} ${entry.resourceLabel}`.toLocaleLowerCase().includes(needle));
+    }
+    rows.sort((left, right) => right.createdAt.localeCompare(left.createdAt));
+    const offset = decodeCursor(query.cursor);
+    const data = rows.slice(offset, offset + query.limit).map(publicRecycleEntry);
+    return { data, total: rows.length, nextCursor: offset + data.length < rows.length ? encodeCursor(offset + data.length) : null };
+  }
+
+  async getRecycleBin(access: CrmAccessContext, id: string): Promise<CrmRecycleBinEntry | null> {
+    const entry = this.state(access).recycleBin.get(id);
+    return entry?.tenantId === access.tenantId ? publicRecycleEntry(entry) : null;
   }
 
   async dashboard(access: CrmAccessContext, period: { from: string; to: string }): Promise<DashboardSummary> {
@@ -402,7 +490,7 @@ export class MemoryCrmV1Store implements CrmV1Store {
       state = {
         resources: { accounts: new Map(), contacts: new Map(), cases: new Map(), activities: new Map(), appointments: new Map(), opportunities: new Map() },
         configuration: defaultTenantConfiguration(access.profileKey, access.profileVersion),
-        idempotency: new Map(), audits: [], outbox: [], jobs: new Map(), imports: new Map()
+        idempotency: new Map(), audits: [], outbox: [], jobs: new Map(), imports: new Map(), recycleBin: new Map()
       };
       state.configuration.timezone = access.timezone;
       state.configuration.locale = access.locale;
@@ -517,6 +605,36 @@ function requireRecord(state: TenantState, resource: CrmResource, id: string, te
 
 function assertVersion(record: CrmRecord, expectedVersion: number): void {
   if (record.version !== expectedVersion) throw new CrmV1Error(412, "crm.version.conflict", "El recurso fue modificado por otra operacion.");
+}
+
+function assertDeletionVersion(record: CrmRecord, expectedVersion: number): void {
+  if (record.version !== expectedVersion) {
+    throw new CrmV1Error(409, "crm.deletion.deletion_policy_changed", "La elegibilidad del registro cambió; actualiza el inventario.");
+  }
+}
+
+function memoryDependencyCount(state: TenantState, resource: CrmResource, id: string): number {
+  if (resource === "accounts") {
+    return (["cases", "activities", "appointments", "opportunities"] as const)
+      .flatMap((candidate) => [...state.resources[candidate].values()])
+      .filter((record) => record.accountId === id).length;
+  }
+  if (resource === "contacts") {
+    return (["cases", "activities", "appointments"] as const)
+      .flatMap((candidate) => [...state.resources[candidate].values()])
+      .filter((record) => record.contactId === id).length
+      + [...state.resources.opportunities.values()].filter((record) => record.primaryContactId === id).length;
+  }
+  return 0;
+}
+
+function resourceLabel(resource: CrmResource, record: CrmRecord): string {
+  return String(record.name ?? record.displayName ?? record.subject ?? record.id).trim().slice(0, 240) || record.id;
+}
+
+function publicRecycleEntry(entry: CrmRecycleBinEntry & { snapshot?: CrmRecord }): CrmRecycleBinEntry {
+  const { snapshot: _snapshot, ...publicEntry } = entry;
+  return structuredClone(publicEntry);
 }
 
 function projectRecord(record: CrmRecord, access: CrmAccessContext): CrmRecord {
