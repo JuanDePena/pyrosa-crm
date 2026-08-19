@@ -26,7 +26,7 @@ function access(capabilities: string[], tenantId = "tenant_recycle"): CrmAccessC
     capabilities,
     contextVersion: `context:${tenantId}`,
     decisionReferences: { directory: "directory:1", platform: "platform:1", store: "store:1" },
-    dictionaryVersion: "2026.08.19.0",
+    dictionaryVersion: "2026.08.19.2",
     displayName: tenantId,
     locale: "es-DO",
     physicalFingerprint: `placement:${tenantId}`,

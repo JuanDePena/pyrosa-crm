@@ -1,0 +1,45 @@
+{
+  "schemaVersion": "pyrosa-platform-dictionary-successor-owner-bundle-v2",
+  "version": "2026.08.19.2",
+  "predecessorVersion": "2026.08.19.0",
+  "ownerRepository": "JuanDePena/pyrosa-crm",
+  "scopeCoverage": [
+    "tenant-product"
+  ],
+  "runtimeDdlAllowed": false,
+  "source": {
+    "path": "database/dictionaries/crm-tenant-product.2026.08.19.2.json",
+    "sha256": "sha256:f91a084b02973c94dacf0ea691c714fcd8f16b841706f81e776b233d6662b948",
+    "objectCount": 439
+  },
+  "compatibilityBridge": {
+    "appSlug": "pyrosa-democrm",
+    "checksum": "sha256:87ddbc885d3aab9910832d93be15b15624c0c6160968de56c088957624f15c10",
+    "migrationBaseChecksum": "sha256:a1830678b88b511792449b526ffad12f683044fe43b3587d85da716bb2002565",
+    "objectCount": 413,
+    "path": "database/dictionaries/pyrosa-democrm-tenant-product.2026.08.19.1.owner-v2.json",
+    "version": "2026.08.19.1"
+  },
+  "manifests": [
+    {
+      "appSlug": "pyrosa-democrm",
+      "dictionarySlug": "pyrosa-democrm-tenant-product",
+      "objectCount": 439,
+      "owner": "pyrosa-democrm",
+      "path": "database/dictionaries/pyrosa-democrm-tenant-product.2026.08.19.2.owner-v2.json",
+      "scopeType": "tenant-product",
+      "sha256": "sha256:ff79e90dbc40a1f8e6a8992fc21691cb624512cc3e70c934972805ac7e097b64",
+      "version": "2026.08.19.2"
+    },
+    {
+      "appSlug": "pyrosa-crm",
+      "dictionarySlug": "pyrosa-crm-tenant-product",
+      "objectCount": 439,
+      "owner": "pyrosa-crm",
+      "path": "database/dictionaries/pyrosa-crm-tenant-product.2026.08.19.2.owner-v2.json",
+      "scopeType": "tenant-product",
+      "sha256": "sha256:81bebe2c1fce6c85b1107fe5443d9f25910c5a6c7fe6cd581eac3ce6da4423cc",
+      "version": "2026.08.19.2"
+    }
+  ]
+}

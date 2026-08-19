@@ -1,0 +1,5837 @@
+{
+  "schemaVersion": "pyrosa-crm-shared-tenant-product-v2",
+  "version": "2026.08.19.2",
+  "productFamily": "pyrosa-crm-v2607",
+  "scopeType": "tenant-product",
+  "artifactKind": "desired-state",
+  "applyOwner": "pyrosa-platform",
+  "runtimeDdlAllowed": false,
+  "schemaObjectName": "tenant_product",
+  "objectCount": 439,
+  "objects": [
+    {
+      "definition": {
+        "bootstrapEligible": true,
+        "governedOperation": "migration.execute",
+        "runtimeDdlAllowed": false,
+        "sourceSchemaVersion": "pyrosa-platform-dictionary-definition-v1",
+        "sourceScope": "tenant"
+      },
+      "objectName": "tenant_product",
+      "objectType": "schema",
+      "parentObjectName": null
+    },
+    {
+      "definition": {
+        "fields": [
+          {
+            "dataType": "text",
+            "name": "id",
+            "nullable": false
+          },
+          {
+            "dataType": "text",
+            "name": "account_id",
+            "nullable": false
+          },
+          {
+            "dataType": "text",
+            "name": "contact_id",
+            "nullable": false
+          },
+          {
+            "dataType": "text",
+            "name": "role_key",
+            "nullable": false
+          },
+          {
+            "dataType": "boolean",
+            "name": "is_primary",
+            "nullable": false
+          },
+          {
+            "dataType": "bigint",
+            "name": "version",
+            "nullable": false
+          },
+          {
+            "dataType": "timestamp with time zone",
+            "name": "created_at",
+            "nullable": false
+          },
+          {
+            "dataType": "timestamp with time zone",
+            "name": "archived_at",
+            "nullable": true
+          }
+        ],
+        "primaryKey": [
+          "id"
+        ],
+        "semanticChecks": [],
+        "semanticIndexes": []
+      },
+      "objectName": "crm_account_contact_links",
+      "objectType": "table",
+      "parentObjectName": null
+    },
+    {
+      "definition": {
+        "fields": [
+          {
+            "dataType": "text",
+            "name": "id",
+            "nullable": false
+          },
+          {
+            "dataType": "text",
+            "name": "status",
+            "nullable": false
+          },
+          {
+            "dataType": "text",
+            "name": "owner_id",
+            "nullable": true
+          },
+          {
+            "dataType": "text",
+            "default": "''::text",
+            "name": "search_text",
+            "nullable": false
+          },
+          {
+            "dataType": "jsonb",
+            "default": "'{}'::jsonb",
+            "name": "record_json",
+            "nullable": false
+          },
+          {
+            "dataType": "bigint",
+            "default": "1",
+            "name": "version",
+            "nullable": false
+          },
+          {
+            "dataType": "timestamp with time zone",
+            "name": "created_at",
+            "nullable": false
+          },
+          {
+            "dataType": "timestamp with time zone",
+            "name": "updated_at",
+            "nullable": false
+          },
+          {
+            "dataType": "timestamp with time zone",
+            "name": "archived_at",
+            "nullable": true
+          },
+          {
+            "dataType": "text",
+            "name": "account_type",
+            "nullable": false
+          },
+          {
+            "dataType": "text",
+            "name": "external_ref",
+            "nullable": true
+          }
+        ],
+        "primaryKey": [
+          "id"
+        ],
+        "semanticChecks": [
+          "record_json:resource-specific-schema",
+          "search_text:contains-no-sensitive-fields",
+          "record_json:account-v1"
+        ],
+        "semanticIndexes": []
+      },
+      "objectName": "crm_accounts",
+      "objectType": "table",
+      "parentObjectName": null
+    },
+    {
+      "definition": {
+        "fields": [
+          {
+            "dataType": "text",
+            "name": "id",
+            "nullable": false
+          },
+          {
+            "dataType": "text",
+            "name": "status",
+            "nullable": false
+          },
+          {
+            "dataType": "text",
+            "name": "owner_id",
+            "nullable": true
+          },
+          {
+            "dataType": "text",
+            "default": "''::text",
+            "name": "search_text",
+            "nullable": false
+          },
+          {
+            "dataType": "jsonb",
+            "default": "'{}'::jsonb",
+            "name": "record_json",
+            "nullable": false
+          },
+          {
+            "dataType": "bigint",
+            "default": "1",
+            "name": "version",
+            "nullable": false
+          },
+          {
+            "dataType": "timestamp with time zone",
+            "name": "created_at",
+            "nullable": false
+          },
+          {
+            "dataType": "timestamp with time zone",
+            "name": "updated_at",
+            "nullable": false
+          },
+          {
+            "dataType": "timestamp with time zone",
+            "name": "archived_at",
+            "nullable": true
+          },
+          {
+            "dataType": "text",
+            "name": "case_id",
+            "nullable": true
+          },
+          {
+            "dataType": "text",
+            "name": "account_id",
+            "nullable": true
+          },
+          {
+            "dataType": "text",
+            "name": "contact_id",
+            "nullable": true
+          },
+          {
+            "dataType": "text",
+            "name": "activity_type",
+            "nullable": false
+          },
+          {
+            "dataType": "timestamp with time zone",
+            "name": "due_at",
+            "nullable": true
+          },
+          {
+            "dataType": "timestamp with time zone",
+            "name": "completed_at",
+            "nullable": true
+          }
+        ],
+        "primaryKey": [
+          "id"
+        ],
+        "semanticChecks": [
+          "record_json:resource-specific-schema",
+          "search_text:contains-no-sensitive-fields",
+          "record_json:activity-v1"
+        ],
+        "semanticIndexes": []
+      },
+      "objectName": "crm_activities",
+      "objectType": "table",
+      "parentObjectName": null
+    },
+    {
+      "definition": {
+        "fields": [
+          {
+            "dataType": "text",
+            "name": "id",
+            "nullable": false
+          },
+          {
+            "dataType": "text",
+            "name": "appointment_id",
+            "nullable": false
+          },
+          {
+            "dataType": "text",
+            "name": "participant_type",
+            "nullable": false
+          },
+          {
+            "dataType": "text",
+            "name": "participant_id",
+            "nullable": false
+          },
+          {
+            "dataType": "text",
+            "name": "role_key",
+            "nullable": false
+          },
+          {
+            "dataType": "text",
+            "name": "response_status",
+            "nullable": false
+          },
+          {
+            "dataType": "timestamp with time zone",
+            "name": "created_at",
+            "nullable": false
+          },
+          {
+            "dataType": "timestamp with time zone",
+            "name": "updated_at",
+            "nullable": false
+          }
+        ],
+        "primaryKey": [
+          "id"
+        ],
+        "semanticChecks": [],
+        "semanticIndexes": []
+      },
+      "objectName": "crm_appointment_participants",
+      "objectType": "table",
+      "parentObjectName": null
+    },
+    {
+      "definition": {
+        "appendOnly": true,
+        "fields": [
+          {
+            "dataType": "text",
+            "name": "id",
+            "nullable": false
+          },
+          {
+            "dataType": "text",
+            "name": "appointment_id",
+            "nullable": false
+          },
+          {
+            "dataType": "text",
+            "name": "from_status",
+            "nullable": true
+          },
+          {
+            "dataType": "text",
+            "name": "to_status",
+            "nullable": false
+          },
+          {
+            "dataType": "text",
+            "name": "reason_code",
+            "nullable": true
+          },
+          {
+            "dataType": "text",
+            "name": "actor_subject",
+            "nullable": false
+          },
+          {
+            "dataType": "bigint",
+            "name": "aggregate_version",
+            "nullable": false
+          },
+          {
+            "dataType": "timestamp with time zone",
+            "name": "occurred_at",
+            "nullable": false
+          }
+        ],
+        "primaryKey": [
+          "id"
+        ],
+        "semanticChecks": [],
+        "semanticIndexes": []
+      },
+      "objectName": "crm_appointment_status_history",
+      "objectType": "table",
+      "parentObjectName": null
+    },
+    {
+      "definition": {
+        "fields": [
+          {
+            "dataType": "text",
+            "name": "id",
+            "nullable": false
+          },
+          {
+            "dataType": "text",
+            "name": "status",
+            "nullable": false
+          },
+          {
+            "dataType": "text",
+            "name": "owner_id",
+            "nullable": true
+          },
+          {
+            "dataType": "text",
+            "default": "''::text",
+            "name": "search_text",
+            "nullable": false
+          },
+          {
+            "dataType": "jsonb",
+            "default": "'{}'::jsonb",
+            "name": "record_json",
+            "nullable": false
+          },
+          {
+            "dataType": "bigint",
+            "default": "1",
+            "name": "version",
+            "nullable": false
+          },
+          {
+            "dataType": "timestamp with time zone",
+            "name": "created_at",
+            "nullable": false
+          },
+          {
+            "dataType": "timestamp with time zone",
+            "name": "updated_at",
+            "nullable": false
+          },
+          {
+            "dataType": "timestamp with time zone",
+            "name": "archived_at",
+            "nullable": true
+          },
+          {
+            "dataType": "text",
+            "name": "case_id",
+            "nullable": false
+          },
+          {
+            "dataType": "text",
+            "name": "account_id",
+            "nullable": true
+          },
+          {
+            "dataType": "text",
+            "name": "contact_id",
+            "nullable": true
+          },
+          {
+            "dataType": "text",
+            "name": "resource_id",
+            "nullable": true
+          },
+          {
+            "dataType": "timestamp with time zone",
+            "name": "start_at",
+            "nullable": true
+          },
+          {
+            "dataType": "timestamp with time zone",
+            "name": "end_at",
+            "nullable": true
+          },
+          {
+            "dataType": "text",
+            "name": "timezone",
+            "nullable": false
+          },
+          {
+            "dataType": "text",
+            "name": "external_ref",
+            "nullable": true
+          }
+        ],
+        "primaryKey": [
+          "id"
+        ],
+        "semanticChecks": [
+          "record_json:resource-specific-schema",
+          "search_text:contains-no-sensitive-fields",
+          "record_json:appointment-v1"
+        ],
+        "semanticIndexes": []
+      },
+      "objectName": "crm_appointments",
+      "objectType": "table",
+      "parentObjectName": null
+    },
+    {
+      "definition": {
+        "primaryKey": [
+          "audit_event_id"
+        ]
+      },
+      "objectName": "crm_audit_events",
+      "objectType": "table",
+      "parentObjectName": null
+    },
+    {
+      "definition": {
+        "fields": [
+          {
+            "dataType": "text",
+            "name": "id",
+            "nullable": false
+          },
+          {
+            "dataType": "text",
+            "name": "case_id",
+            "nullable": false
+          },
+          {
+            "dataType": "text",
+            "name": "party_type",
+            "nullable": false
+          },
+          {
+            "dataType": "text",
+            "name": "party_id",
+            "nullable": false
+          },
+          {
+            "dataType": "text",
+            "name": "role_key",
+            "nullable": false
+          },
+          {
+            "dataType": "timestamp with time zone",
+            "name": "created_at",
+            "nullable": false
+          },
+          {
+            "dataType": "timestamp with time zone",
+            "name": "archived_at",
+            "nullable": true
+          }
+        ],
+        "primaryKey": [
+          "id"
+        ],
+        "semanticChecks": [],
+        "semanticIndexes": []
+      },
+      "objectName": "crm_case_parties",
+      "objectType": "table",
+      "parentObjectName": null
+    },
+    {
+      "definition": {
+        "appendOnly": true,
+        "fields": [
+          {
+            "dataType": "text",
+            "name": "id",
+            "nullable": false
+          },
+          {
+            "dataType": "text",
+            "name": "case_id",
+            "nullable": false
+          },
+          {
+            "dataType": "text",
+            "name": "from_status",
+            "nullable": true
+          },
+          {
+            "dataType": "text",
+            "name": "to_status",
+            "nullable": false
+          },
+          {
+            "dataType": "text",
+            "name": "reason_code",
+            "nullable": true
+          },
+          {
+            "dataType": "text",
+            "name": "actor_subject",
+            "nullable": false
+          },
+          {
+            "dataType": "bigint",
+            "name": "aggregate_version",
+            "nullable": false
+          },
+          {
+            "dataType": "timestamp with time zone",
+            "name": "occurred_at",
+            "nullable": false
+          }
+        ],
+        "primaryKey": [
+          "id"
+        ],
+        "semanticChecks": [],
+        "semanticIndexes": []
+      },
+      "objectName": "crm_case_status_history",
+      "objectType": "table",
+      "parentObjectName": null
+    },
+    {
+      "definition": {
+        "fields": [
+          {
+            "dataType": "text",
+            "name": "id",
+            "nullable": false
+          },
+          {
+            "dataType": "text",
+            "name": "status",
+            "nullable": false
+          },
+          {
+            "dataType": "text",
+            "name": "owner_id",
+            "nullable": true
+          },
+          {
+            "dataType": "text",
+            "default": "''::text",
+            "name": "search_text",
+            "nullable": false
+          },
+          {
+            "dataType": "jsonb",
+            "default": "'{}'::jsonb",
+            "name": "record_json",
+            "nullable": false
+          },
+          {
+            "dataType": "bigint",
+            "default": "1",
+            "name": "version",
+            "nullable": false
+          },
+          {
+            "dataType": "timestamp with time zone",
+            "name": "created_at",
+            "nullable": false
+          },
+          {
+            "dataType": "timestamp with time zone",
+            "name": "updated_at",
+            "nullable": false
+          },
+          {
+            "dataType": "timestamp with time zone",
+            "name": "archived_at",
+            "nullable": true
+          },
+          {
+            "dataType": "text",
+            "name": "account_id",
+            "nullable": true
+          },
+          {
+            "dataType": "text",
+            "name": "contact_id",
+            "nullable": true
+          },
+          {
+            "dataType": "text",
+            "name": "case_type",
+            "nullable": false
+          },
+          {
+            "dataType": "text",
+            "name": "priority",
+            "nullable": false
+          },
+          {
+            "dataType": "text",
+            "name": "queue_id",
+            "nullable": true
+          },
+          {
+            "dataType": "timestamp with time zone",
+            "name": "sla_due_at",
+            "nullable": true
+          }
+        ],
+        "primaryKey": [
+          "id"
+        ],
+        "semanticChecks": [
+          "record_json:resource-specific-schema",
+          "search_text:contains-no-sensitive-fields",
+          "record_json:case-v1"
+        ],
+        "semanticIndexes": []
+      },
+      "objectName": "crm_cases",
+      "objectType": "table",
+      "parentObjectName": null
+    },
+    {
+      "definition": {
+        "fields": [
+          {
+            "dataType": "text",
+            "name": "contact_id",
+            "nullable": false
+          },
+          {
+            "dataType": "text",
+            "name": "channel_key",
+            "nullable": false
+          },
+          {
+            "dataType": "text",
+            "name": "preference",
+            "nullable": false
+          },
+          {
+            "dataType": "text",
+            "name": "consent_status",
+            "nullable": false
+          },
+          {
+            "dataType": "text",
+            "name": "consent_source",
+            "nullable": true
+          },
+          {
+            "dataType": "bigint",
+            "name": "version",
+            "nullable": false
+          },
+          {
+            "dataType": "timestamp with time zone",
+            "name": "updated_at",
+            "nullable": false
+          }
+        ],
+        "primaryKey": [
+          "contact_id",
+          "channel_key"
+        ],
+        "semanticChecks": [],
+        "semanticIndexes": []
+      },
+      "objectName": "crm_contact_preferences",
+      "objectType": "table",
+      "parentObjectName": null
+    },
+    {
+      "definition": {
+        "fields": [
+          {
+            "dataType": "text",
+            "name": "id",
+            "nullable": false
+          },
+          {
+            "dataType": "text",
+            "name": "status",
+            "nullable": false
+          },
+          {
+            "dataType": "text",
+            "name": "owner_id",
+            "nullable": true
+          },
+          {
+            "dataType": "text",
+            "default": "''::text",
+            "name": "search_text",
+            "nullable": false
+          },
+          {
+            "dataType": "jsonb",
+            "default": "'{}'::jsonb",
+            "name": "record_json",
+            "nullable": false
+          },
+          {
+            "dataType": "bigint",
+            "default": "1",
+            "name": "version",
+            "nullable": false
+          },
+          {
+            "dataType": "timestamp with time zone",
+            "name": "created_at",
+            "nullable": false
+          },
+          {
+            "dataType": "timestamp with time zone",
+            "name": "updated_at",
+            "nullable": false
+          },
+          {
+            "dataType": "timestamp with time zone",
+            "name": "archived_at",
+            "nullable": true
+          },
+          {
+            "dataType": "text",
+            "name": "primary_account_id",
+            "nullable": true
+          },
+          {
+            "dataType": "text",
+            "name": "contact_role",
+            "nullable": false
+          },
+          {
+            "dataType": "jsonb",
+            "name": "sensitive_json",
+            "nullable": false,
+            "protection": "encrypted-or-field-encrypted"
+          }
+        ],
+        "primaryKey": [
+          "id"
+        ],
+        "semanticChecks": [
+          "record_json:resource-specific-schema",
+          "search_text:contains-no-sensitive-fields",
+          "record_json:contact-v1",
+          "sensitive_json:contact-sensitive-v1"
+        ],
+        "semanticIndexes": []
+      },
+      "objectName": "crm_contacts",
+      "objectType": "table",
+      "parentObjectName": null
+    },
+    {
+      "definition": {
+        "fields": [
+          {
+            "dataType": "text",
+            "name": "idempotency_key",
+            "nullable": false
+          },
+          {
+            "dataType": "char(64)",
+            "name": "request_checksum",
+            "nullable": false
+          },
+          {
+            "dataType": "jsonb",
+            "name": "response_json",
+            "nullable": false
+          },
+          {
+            "dataType": "timestamp with time zone",
+            "name": "created_at",
+            "nullable": false
+          },
+          {
+            "dataType": "timestamp with time zone",
+            "name": "updated_at",
+            "nullable": false
+          }
+        ],
+        "primaryKey": [
+          "idempotency_key"
+        ],
+        "semanticChecks": [
+          "request_checksum:sha256",
+          "response_json:sanitized-response-v1"
+        ],
+        "semanticIndexes": []
+      },
+      "objectName": "crm_idempotency_results",
+      "objectType": "table",
+      "parentObjectName": null
+    },
+    {
+      "definition": {
+        "fields": [
+          {
+            "dataType": "text",
+            "name": "id",
+            "nullable": false
+          },
+          {
+            "dataType": "text",
+            "name": "status",
+            "nullable": false
+          },
+          {
+            "dataType": "char(64)",
+            "name": "source_fingerprint",
+            "nullable": false
+          },
+          {
+            "dataType": "integer",
+            "name": "source_record_count",
+            "nullable": false
+          },
+          {
+            "dataType": "integer",
+            "name": "accepted_count",
+            "nullable": false
+          },
+          {
+            "dataType": "integer",
+            "name": "duplicate_count",
+            "nullable": false
+          },
+          {
+            "dataType": "integer",
+            "name": "quarantine_count",
+            "nullable": false
+          },
+          {
+            "dataType": "jsonb",
+            "name": "quarantine_json",
+            "nullable": false
+          },
+          {
+            "dataType": "bigint",
+            "name": "version",
+            "nullable": false
+          },
+          {
+            "dataType": "timestamp with time zone",
+            "name": "created_at",
+            "nullable": false
+          },
+          {
+            "dataType": "timestamp with time zone",
+            "name": "updated_at",
+            "nullable": false
+          }
+        ],
+        "primaryKey": [
+          "id"
+        ],
+        "semanticChecks": [
+          "counts:non-negative",
+          "quarantine_json:no-source-values"
+        ],
+        "semanticIndexes": []
+      },
+      "objectName": "crm_import_batches",
+      "objectType": "table",
+      "parentObjectName": null
+    },
+    {
+      "definition": {
+        "fields": [
+          {
+            "dataType": "text",
+            "name": "batch_id",
+            "nullable": false
+          },
+          {
+            "dataType": "integer",
+            "name": "source_row",
+            "nullable": false
+          },
+          {
+            "dataType": "jsonb",
+            "name": "normalized_json",
+            "nullable": false
+          },
+          {
+            "dataType": "text",
+            "name": "status",
+            "nullable": false
+          },
+          {
+            "dataType": "text",
+            "name": "target_type",
+            "nullable": true
+          },
+          {
+            "dataType": "text",
+            "name": "target_id",
+            "nullable": true
+          },
+          {
+            "dataType": "timestamp with time zone",
+            "name": "created_at",
+            "nullable": false
+          }
+        ],
+        "primaryKey": [
+          "batch_id",
+          "source_row"
+        ],
+        "semanticChecks": [
+          "normalized_json:voix-import-normalized-v1"
+        ],
+        "semanticIndexes": []
+      },
+      "objectName": "crm_import_records",
+      "objectType": "table",
+      "parentObjectName": null
+    },
+    {
+      "definition": {
+        "fields": [
+          {
+            "dataType": "text",
+            "name": "id",
+            "nullable": false
+          },
+          {
+            "dataType": "text",
+            "name": "kind",
+            "nullable": false
+          },
+          {
+            "dataType": "text",
+            "name": "status",
+            "nullable": false
+          },
+          {
+            "dataType": "timestamp with time zone",
+            "name": "expires_at",
+            "nullable": true
+          },
+          {
+            "dataType": "jsonb",
+            "name": "record_json",
+            "nullable": false
+          },
+          {
+            "dataType": "bigint",
+            "name": "version",
+            "nullable": false
+          },
+          {
+            "dataType": "timestamp with time zone",
+            "name": "created_at",
+            "nullable": false
+          },
+          {
+            "dataType": "timestamp with time zone",
+            "name": "updated_at",
+            "nullable": false
+          }
+        ],
+        "primaryKey": [
+          "id"
+        ],
+        "semanticChecks": [
+          "record_json:job-v1"
+        ],
+        "semanticIndexes": []
+      },
+      "objectName": "crm_jobs",
+      "objectType": "table",
+      "parentObjectName": null
+    },
+    {
+      "definition": {
+        "columns": [
+          "accounts_organization_id",
+          "context_id",
+          "created_at",
+          "display_name",
+          "platform_tenant_id",
+          "status",
+          "updated_at"
+        ],
+        "primaryKey": [
+          "context_id"
+        ]
+      },
+      "objectName": "crm_operating_contexts",
+      "objectType": "table",
+      "parentObjectName": null
+    },
+    {
+      "definition": {
+        "fields": [
+          {
+            "dataType": "text",
+            "name": "id",
+            "nullable": false
+          },
+          {
+            "dataType": "text",
+            "name": "status",
+            "nullable": false
+          },
+          {
+            "dataType": "text",
+            "name": "owner_id",
+            "nullable": true
+          },
+          {
+            "dataType": "text",
+            "default": "''::text",
+            "name": "search_text",
+            "nullable": false
+          },
+          {
+            "dataType": "jsonb",
+            "default": "'{}'::jsonb",
+            "name": "record_json",
+            "nullable": false
+          },
+          {
+            "dataType": "bigint",
+            "default": "1",
+            "name": "version",
+            "nullable": false
+          },
+          {
+            "dataType": "timestamp with time zone",
+            "name": "created_at",
+            "nullable": false
+          },
+          {
+            "dataType": "timestamp with time zone",
+            "name": "updated_at",
+            "nullable": false
+          },
+          {
+            "dataType": "timestamp with time zone",
+            "name": "archived_at",
+            "nullable": true
+          },
+          {
+            "dataType": "text",
+            "name": "account_id",
+            "nullable": false
+          },
+          {
+            "dataType": "text",
+            "name": "primary_contact_id",
+            "nullable": true
+          },
+          {
+            "dataType": "text",
+            "name": "pipeline_id",
+            "nullable": false
+          },
+          {
+            "dataType": "text",
+            "name": "stage_id",
+            "nullable": false
+          },
+          {
+            "dataType": "bigint",
+            "name": "amount_minor",
+            "nullable": false
+          },
+          {
+            "dataType": "char(3)",
+            "name": "currency",
+            "nullable": false
+          },
+          {
+            "dataType": "integer",
+            "name": "probability",
+            "nullable": false
+          },
+          {
+            "dataType": "text",
+            "name": "close_reason",
+            "nullable": true
+          }
+        ],
+        "primaryKey": [
+          "id"
+        ],
+        "semanticChecks": [
+          "record_json:resource-specific-schema",
+          "search_text:contains-no-sensitive-fields",
+          "record_json:opportunity-v1"
+        ],
+        "semanticIndexes": []
+      },
+      "objectName": "crm_opportunities",
+      "objectType": "table",
+      "parentObjectName": null
+    },
+    {
+      "definition": {
+        "appendOnly": true,
+        "fields": [
+          {
+            "dataType": "text",
+            "name": "id",
+            "nullable": false
+          },
+          {
+            "dataType": "text",
+            "name": "opportunity_id",
+            "nullable": false
+          },
+          {
+            "dataType": "text",
+            "name": "from_stage_id",
+            "nullable": true
+          },
+          {
+            "dataType": "text",
+            "name": "to_stage_id",
+            "nullable": false
+          },
+          {
+            "dataType": "integer",
+            "name": "probability",
+            "nullable": false
+          },
+          {
+            "dataType": "text",
+            "name": "reason_code",
+            "nullable": true
+          },
+          {
+            "dataType": "text",
+            "name": "actor_subject",
+            "nullable": false
+          },
+          {
+            "dataType": "bigint",
+            "name": "aggregate_version",
+            "nullable": false
+          },
+          {
+            "dataType": "timestamp with time zone",
+            "name": "occurred_at",
+            "nullable": false
+          }
+        ],
+        "primaryKey": [
+          "id"
+        ],
+        "semanticChecks": [],
+        "semanticIndexes": []
+      },
+      "objectName": "crm_opportunity_stage_history",
+      "objectType": "table",
+      "parentObjectName": null
+    },
+    {
+      "definition": {
+        "fields": [
+          {
+            "dataType": "text",
+            "name": "event_id",
+            "nullable": false
+          },
+          {
+            "dataType": "text",
+            "name": "event_type",
+            "nullable": false
+          },
+          {
+            "dataType": "text",
+            "name": "contract_version",
+            "nullable": false
+          },
+          {
+            "dataType": "text",
+            "name": "correlation_id",
+            "nullable": false
+          },
+          {
+            "dataType": "text",
+            "name": "causation_id",
+            "nullable": false
+          },
+          {
+            "dataType": "text",
+            "name": "actor_subject",
+            "nullable": false
+          },
+          {
+            "dataType": "jsonb",
+            "name": "payload_json",
+            "nullable": false
+          },
+          {
+            "dataType": "text",
+            "name": "status",
+            "nullable": false
+          },
+          {
+            "dataType": "integer",
+            "default": "0",
+            "name": "attempt_count",
+            "nullable": false
+          },
+          {
+            "dataType": "timestamp with time zone",
+            "default": "now()",
+            "name": "available_at",
+            "nullable": false
+          },
+          {
+            "dataType": "timestamp with time zone",
+            "name": "occurred_at",
+            "nullable": false
+          },
+          {
+            "dataType": "timestamp with time zone",
+            "name": "delivered_at",
+            "nullable": true
+          },
+          {
+            "dataType": "text",
+            "name": "last_error_code",
+            "nullable": true
+          }
+        ],
+        "primaryKey": [
+          "event_id"
+        ],
+        "semanticChecks": [
+          "payload_json:no-sensitive-fields"
+        ],
+        "semanticIndexes": []
+      },
+      "objectName": "crm_outbox_events",
+      "objectType": "table",
+      "parentObjectName": null
+    },
+    {
+      "definition": {
+        "fields": [
+          {
+            "dataType": "text",
+            "name": "id",
+            "nullable": false
+          },
+          {
+            "dataType": "text",
+            "name": "pipeline_id",
+            "nullable": false
+          },
+          {
+            "dataType": "text",
+            "name": "stage_key",
+            "nullable": false
+          },
+          {
+            "dataType": "text",
+            "name": "label",
+            "nullable": false
+          },
+          {
+            "dataType": "integer",
+            "name": "position",
+            "nullable": false
+          },
+          {
+            "dataType": "integer",
+            "name": "default_probability",
+            "nullable": false
+          },
+          {
+            "dataType": "text",
+            "name": "terminal_kind",
+            "nullable": true
+          },
+          {
+            "dataType": "bigint",
+            "name": "version",
+            "nullable": false
+          }
+        ],
+        "primaryKey": [
+          "id"
+        ],
+        "semanticChecks": [],
+        "semanticIndexes": []
+      },
+      "objectName": "crm_pipeline_stages",
+      "objectType": "table",
+      "parentObjectName": null
+    },
+    {
+      "definition": {
+        "fields": [
+          {
+            "dataType": "text",
+            "name": "id",
+            "nullable": false
+          },
+          {
+            "dataType": "text",
+            "name": "profile_key",
+            "nullable": false
+          },
+          {
+            "dataType": "text",
+            "name": "name",
+            "nullable": false
+          },
+          {
+            "dataType": "text",
+            "name": "status",
+            "nullable": false
+          },
+          {
+            "dataType": "bigint",
+            "name": "version",
+            "nullable": false
+          },
+          {
+            "dataType": "timestamp with time zone",
+            "name": "created_at",
+            "nullable": false
+          },
+          {
+            "dataType": "timestamp with time zone",
+            "name": "updated_at",
+            "nullable": false
+          }
+        ],
+        "primaryKey": [
+          "id"
+        ],
+        "semanticChecks": [],
+        "semanticIndexes": []
+      },
+      "objectName": "crm_pipelines",
+      "objectType": "table",
+      "parentObjectName": null
+    },
+    {
+      "definition": {
+        "columns": [
+          "context_id",
+          "created_at",
+          "external_ref",
+          "link_id",
+          "purpose",
+          "service_slug",
+          "status",
+          "updated_at"
+        ],
+        "primaryKey": [
+          "link_id"
+        ]
+      },
+      "objectName": "crm_platform_links",
+      "objectType": "table",
+      "parentObjectName": null
+    },
+    {
+      "definition": {
+        "fields": [
+          {
+            "name": "id",
+            "dataType": "text",
+            "nullable": false
+          },
+          {
+            "name": "resource_type",
+            "dataType": "text",
+            "nullable": false
+          },
+          {
+            "name": "resource_id",
+            "dataType": "text",
+            "nullable": false
+          },
+          {
+            "name": "resource_label",
+            "dataType": "text",
+            "nullable": false
+          },
+          {
+            "name": "resource_class",
+            "dataType": "text",
+            "nullable": false
+          },
+          {
+            "name": "previous_status",
+            "dataType": "text",
+            "nullable": false
+          },
+          {
+            "name": "previous_version",
+            "dataType": "bigint",
+            "nullable": false
+          },
+          {
+            "name": "snapshot_json",
+            "dataType": "jsonb",
+            "nullable": false
+          },
+          {
+            "name": "dependency_count",
+            "dataType": "bigint",
+            "nullable": false,
+            "default": "0"
+          },
+          {
+            "name": "policy_reason_code",
+            "dataType": "text",
+            "nullable": false
+          },
+          {
+            "name": "trashed_by",
+            "dataType": "text",
+            "nullable": false
+          },
+          {
+            "name": "trash_operation_ref",
+            "dataType": "text",
+            "nullable": false
+          },
+          {
+            "name": "status",
+            "dataType": "text",
+            "nullable": false
+          },
+          {
+            "name": "version",
+            "dataType": "bigint",
+            "nullable": false,
+            "default": "1"
+          },
+          {
+            "name": "created_at",
+            "dataType": "timestamp with time zone",
+            "nullable": false
+          },
+          {
+            "name": "updated_at",
+            "dataType": "timestamp with time zone",
+            "nullable": false
+          },
+          {
+            "name": "restored_at",
+            "dataType": "timestamp with time zone",
+            "nullable": true
+          },
+          {
+            "name": "restored_by",
+            "dataType": "text",
+            "nullable": true
+          },
+          {
+            "name": "restore_operation_ref",
+            "dataType": "text",
+            "nullable": true
+          }
+        ],
+        "primaryKey": [
+          "id"
+        ],
+        "semanticChecks": [
+          "resource_type follows the exact CRM resource allowlist",
+          "snapshot_json is internal and never projected by the API"
+        ]
+      },
+      "objectName": "crm_recycle_bin_entries",
+      "objectType": "table",
+      "parentObjectName": null
+    },
+    {
+      "definition": {
+        "columns": [
+          "applied_at",
+          "version"
+        ],
+        "primaryKey": [
+          "version"
+        ]
+      },
+      "objectName": "crm_schema_migrations",
+      "objectType": "table",
+      "parentObjectName": null
+    },
+    {
+      "definition": {
+        "fields": [
+          {
+            "dataType": "text",
+            "name": "singleton_key",
+            "nullable": false
+          },
+          {
+            "dataType": "text",
+            "name": "profile_key",
+            "nullable": false
+          },
+          {
+            "dataType": "text",
+            "name": "profile_version",
+            "nullable": false
+          },
+          {
+            "dataType": "jsonb",
+            "name": "configuration_json",
+            "nullable": false
+          },
+          {
+            "dataType": "bigint",
+            "name": "version",
+            "nullable": false
+          },
+          {
+            "dataType": "timestamp with time zone",
+            "name": "updated_at",
+            "nullable": false
+          }
+        ],
+        "primaryKey": [
+          "singleton_key"
+        ],
+        "semanticChecks": [
+          "configuration_json:tenant-config-v1"
+        ],
+        "semanticIndexes": []
+      },
+      "objectName": "crm_tenant_configuration",
+      "objectType": "table",
+      "parentObjectName": null
+    },
+    {
+      "definition": {
+        "cycle": false,
+        "dataType": "bigint",
+        "increment": 1,
+        "maximum": 9223372036854776000,
+        "minimum": 1,
+        "start": 1
+      },
+      "objectName": "crm_audit_events_audit_event_id_seq",
+      "objectType": "sequence",
+      "parentObjectName": null
+    },
+    {
+      "definition": {
+        "cycle": false,
+        "dataType": "bigint",
+        "increment": 1,
+        "maximum": 9223372036854776000,
+        "minimum": 1,
+        "start": 1
+      },
+      "objectName": "crm_operating_contexts_context_id_seq",
+      "objectType": "sequence",
+      "parentObjectName": null
+    },
+    {
+      "definition": {
+        "cycle": false,
+        "dataType": "bigint",
+        "increment": 1,
+        "maximum": 9223372036854776000,
+        "minimum": 1,
+        "start": 1
+      },
+      "objectName": "crm_platform_links_link_id_seq",
+      "objectType": "sequence",
+      "parentObjectName": null
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": false
+      },
+      "objectName": "crm_account_contact_links.account_id",
+      "objectType": "column",
+      "parentObjectName": "crm_account_contact_links"
+    },
+    {
+      "definition": {
+        "dataType": "timestamp with time zone",
+        "nullable": true
+      },
+      "objectName": "crm_account_contact_links.archived_at",
+      "objectType": "column",
+      "parentObjectName": "crm_account_contact_links"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": false
+      },
+      "objectName": "crm_account_contact_links.contact_id",
+      "objectType": "column",
+      "parentObjectName": "crm_account_contact_links"
+    },
+    {
+      "definition": {
+        "dataType": "timestamp with time zone",
+        "nullable": false
+      },
+      "objectName": "crm_account_contact_links.created_at",
+      "objectType": "column",
+      "parentObjectName": "crm_account_contact_links"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": false
+      },
+      "objectName": "crm_account_contact_links.id",
+      "objectType": "column",
+      "parentObjectName": "crm_account_contact_links"
+    },
+    {
+      "definition": {
+        "dataType": "boolean",
+        "nullable": false
+      },
+      "objectName": "crm_account_contact_links.is_primary",
+      "objectType": "column",
+      "parentObjectName": "crm_account_contact_links"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": false
+      },
+      "objectName": "crm_account_contact_links.role_key",
+      "objectType": "column",
+      "parentObjectName": "crm_account_contact_links"
+    },
+    {
+      "definition": {
+        "dataType": "bigint",
+        "nullable": false
+      },
+      "objectName": "crm_account_contact_links.version",
+      "objectType": "column",
+      "parentObjectName": "crm_account_contact_links"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": false
+      },
+      "objectName": "crm_accounts.account_type",
+      "objectType": "column",
+      "parentObjectName": "crm_accounts"
+    },
+    {
+      "definition": {
+        "dataType": "timestamp with time zone",
+        "nullable": true
+      },
+      "objectName": "crm_accounts.archived_at",
+      "objectType": "column",
+      "parentObjectName": "crm_accounts"
+    },
+    {
+      "definition": {
+        "dataType": "timestamp with time zone",
+        "nullable": false
+      },
+      "objectName": "crm_accounts.created_at",
+      "objectType": "column",
+      "parentObjectName": "crm_accounts"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": true
+      },
+      "objectName": "crm_accounts.external_ref",
+      "objectType": "column",
+      "parentObjectName": "crm_accounts"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": false
+      },
+      "objectName": "crm_accounts.id",
+      "objectType": "column",
+      "parentObjectName": "crm_accounts"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": true
+      },
+      "objectName": "crm_accounts.owner_id",
+      "objectType": "column",
+      "parentObjectName": "crm_accounts"
+    },
+    {
+      "definition": {
+        "dataType": "jsonb",
+        "default": "'{}'::jsonb",
+        "nullable": false
+      },
+      "objectName": "crm_accounts.record_json",
+      "objectType": "column",
+      "parentObjectName": "crm_accounts"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "default": "''::text",
+        "nullable": false
+      },
+      "objectName": "crm_accounts.search_text",
+      "objectType": "column",
+      "parentObjectName": "crm_accounts"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": false
+      },
+      "objectName": "crm_accounts.status",
+      "objectType": "column",
+      "parentObjectName": "crm_accounts"
+    },
+    {
+      "definition": {
+        "dataType": "timestamp with time zone",
+        "nullable": false
+      },
+      "objectName": "crm_accounts.updated_at",
+      "objectType": "column",
+      "parentObjectName": "crm_accounts"
+    },
+    {
+      "definition": {
+        "dataType": "bigint",
+        "default": "1",
+        "nullable": false
+      },
+      "objectName": "crm_accounts.version",
+      "objectType": "column",
+      "parentObjectName": "crm_accounts"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": true
+      },
+      "objectName": "crm_activities.account_id",
+      "objectType": "column",
+      "parentObjectName": "crm_activities"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": false
+      },
+      "objectName": "crm_activities.activity_type",
+      "objectType": "column",
+      "parentObjectName": "crm_activities"
+    },
+    {
+      "definition": {
+        "dataType": "timestamp with time zone",
+        "nullable": true
+      },
+      "objectName": "crm_activities.archived_at",
+      "objectType": "column",
+      "parentObjectName": "crm_activities"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": true
+      },
+      "objectName": "crm_activities.case_id",
+      "objectType": "column",
+      "parentObjectName": "crm_activities"
+    },
+    {
+      "definition": {
+        "dataType": "timestamp with time zone",
+        "nullable": true
+      },
+      "objectName": "crm_activities.completed_at",
+      "objectType": "column",
+      "parentObjectName": "crm_activities"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": true
+      },
+      "objectName": "crm_activities.contact_id",
+      "objectType": "column",
+      "parentObjectName": "crm_activities"
+    },
+    {
+      "definition": {
+        "dataType": "timestamp with time zone",
+        "nullable": false
+      },
+      "objectName": "crm_activities.created_at",
+      "objectType": "column",
+      "parentObjectName": "crm_activities"
+    },
+    {
+      "definition": {
+        "dataType": "timestamp with time zone",
+        "nullable": true
+      },
+      "objectName": "crm_activities.due_at",
+      "objectType": "column",
+      "parentObjectName": "crm_activities"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": false
+      },
+      "objectName": "crm_activities.id",
+      "objectType": "column",
+      "parentObjectName": "crm_activities"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": true
+      },
+      "objectName": "crm_activities.owner_id",
+      "objectType": "column",
+      "parentObjectName": "crm_activities"
+    },
+    {
+      "definition": {
+        "dataType": "jsonb",
+        "default": "'{}'::jsonb",
+        "nullable": false
+      },
+      "objectName": "crm_activities.record_json",
+      "objectType": "column",
+      "parentObjectName": "crm_activities"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "default": "''::text",
+        "nullable": false
+      },
+      "objectName": "crm_activities.search_text",
+      "objectType": "column",
+      "parentObjectName": "crm_activities"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": false
+      },
+      "objectName": "crm_activities.status",
+      "objectType": "column",
+      "parentObjectName": "crm_activities"
+    },
+    {
+      "definition": {
+        "dataType": "timestamp with time zone",
+        "nullable": false
+      },
+      "objectName": "crm_activities.updated_at",
+      "objectType": "column",
+      "parentObjectName": "crm_activities"
+    },
+    {
+      "definition": {
+        "dataType": "bigint",
+        "default": "1",
+        "nullable": false
+      },
+      "objectName": "crm_activities.version",
+      "objectType": "column",
+      "parentObjectName": "crm_activities"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": false
+      },
+      "objectName": "crm_appointment_participants.appointment_id",
+      "objectType": "column",
+      "parentObjectName": "crm_appointment_participants"
+    },
+    {
+      "definition": {
+        "dataType": "timestamp with time zone",
+        "nullable": false
+      },
+      "objectName": "crm_appointment_participants.created_at",
+      "objectType": "column",
+      "parentObjectName": "crm_appointment_participants"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": false
+      },
+      "objectName": "crm_appointment_participants.id",
+      "objectType": "column",
+      "parentObjectName": "crm_appointment_participants"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": false
+      },
+      "objectName": "crm_appointment_participants.participant_id",
+      "objectType": "column",
+      "parentObjectName": "crm_appointment_participants"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": false
+      },
+      "objectName": "crm_appointment_participants.participant_type",
+      "objectType": "column",
+      "parentObjectName": "crm_appointment_participants"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": false
+      },
+      "objectName": "crm_appointment_participants.response_status",
+      "objectType": "column",
+      "parentObjectName": "crm_appointment_participants"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": false
+      },
+      "objectName": "crm_appointment_participants.role_key",
+      "objectType": "column",
+      "parentObjectName": "crm_appointment_participants"
+    },
+    {
+      "definition": {
+        "dataType": "timestamp with time zone",
+        "nullable": false
+      },
+      "objectName": "crm_appointment_participants.updated_at",
+      "objectType": "column",
+      "parentObjectName": "crm_appointment_participants"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": false
+      },
+      "objectName": "crm_appointment_status_history.actor_subject",
+      "objectType": "column",
+      "parentObjectName": "crm_appointment_status_history"
+    },
+    {
+      "definition": {
+        "dataType": "bigint",
+        "nullable": false
+      },
+      "objectName": "crm_appointment_status_history.aggregate_version",
+      "objectType": "column",
+      "parentObjectName": "crm_appointment_status_history"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": false
+      },
+      "objectName": "crm_appointment_status_history.appointment_id",
+      "objectType": "column",
+      "parentObjectName": "crm_appointment_status_history"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": true
+      },
+      "objectName": "crm_appointment_status_history.from_status",
+      "objectType": "column",
+      "parentObjectName": "crm_appointment_status_history"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": false
+      },
+      "objectName": "crm_appointment_status_history.id",
+      "objectType": "column",
+      "parentObjectName": "crm_appointment_status_history"
+    },
+    {
+      "definition": {
+        "dataType": "timestamp with time zone",
+        "nullable": false
+      },
+      "objectName": "crm_appointment_status_history.occurred_at",
+      "objectType": "column",
+      "parentObjectName": "crm_appointment_status_history"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": true
+      },
+      "objectName": "crm_appointment_status_history.reason_code",
+      "objectType": "column",
+      "parentObjectName": "crm_appointment_status_history"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": false
+      },
+      "objectName": "crm_appointment_status_history.to_status",
+      "objectType": "column",
+      "parentObjectName": "crm_appointment_status_history"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": true
+      },
+      "objectName": "crm_appointments.account_id",
+      "objectType": "column",
+      "parentObjectName": "crm_appointments"
+    },
+    {
+      "definition": {
+        "dataType": "timestamp with time zone",
+        "nullable": true
+      },
+      "objectName": "crm_appointments.archived_at",
+      "objectType": "column",
+      "parentObjectName": "crm_appointments"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": false
+      },
+      "objectName": "crm_appointments.case_id",
+      "objectType": "column",
+      "parentObjectName": "crm_appointments"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": true
+      },
+      "objectName": "crm_appointments.contact_id",
+      "objectType": "column",
+      "parentObjectName": "crm_appointments"
+    },
+    {
+      "definition": {
+        "dataType": "timestamp with time zone",
+        "nullable": false
+      },
+      "objectName": "crm_appointments.created_at",
+      "objectType": "column",
+      "parentObjectName": "crm_appointments"
+    },
+    {
+      "definition": {
+        "dataType": "timestamp with time zone",
+        "nullable": true
+      },
+      "objectName": "crm_appointments.end_at",
+      "objectType": "column",
+      "parentObjectName": "crm_appointments"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": true
+      },
+      "objectName": "crm_appointments.external_ref",
+      "objectType": "column",
+      "parentObjectName": "crm_appointments"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": false
+      },
+      "objectName": "crm_appointments.id",
+      "objectType": "column",
+      "parentObjectName": "crm_appointments"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": true
+      },
+      "objectName": "crm_appointments.owner_id",
+      "objectType": "column",
+      "parentObjectName": "crm_appointments"
+    },
+    {
+      "definition": {
+        "dataType": "jsonb",
+        "default": "'{}'::jsonb",
+        "nullable": false
+      },
+      "objectName": "crm_appointments.record_json",
+      "objectType": "column",
+      "parentObjectName": "crm_appointments"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": true
+      },
+      "objectName": "crm_appointments.resource_id",
+      "objectType": "column",
+      "parentObjectName": "crm_appointments"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "default": "''::text",
+        "nullable": false
+      },
+      "objectName": "crm_appointments.search_text",
+      "objectType": "column",
+      "parentObjectName": "crm_appointments"
+    },
+    {
+      "definition": {
+        "dataType": "timestamp with time zone",
+        "nullable": true
+      },
+      "objectName": "crm_appointments.start_at",
+      "objectType": "column",
+      "parentObjectName": "crm_appointments"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": false
+      },
+      "objectName": "crm_appointments.status",
+      "objectType": "column",
+      "parentObjectName": "crm_appointments"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": false
+      },
+      "objectName": "crm_appointments.timezone",
+      "objectType": "column",
+      "parentObjectName": "crm_appointments"
+    },
+    {
+      "definition": {
+        "dataType": "timestamp with time zone",
+        "nullable": false
+      },
+      "objectName": "crm_appointments.updated_at",
+      "objectType": "column",
+      "parentObjectName": "crm_appointments"
+    },
+    {
+      "definition": {
+        "dataType": "bigint",
+        "default": "1",
+        "nullable": false
+      },
+      "objectName": "crm_appointments.version",
+      "objectType": "column",
+      "parentObjectName": "crm_appointments"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": false
+      },
+      "objectName": "crm_audit_events.action",
+      "objectType": "column",
+      "parentObjectName": "crm_audit_events"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "default": "'pyrosa-iam'::text",
+        "nullable": false
+      },
+      "objectName": "crm_audit_events.actor_source",
+      "objectType": "column",
+      "parentObjectName": "crm_audit_events"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": true
+      },
+      "objectName": "crm_audit_events.actor_subject",
+      "objectType": "column",
+      "parentObjectName": "crm_audit_events"
+    },
+    {
+      "definition": {
+        "dataType": "bigint",
+        "default": "nextval('crm_audit_events_audit_event_id_seq')",
+        "nullable": false,
+        "precision": 64,
+        "scale": 0
+      },
+      "objectName": "crm_audit_events.audit_event_id",
+      "objectType": "column",
+      "parentObjectName": "crm_audit_events"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": false
+      },
+      "objectName": "crm_audit_events.authorization_decision_id",
+      "objectType": "column",
+      "parentObjectName": "crm_audit_events"
+    },
+    {
+      "definition": {
+        "dataType": "bigint",
+        "nullable": true,
+        "precision": 64,
+        "scale": 0
+      },
+      "objectName": "crm_audit_events.context_id",
+      "objectType": "column",
+      "parentObjectName": "crm_audit_events"
+    },
+    {
+      "definition": {
+        "dataType": "timestamptz",
+        "default": "now()",
+        "nullable": false
+      },
+      "objectName": "crm_audit_events.created_at",
+      "objectType": "column",
+      "parentObjectName": "crm_audit_events"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": true
+      },
+      "objectName": "crm_audit_events.entity_id",
+      "objectType": "column",
+      "parentObjectName": "crm_audit_events"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": false
+      },
+      "objectName": "crm_audit_events.entity_type",
+      "objectType": "column",
+      "parentObjectName": "crm_audit_events"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": false
+      },
+      "objectName": "crm_audit_events.event_type",
+      "objectType": "column",
+      "parentObjectName": "crm_audit_events"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": false
+      },
+      "objectName": "crm_audit_events.id",
+      "objectType": "column",
+      "parentObjectName": "crm_audit_events"
+    },
+    {
+      "definition": {
+        "dataType": "timestamp with time zone",
+        "nullable": false
+      },
+      "objectName": "crm_audit_events.occurred_at",
+      "objectType": "column",
+      "parentObjectName": "crm_audit_events"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": false
+      },
+      "objectName": "crm_audit_events.outcome",
+      "objectType": "column",
+      "parentObjectName": "crm_audit_events"
+    },
+    {
+      "definition": {
+        "dataType": "jsonb",
+        "default": "'{}'::jsonb",
+        "nullable": false
+      },
+      "objectName": "crm_audit_events.payload",
+      "objectType": "column",
+      "parentObjectName": "crm_audit_events"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": true
+      },
+      "objectName": "crm_audit_events.reason_code",
+      "objectType": "column",
+      "parentObjectName": "crm_audit_events"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": false
+      },
+      "objectName": "crm_audit_events.request_id",
+      "objectType": "column",
+      "parentObjectName": "crm_audit_events"
+    },
+    {
+      "definition": {
+        "dataType": "timestamp with time zone",
+        "nullable": true
+      },
+      "objectName": "crm_case_parties.archived_at",
+      "objectType": "column",
+      "parentObjectName": "crm_case_parties"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": false
+      },
+      "objectName": "crm_case_parties.case_id",
+      "objectType": "column",
+      "parentObjectName": "crm_case_parties"
+    },
+    {
+      "definition": {
+        "dataType": "timestamp with time zone",
+        "nullable": false
+      },
+      "objectName": "crm_case_parties.created_at",
+      "objectType": "column",
+      "parentObjectName": "crm_case_parties"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": false
+      },
+      "objectName": "crm_case_parties.id",
+      "objectType": "column",
+      "parentObjectName": "crm_case_parties"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": false
+      },
+      "objectName": "crm_case_parties.party_id",
+      "objectType": "column",
+      "parentObjectName": "crm_case_parties"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": false
+      },
+      "objectName": "crm_case_parties.party_type",
+      "objectType": "column",
+      "parentObjectName": "crm_case_parties"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": false
+      },
+      "objectName": "crm_case_parties.role_key",
+      "objectType": "column",
+      "parentObjectName": "crm_case_parties"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": false
+      },
+      "objectName": "crm_case_status_history.actor_subject",
+      "objectType": "column",
+      "parentObjectName": "crm_case_status_history"
+    },
+    {
+      "definition": {
+        "dataType": "bigint",
+        "nullable": false
+      },
+      "objectName": "crm_case_status_history.aggregate_version",
+      "objectType": "column",
+      "parentObjectName": "crm_case_status_history"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": false
+      },
+      "objectName": "crm_case_status_history.case_id",
+      "objectType": "column",
+      "parentObjectName": "crm_case_status_history"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": true
+      },
+      "objectName": "crm_case_status_history.from_status",
+      "objectType": "column",
+      "parentObjectName": "crm_case_status_history"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": false
+      },
+      "objectName": "crm_case_status_history.id",
+      "objectType": "column",
+      "parentObjectName": "crm_case_status_history"
+    },
+    {
+      "definition": {
+        "dataType": "timestamp with time zone",
+        "nullable": false
+      },
+      "objectName": "crm_case_status_history.occurred_at",
+      "objectType": "column",
+      "parentObjectName": "crm_case_status_history"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": true
+      },
+      "objectName": "crm_case_status_history.reason_code",
+      "objectType": "column",
+      "parentObjectName": "crm_case_status_history"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": false
+      },
+      "objectName": "crm_case_status_history.to_status",
+      "objectType": "column",
+      "parentObjectName": "crm_case_status_history"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": true
+      },
+      "objectName": "crm_cases.account_id",
+      "objectType": "column",
+      "parentObjectName": "crm_cases"
+    },
+    {
+      "definition": {
+        "dataType": "timestamp with time zone",
+        "nullable": true
+      },
+      "objectName": "crm_cases.archived_at",
+      "objectType": "column",
+      "parentObjectName": "crm_cases"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": false
+      },
+      "objectName": "crm_cases.case_type",
+      "objectType": "column",
+      "parentObjectName": "crm_cases"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": true
+      },
+      "objectName": "crm_cases.contact_id",
+      "objectType": "column",
+      "parentObjectName": "crm_cases"
+    },
+    {
+      "definition": {
+        "dataType": "timestamp with time zone",
+        "nullable": false
+      },
+      "objectName": "crm_cases.created_at",
+      "objectType": "column",
+      "parentObjectName": "crm_cases"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": false
+      },
+      "objectName": "crm_cases.id",
+      "objectType": "column",
+      "parentObjectName": "crm_cases"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": true
+      },
+      "objectName": "crm_cases.owner_id",
+      "objectType": "column",
+      "parentObjectName": "crm_cases"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": false
+      },
+      "objectName": "crm_cases.priority",
+      "objectType": "column",
+      "parentObjectName": "crm_cases"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": true
+      },
+      "objectName": "crm_cases.queue_id",
+      "objectType": "column",
+      "parentObjectName": "crm_cases"
+    },
+    {
+      "definition": {
+        "dataType": "jsonb",
+        "default": "'{}'::jsonb",
+        "nullable": false
+      },
+      "objectName": "crm_cases.record_json",
+      "objectType": "column",
+      "parentObjectName": "crm_cases"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "default": "''::text",
+        "nullable": false
+      },
+      "objectName": "crm_cases.search_text",
+      "objectType": "column",
+      "parentObjectName": "crm_cases"
+    },
+    {
+      "definition": {
+        "dataType": "timestamp with time zone",
+        "nullable": true
+      },
+      "objectName": "crm_cases.sla_due_at",
+      "objectType": "column",
+      "parentObjectName": "crm_cases"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": false
+      },
+      "objectName": "crm_cases.status",
+      "objectType": "column",
+      "parentObjectName": "crm_cases"
+    },
+    {
+      "definition": {
+        "dataType": "timestamp with time zone",
+        "nullable": false
+      },
+      "objectName": "crm_cases.updated_at",
+      "objectType": "column",
+      "parentObjectName": "crm_cases"
+    },
+    {
+      "definition": {
+        "dataType": "bigint",
+        "default": "1",
+        "nullable": false
+      },
+      "objectName": "crm_cases.version",
+      "objectType": "column",
+      "parentObjectName": "crm_cases"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": false
+      },
+      "objectName": "crm_contact_preferences.channel_key",
+      "objectType": "column",
+      "parentObjectName": "crm_contact_preferences"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": true
+      },
+      "objectName": "crm_contact_preferences.consent_source",
+      "objectType": "column",
+      "parentObjectName": "crm_contact_preferences"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": false
+      },
+      "objectName": "crm_contact_preferences.consent_status",
+      "objectType": "column",
+      "parentObjectName": "crm_contact_preferences"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": false
+      },
+      "objectName": "crm_contact_preferences.contact_id",
+      "objectType": "column",
+      "parentObjectName": "crm_contact_preferences"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": false
+      },
+      "objectName": "crm_contact_preferences.preference",
+      "objectType": "column",
+      "parentObjectName": "crm_contact_preferences"
+    },
+    {
+      "definition": {
+        "dataType": "timestamp with time zone",
+        "nullable": false
+      },
+      "objectName": "crm_contact_preferences.updated_at",
+      "objectType": "column",
+      "parentObjectName": "crm_contact_preferences"
+    },
+    {
+      "definition": {
+        "dataType": "bigint",
+        "nullable": false
+      },
+      "objectName": "crm_contact_preferences.version",
+      "objectType": "column",
+      "parentObjectName": "crm_contact_preferences"
+    },
+    {
+      "definition": {
+        "dataType": "timestamp with time zone",
+        "nullable": true
+      },
+      "objectName": "crm_contacts.archived_at",
+      "objectType": "column",
+      "parentObjectName": "crm_contacts"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": false
+      },
+      "objectName": "crm_contacts.contact_role",
+      "objectType": "column",
+      "parentObjectName": "crm_contacts"
+    },
+    {
+      "definition": {
+        "dataType": "timestamp with time zone",
+        "nullable": false
+      },
+      "objectName": "crm_contacts.created_at",
+      "objectType": "column",
+      "parentObjectName": "crm_contacts"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": false
+      },
+      "objectName": "crm_contacts.id",
+      "objectType": "column",
+      "parentObjectName": "crm_contacts"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": true
+      },
+      "objectName": "crm_contacts.owner_id",
+      "objectType": "column",
+      "parentObjectName": "crm_contacts"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": true
+      },
+      "objectName": "crm_contacts.primary_account_id",
+      "objectType": "column",
+      "parentObjectName": "crm_contacts"
+    },
+    {
+      "definition": {
+        "dataType": "jsonb",
+        "default": "'{}'::jsonb",
+        "nullable": false
+      },
+      "objectName": "crm_contacts.record_json",
+      "objectType": "column",
+      "parentObjectName": "crm_contacts"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "default": "''::text",
+        "nullable": false
+      },
+      "objectName": "crm_contacts.search_text",
+      "objectType": "column",
+      "parentObjectName": "crm_contacts"
+    },
+    {
+      "definition": {
+        "dataType": "jsonb",
+        "nullable": false,
+        "protection": "encrypted-or-field-encrypted"
+      },
+      "objectName": "crm_contacts.sensitive_json",
+      "objectType": "column",
+      "parentObjectName": "crm_contacts"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": false
+      },
+      "objectName": "crm_contacts.status",
+      "objectType": "column",
+      "parentObjectName": "crm_contacts"
+    },
+    {
+      "definition": {
+        "dataType": "timestamp with time zone",
+        "nullable": false
+      },
+      "objectName": "crm_contacts.updated_at",
+      "objectType": "column",
+      "parentObjectName": "crm_contacts"
+    },
+    {
+      "definition": {
+        "dataType": "bigint",
+        "default": "1",
+        "nullable": false
+      },
+      "objectName": "crm_contacts.version",
+      "objectType": "column",
+      "parentObjectName": "crm_contacts"
+    },
+    {
+      "definition": {
+        "dataType": "timestamp with time zone",
+        "nullable": false
+      },
+      "objectName": "crm_idempotency_results.created_at",
+      "objectType": "column",
+      "parentObjectName": "crm_idempotency_results"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": false
+      },
+      "objectName": "crm_idempotency_results.idempotency_key",
+      "objectType": "column",
+      "parentObjectName": "crm_idempotency_results"
+    },
+    {
+      "definition": {
+        "dataType": "char(64)",
+        "nullable": false
+      },
+      "objectName": "crm_idempotency_results.request_checksum",
+      "objectType": "column",
+      "parentObjectName": "crm_idempotency_results"
+    },
+    {
+      "definition": {
+        "dataType": "jsonb",
+        "nullable": false
+      },
+      "objectName": "crm_idempotency_results.response_json",
+      "objectType": "column",
+      "parentObjectName": "crm_idempotency_results"
+    },
+    {
+      "definition": {
+        "dataType": "timestamp with time zone",
+        "nullable": false
+      },
+      "objectName": "crm_idempotency_results.updated_at",
+      "objectType": "column",
+      "parentObjectName": "crm_idempotency_results"
+    },
+    {
+      "definition": {
+        "dataType": "integer",
+        "nullable": false
+      },
+      "objectName": "crm_import_batches.accepted_count",
+      "objectType": "column",
+      "parentObjectName": "crm_import_batches"
+    },
+    {
+      "definition": {
+        "dataType": "timestamp with time zone",
+        "nullable": false
+      },
+      "objectName": "crm_import_batches.created_at",
+      "objectType": "column",
+      "parentObjectName": "crm_import_batches"
+    },
+    {
+      "definition": {
+        "dataType": "integer",
+        "nullable": false
+      },
+      "objectName": "crm_import_batches.duplicate_count",
+      "objectType": "column",
+      "parentObjectName": "crm_import_batches"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": false
+      },
+      "objectName": "crm_import_batches.id",
+      "objectType": "column",
+      "parentObjectName": "crm_import_batches"
+    },
+    {
+      "definition": {
+        "dataType": "integer",
+        "nullable": false
+      },
+      "objectName": "crm_import_batches.quarantine_count",
+      "objectType": "column",
+      "parentObjectName": "crm_import_batches"
+    },
+    {
+      "definition": {
+        "dataType": "jsonb",
+        "nullable": false
+      },
+      "objectName": "crm_import_batches.quarantine_json",
+      "objectType": "column",
+      "parentObjectName": "crm_import_batches"
+    },
+    {
+      "definition": {
+        "dataType": "char(64)",
+        "nullable": false
+      },
+      "objectName": "crm_import_batches.source_fingerprint",
+      "objectType": "column",
+      "parentObjectName": "crm_import_batches"
+    },
+    {
+      "definition": {
+        "dataType": "integer",
+        "nullable": false
+      },
+      "objectName": "crm_import_batches.source_record_count",
+      "objectType": "column",
+      "parentObjectName": "crm_import_batches"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": false
+      },
+      "objectName": "crm_import_batches.status",
+      "objectType": "column",
+      "parentObjectName": "crm_import_batches"
+    },
+    {
+      "definition": {
+        "dataType": "timestamp with time zone",
+        "nullable": false
+      },
+      "objectName": "crm_import_batches.updated_at",
+      "objectType": "column",
+      "parentObjectName": "crm_import_batches"
+    },
+    {
+      "definition": {
+        "dataType": "bigint",
+        "nullable": false
+      },
+      "objectName": "crm_import_batches.version",
+      "objectType": "column",
+      "parentObjectName": "crm_import_batches"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": false
+      },
+      "objectName": "crm_import_records.batch_id",
+      "objectType": "column",
+      "parentObjectName": "crm_import_records"
+    },
+    {
+      "definition": {
+        "dataType": "timestamp with time zone",
+        "nullable": false
+      },
+      "objectName": "crm_import_records.created_at",
+      "objectType": "column",
+      "parentObjectName": "crm_import_records"
+    },
+    {
+      "definition": {
+        "dataType": "jsonb",
+        "nullable": false
+      },
+      "objectName": "crm_import_records.normalized_json",
+      "objectType": "column",
+      "parentObjectName": "crm_import_records"
+    },
+    {
+      "definition": {
+        "dataType": "integer",
+        "nullable": false
+      },
+      "objectName": "crm_import_records.source_row",
+      "objectType": "column",
+      "parentObjectName": "crm_import_records"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": false
+      },
+      "objectName": "crm_import_records.status",
+      "objectType": "column",
+      "parentObjectName": "crm_import_records"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": true
+      },
+      "objectName": "crm_import_records.target_id",
+      "objectType": "column",
+      "parentObjectName": "crm_import_records"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": true
+      },
+      "objectName": "crm_import_records.target_type",
+      "objectType": "column",
+      "parentObjectName": "crm_import_records"
+    },
+    {
+      "definition": {
+        "dataType": "timestamp with time zone",
+        "nullable": false
+      },
+      "objectName": "crm_jobs.created_at",
+      "objectType": "column",
+      "parentObjectName": "crm_jobs"
+    },
+    {
+      "definition": {
+        "dataType": "timestamp with time zone",
+        "nullable": true
+      },
+      "objectName": "crm_jobs.expires_at",
+      "objectType": "column",
+      "parentObjectName": "crm_jobs"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": false
+      },
+      "objectName": "crm_jobs.id",
+      "objectType": "column",
+      "parentObjectName": "crm_jobs"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": false
+      },
+      "objectName": "crm_jobs.kind",
+      "objectType": "column",
+      "parentObjectName": "crm_jobs"
+    },
+    {
+      "definition": {
+        "dataType": "jsonb",
+        "nullable": false
+      },
+      "objectName": "crm_jobs.record_json",
+      "objectType": "column",
+      "parentObjectName": "crm_jobs"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": false
+      },
+      "objectName": "crm_jobs.status",
+      "objectType": "column",
+      "parentObjectName": "crm_jobs"
+    },
+    {
+      "definition": {
+        "dataType": "timestamp with time zone",
+        "nullable": false
+      },
+      "objectName": "crm_jobs.updated_at",
+      "objectType": "column",
+      "parentObjectName": "crm_jobs"
+    },
+    {
+      "definition": {
+        "dataType": "bigint",
+        "nullable": false
+      },
+      "objectName": "crm_jobs.version",
+      "objectType": "column",
+      "parentObjectName": "crm_jobs"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "ensureNullable": true,
+        "nullable": true
+      },
+      "objectName": "crm_operating_contexts.accounts_organization_id",
+      "objectType": "column",
+      "parentObjectName": "crm_operating_contexts"
+    },
+    {
+      "definition": {
+        "dataType": "bigint",
+        "default": "nextval('crm_operating_contexts_context_id_seq')",
+        "nullable": false,
+        "ordinalPosition": 2,
+        "precision": 64,
+        "scale": 0
+      },
+      "objectName": "crm_operating_contexts.context_id",
+      "objectType": "column",
+      "parentObjectName": "crm_operating_contexts"
+    },
+    {
+      "definition": {
+        "dataType": "timestamptz",
+        "default": "now()",
+        "nullable": false,
+        "ordinalPosition": 3
+      },
+      "objectName": "crm_operating_contexts.created_at",
+      "objectType": "column",
+      "parentObjectName": "crm_operating_contexts"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": false,
+        "ordinalPosition": 4
+      },
+      "objectName": "crm_operating_contexts.display_name",
+      "objectType": "column",
+      "parentObjectName": "crm_operating_contexts"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": false,
+        "ordinalPosition": 5
+      },
+      "objectName": "crm_operating_contexts.platform_tenant_id",
+      "objectType": "column",
+      "parentObjectName": "crm_operating_contexts"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "default": "'active'::text",
+        "nullable": false,
+        "ordinalPosition": 6
+      },
+      "objectName": "crm_operating_contexts.status",
+      "objectType": "column",
+      "parentObjectName": "crm_operating_contexts"
+    },
+    {
+      "definition": {
+        "dataType": "timestamptz",
+        "default": "now()",
+        "nullable": false,
+        "ordinalPosition": 7
+      },
+      "objectName": "crm_operating_contexts.updated_at",
+      "objectType": "column",
+      "parentObjectName": "crm_operating_contexts"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": false
+      },
+      "objectName": "crm_opportunities.account_id",
+      "objectType": "column",
+      "parentObjectName": "crm_opportunities"
+    },
+    {
+      "definition": {
+        "dataType": "bigint",
+        "nullable": false
+      },
+      "objectName": "crm_opportunities.amount_minor",
+      "objectType": "column",
+      "parentObjectName": "crm_opportunities"
+    },
+    {
+      "definition": {
+        "dataType": "timestamp with time zone",
+        "nullable": true
+      },
+      "objectName": "crm_opportunities.archived_at",
+      "objectType": "column",
+      "parentObjectName": "crm_opportunities"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": true
+      },
+      "objectName": "crm_opportunities.close_reason",
+      "objectType": "column",
+      "parentObjectName": "crm_opportunities"
+    },
+    {
+      "definition": {
+        "dataType": "timestamp with time zone",
+        "nullable": false
+      },
+      "objectName": "crm_opportunities.created_at",
+      "objectType": "column",
+      "parentObjectName": "crm_opportunities"
+    },
+    {
+      "definition": {
+        "dataType": "char(3)",
+        "nullable": false
+      },
+      "objectName": "crm_opportunities.currency",
+      "objectType": "column",
+      "parentObjectName": "crm_opportunities"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": false
+      },
+      "objectName": "crm_opportunities.id",
+      "objectType": "column",
+      "parentObjectName": "crm_opportunities"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": true
+      },
+      "objectName": "crm_opportunities.owner_id",
+      "objectType": "column",
+      "parentObjectName": "crm_opportunities"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": false
+      },
+      "objectName": "crm_opportunities.pipeline_id",
+      "objectType": "column",
+      "parentObjectName": "crm_opportunities"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": true
+      },
+      "objectName": "crm_opportunities.primary_contact_id",
+      "objectType": "column",
+      "parentObjectName": "crm_opportunities"
+    },
+    {
+      "definition": {
+        "dataType": "integer",
+        "nullable": false
+      },
+      "objectName": "crm_opportunities.probability",
+      "objectType": "column",
+      "parentObjectName": "crm_opportunities"
+    },
+    {
+      "definition": {
+        "dataType": "jsonb",
+        "default": "'{}'::jsonb",
+        "nullable": false
+      },
+      "objectName": "crm_opportunities.record_json",
+      "objectType": "column",
+      "parentObjectName": "crm_opportunities"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "default": "''::text",
+        "nullable": false
+      },
+      "objectName": "crm_opportunities.search_text",
+      "objectType": "column",
+      "parentObjectName": "crm_opportunities"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": false
+      },
+      "objectName": "crm_opportunities.stage_id",
+      "objectType": "column",
+      "parentObjectName": "crm_opportunities"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": false
+      },
+      "objectName": "crm_opportunities.status",
+      "objectType": "column",
+      "parentObjectName": "crm_opportunities"
+    },
+    {
+      "definition": {
+        "dataType": "timestamp with time zone",
+        "nullable": false
+      },
+      "objectName": "crm_opportunities.updated_at",
+      "objectType": "column",
+      "parentObjectName": "crm_opportunities"
+    },
+    {
+      "definition": {
+        "dataType": "bigint",
+        "default": "1",
+        "nullable": false
+      },
+      "objectName": "crm_opportunities.version",
+      "objectType": "column",
+      "parentObjectName": "crm_opportunities"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": false
+      },
+      "objectName": "crm_opportunity_stage_history.actor_subject",
+      "objectType": "column",
+      "parentObjectName": "crm_opportunity_stage_history"
+    },
+    {
+      "definition": {
+        "dataType": "bigint",
+        "nullable": false
+      },
+      "objectName": "crm_opportunity_stage_history.aggregate_version",
+      "objectType": "column",
+      "parentObjectName": "crm_opportunity_stage_history"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": true
+      },
+      "objectName": "crm_opportunity_stage_history.from_stage_id",
+      "objectType": "column",
+      "parentObjectName": "crm_opportunity_stage_history"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": false
+      },
+      "objectName": "crm_opportunity_stage_history.id",
+      "objectType": "column",
+      "parentObjectName": "crm_opportunity_stage_history"
+    },
+    {
+      "definition": {
+        "dataType": "timestamp with time zone",
+        "nullable": false
+      },
+      "objectName": "crm_opportunity_stage_history.occurred_at",
+      "objectType": "column",
+      "parentObjectName": "crm_opportunity_stage_history"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": false
+      },
+      "objectName": "crm_opportunity_stage_history.opportunity_id",
+      "objectType": "column",
+      "parentObjectName": "crm_opportunity_stage_history"
+    },
+    {
+      "definition": {
+        "dataType": "integer",
+        "nullable": false
+      },
+      "objectName": "crm_opportunity_stage_history.probability",
+      "objectType": "column",
+      "parentObjectName": "crm_opportunity_stage_history"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": true
+      },
+      "objectName": "crm_opportunity_stage_history.reason_code",
+      "objectType": "column",
+      "parentObjectName": "crm_opportunity_stage_history"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": false
+      },
+      "objectName": "crm_opportunity_stage_history.to_stage_id",
+      "objectType": "column",
+      "parentObjectName": "crm_opportunity_stage_history"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": false
+      },
+      "objectName": "crm_outbox_events.actor_subject",
+      "objectType": "column",
+      "parentObjectName": "crm_outbox_events"
+    },
+    {
+      "definition": {
+        "dataType": "integer",
+        "default": "0",
+        "nullable": false
+      },
+      "objectName": "crm_outbox_events.attempt_count",
+      "objectType": "column",
+      "parentObjectName": "crm_outbox_events"
+    },
+    {
+      "definition": {
+        "dataType": "timestamp with time zone",
+        "default": "now()",
+        "nullable": false
+      },
+      "objectName": "crm_outbox_events.available_at",
+      "objectType": "column",
+      "parentObjectName": "crm_outbox_events"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": false
+      },
+      "objectName": "crm_outbox_events.causation_id",
+      "objectType": "column",
+      "parentObjectName": "crm_outbox_events"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": false
+      },
+      "objectName": "crm_outbox_events.contract_version",
+      "objectType": "column",
+      "parentObjectName": "crm_outbox_events"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": false
+      },
+      "objectName": "crm_outbox_events.correlation_id",
+      "objectType": "column",
+      "parentObjectName": "crm_outbox_events"
+    },
+    {
+      "definition": {
+        "dataType": "timestamp with time zone",
+        "nullable": true
+      },
+      "objectName": "crm_outbox_events.delivered_at",
+      "objectType": "column",
+      "parentObjectName": "crm_outbox_events"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": false
+      },
+      "objectName": "crm_outbox_events.event_id",
+      "objectType": "column",
+      "parentObjectName": "crm_outbox_events"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": false
+      },
+      "objectName": "crm_outbox_events.event_type",
+      "objectType": "column",
+      "parentObjectName": "crm_outbox_events"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": true
+      },
+      "objectName": "crm_outbox_events.last_error_code",
+      "objectType": "column",
+      "parentObjectName": "crm_outbox_events"
+    },
+    {
+      "definition": {
+        "dataType": "timestamp with time zone",
+        "nullable": false
+      },
+      "objectName": "crm_outbox_events.occurred_at",
+      "objectType": "column",
+      "parentObjectName": "crm_outbox_events"
+    },
+    {
+      "definition": {
+        "dataType": "jsonb",
+        "nullable": false
+      },
+      "objectName": "crm_outbox_events.payload_json",
+      "objectType": "column",
+      "parentObjectName": "crm_outbox_events"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": false
+      },
+      "objectName": "crm_outbox_events.status",
+      "objectType": "column",
+      "parentObjectName": "crm_outbox_events"
+    },
+    {
+      "definition": {
+        "dataType": "integer",
+        "nullable": false
+      },
+      "objectName": "crm_pipeline_stages.default_probability",
+      "objectType": "column",
+      "parentObjectName": "crm_pipeline_stages"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": false
+      },
+      "objectName": "crm_pipeline_stages.id",
+      "objectType": "column",
+      "parentObjectName": "crm_pipeline_stages"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": false
+      },
+      "objectName": "crm_pipeline_stages.label",
+      "objectType": "column",
+      "parentObjectName": "crm_pipeline_stages"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": false
+      },
+      "objectName": "crm_pipeline_stages.pipeline_id",
+      "objectType": "column",
+      "parentObjectName": "crm_pipeline_stages"
+    },
+    {
+      "definition": {
+        "dataType": "integer",
+        "nullable": false
+      },
+      "objectName": "crm_pipeline_stages.position",
+      "objectType": "column",
+      "parentObjectName": "crm_pipeline_stages"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": false
+      },
+      "objectName": "crm_pipeline_stages.stage_key",
+      "objectType": "column",
+      "parentObjectName": "crm_pipeline_stages"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": true
+      },
+      "objectName": "crm_pipeline_stages.terminal_kind",
+      "objectType": "column",
+      "parentObjectName": "crm_pipeline_stages"
+    },
+    {
+      "definition": {
+        "dataType": "bigint",
+        "nullable": false
+      },
+      "objectName": "crm_pipeline_stages.version",
+      "objectType": "column",
+      "parentObjectName": "crm_pipeline_stages"
+    },
+    {
+      "definition": {
+        "dataType": "timestamp with time zone",
+        "nullable": false
+      },
+      "objectName": "crm_pipelines.created_at",
+      "objectType": "column",
+      "parentObjectName": "crm_pipelines"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": false
+      },
+      "objectName": "crm_pipelines.id",
+      "objectType": "column",
+      "parentObjectName": "crm_pipelines"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": false
+      },
+      "objectName": "crm_pipelines.name",
+      "objectType": "column",
+      "parentObjectName": "crm_pipelines"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": false
+      },
+      "objectName": "crm_pipelines.profile_key",
+      "objectType": "column",
+      "parentObjectName": "crm_pipelines"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": false
+      },
+      "objectName": "crm_pipelines.status",
+      "objectType": "column",
+      "parentObjectName": "crm_pipelines"
+    },
+    {
+      "definition": {
+        "dataType": "timestamp with time zone",
+        "nullable": false
+      },
+      "objectName": "crm_pipelines.updated_at",
+      "objectType": "column",
+      "parentObjectName": "crm_pipelines"
+    },
+    {
+      "definition": {
+        "dataType": "bigint",
+        "nullable": false
+      },
+      "objectName": "crm_pipelines.version",
+      "objectType": "column",
+      "parentObjectName": "crm_pipelines"
+    },
+    {
+      "definition": {
+        "dataType": "bigint",
+        "nullable": true,
+        "ordinalPosition": 1,
+        "precision": 64,
+        "scale": 0
+      },
+      "objectName": "crm_platform_links.context_id",
+      "objectType": "column",
+      "parentObjectName": "crm_platform_links"
+    },
+    {
+      "definition": {
+        "dataType": "timestamptz",
+        "default": "now()",
+        "nullable": false,
+        "ordinalPosition": 2
+      },
+      "objectName": "crm_platform_links.created_at",
+      "objectType": "column",
+      "parentObjectName": "crm_platform_links"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": false,
+        "ordinalPosition": 3
+      },
+      "objectName": "crm_platform_links.external_ref",
+      "objectType": "column",
+      "parentObjectName": "crm_platform_links"
+    },
+    {
+      "definition": {
+        "dataType": "bigint",
+        "default": "nextval('crm_platform_links_link_id_seq')",
+        "nullable": false,
+        "ordinalPosition": 4,
+        "precision": 64,
+        "scale": 0
+      },
+      "objectName": "crm_platform_links.link_id",
+      "objectType": "column",
+      "parentObjectName": "crm_platform_links"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": false,
+        "ordinalPosition": 5
+      },
+      "objectName": "crm_platform_links.purpose",
+      "objectType": "column",
+      "parentObjectName": "crm_platform_links"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": false,
+        "ordinalPosition": 6
+      },
+      "objectName": "crm_platform_links.service_slug",
+      "objectType": "column",
+      "parentObjectName": "crm_platform_links"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "default": "'active'::text",
+        "nullable": false,
+        "ordinalPosition": 7
+      },
+      "objectName": "crm_platform_links.status",
+      "objectType": "column",
+      "parentObjectName": "crm_platform_links"
+    },
+    {
+      "definition": {
+        "dataType": "timestamptz",
+        "default": "now()",
+        "nullable": false,
+        "ordinalPosition": 8
+      },
+      "objectName": "crm_platform_links.updated_at",
+      "objectType": "column",
+      "parentObjectName": "crm_platform_links"
+    },
+    {
+      "definition": {
+        "dataType": "timestamp with time zone",
+        "nullable": false
+      },
+      "objectName": "crm_recycle_bin_entries.created_at",
+      "objectType": "column",
+      "parentObjectName": "crm_recycle_bin_entries"
+    },
+    {
+      "definition": {
+        "dataType": "bigint",
+        "nullable": false,
+        "default": "0"
+      },
+      "objectName": "crm_recycle_bin_entries.dependency_count",
+      "objectType": "column",
+      "parentObjectName": "crm_recycle_bin_entries"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": false
+      },
+      "objectName": "crm_recycle_bin_entries.id",
+      "objectType": "column",
+      "parentObjectName": "crm_recycle_bin_entries"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": false
+      },
+      "objectName": "crm_recycle_bin_entries.policy_reason_code",
+      "objectType": "column",
+      "parentObjectName": "crm_recycle_bin_entries"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": false
+      },
+      "objectName": "crm_recycle_bin_entries.previous_status",
+      "objectType": "column",
+      "parentObjectName": "crm_recycle_bin_entries"
+    },
+    {
+      "definition": {
+        "dataType": "bigint",
+        "nullable": false
+      },
+      "objectName": "crm_recycle_bin_entries.previous_version",
+      "objectType": "column",
+      "parentObjectName": "crm_recycle_bin_entries"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": false
+      },
+      "objectName": "crm_recycle_bin_entries.resource_class",
+      "objectType": "column",
+      "parentObjectName": "crm_recycle_bin_entries"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": false
+      },
+      "objectName": "crm_recycle_bin_entries.resource_id",
+      "objectType": "column",
+      "parentObjectName": "crm_recycle_bin_entries"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": false
+      },
+      "objectName": "crm_recycle_bin_entries.resource_label",
+      "objectType": "column",
+      "parentObjectName": "crm_recycle_bin_entries"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": false
+      },
+      "objectName": "crm_recycle_bin_entries.resource_type",
+      "objectType": "column",
+      "parentObjectName": "crm_recycle_bin_entries"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": true
+      },
+      "objectName": "crm_recycle_bin_entries.restore_operation_ref",
+      "objectType": "column",
+      "parentObjectName": "crm_recycle_bin_entries"
+    },
+    {
+      "definition": {
+        "dataType": "timestamp with time zone",
+        "nullable": true
+      },
+      "objectName": "crm_recycle_bin_entries.restored_at",
+      "objectType": "column",
+      "parentObjectName": "crm_recycle_bin_entries"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": true
+      },
+      "objectName": "crm_recycle_bin_entries.restored_by",
+      "objectType": "column",
+      "parentObjectName": "crm_recycle_bin_entries"
+    },
+    {
+      "definition": {
+        "dataType": "jsonb",
+        "nullable": false
+      },
+      "objectName": "crm_recycle_bin_entries.snapshot_json",
+      "objectType": "column",
+      "parentObjectName": "crm_recycle_bin_entries"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": false
+      },
+      "objectName": "crm_recycle_bin_entries.status",
+      "objectType": "column",
+      "parentObjectName": "crm_recycle_bin_entries"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": false
+      },
+      "objectName": "crm_recycle_bin_entries.trash_operation_ref",
+      "objectType": "column",
+      "parentObjectName": "crm_recycle_bin_entries"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": false
+      },
+      "objectName": "crm_recycle_bin_entries.trashed_by",
+      "objectType": "column",
+      "parentObjectName": "crm_recycle_bin_entries"
+    },
+    {
+      "definition": {
+        "dataType": "timestamp with time zone",
+        "nullable": false
+      },
+      "objectName": "crm_recycle_bin_entries.updated_at",
+      "objectType": "column",
+      "parentObjectName": "crm_recycle_bin_entries"
+    },
+    {
+      "definition": {
+        "dataType": "bigint",
+        "nullable": false,
+        "default": "1"
+      },
+      "objectName": "crm_recycle_bin_entries.version",
+      "objectType": "column",
+      "parentObjectName": "crm_recycle_bin_entries"
+    },
+    {
+      "definition": {
+        "dataType": "timestamptz",
+        "default": "now()",
+        "nullable": false,
+        "ordinalPosition": 1
+      },
+      "objectName": "crm_schema_migrations.applied_at",
+      "objectType": "column",
+      "parentObjectName": "crm_schema_migrations"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": false,
+        "ordinalPosition": 2
+      },
+      "objectName": "crm_schema_migrations.version",
+      "objectType": "column",
+      "parentObjectName": "crm_schema_migrations"
+    },
+    {
+      "definition": {
+        "dataType": "jsonb",
+        "nullable": false
+      },
+      "objectName": "crm_tenant_configuration.configuration_json",
+      "objectType": "column",
+      "parentObjectName": "crm_tenant_configuration"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": false
+      },
+      "objectName": "crm_tenant_configuration.profile_key",
+      "objectType": "column",
+      "parentObjectName": "crm_tenant_configuration"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": false
+      },
+      "objectName": "crm_tenant_configuration.profile_version",
+      "objectType": "column",
+      "parentObjectName": "crm_tenant_configuration"
+    },
+    {
+      "definition": {
+        "dataType": "text",
+        "nullable": false
+      },
+      "objectName": "crm_tenant_configuration.singleton_key",
+      "objectType": "column",
+      "parentObjectName": "crm_tenant_configuration"
+    },
+    {
+      "definition": {
+        "dataType": "timestamp with time zone",
+        "nullable": false
+      },
+      "objectName": "crm_tenant_configuration.updated_at",
+      "objectType": "column",
+      "parentObjectName": "crm_tenant_configuration"
+    },
+    {
+      "definition": {
+        "dataType": "bigint",
+        "nullable": false
+      },
+      "objectName": "crm_tenant_configuration.version",
+      "objectType": "column",
+      "parentObjectName": "crm_tenant_configuration"
+    },
+    {
+      "definition": {
+        "columns": [
+          "account_id",
+          "contact_id",
+          "role_key",
+          "archived_at"
+        ],
+        "constraintType": "unique"
+      },
+      "objectName": "crm_account_contact_links.crm_account_contact_links_account_id_contact_id_role_47fb949898",
+      "objectType": "constraint",
+      "parentObjectName": "crm_account_contact_links"
+    },
+    {
+      "definition": {
+        "columns": [
+          "account_id"
+        ],
+        "constraintType": "foreign key",
+        "onDelete": "restrict",
+        "references": {
+          "columns": [
+            "id"
+          ],
+          "table": "crm_accounts"
+        }
+      },
+      "objectName": "crm_account_contact_links.crm_account_contact_links_account_id_n1_fk",
+      "objectType": "constraint",
+      "parentObjectName": "crm_account_contact_links"
+    },
+    {
+      "definition": {
+        "columns": [
+          "contact_id"
+        ],
+        "constraintType": "foreign key",
+        "onDelete": "restrict",
+        "references": {
+          "columns": [
+            "id"
+          ],
+          "table": "crm_contacts"
+        }
+      },
+      "objectName": "crm_account_contact_links.crm_account_contact_links_contact_id_n2_fk",
+      "objectType": "constraint",
+      "parentObjectName": "crm_account_contact_links"
+    },
+    {
+      "definition": {
+        "columns": [
+          "id"
+        ],
+        "constraintType": "primary key"
+      },
+      "objectName": "crm_account_contact_links.crm_account_contact_links_pkey",
+      "objectType": "constraint",
+      "parentObjectName": "crm_account_contact_links"
+    },
+    {
+      "definition": {
+        "columns": [
+          "external_ref",
+          "archived_at"
+        ],
+        "constraintType": "unique"
+      },
+      "objectName": "crm_accounts.crm_accounts_external_ref_archived_at_n1_uq",
+      "objectType": "constraint",
+      "parentObjectName": "crm_accounts"
+    },
+    {
+      "definition": {
+        "columns": [
+          "id"
+        ],
+        "constraintType": "primary key"
+      },
+      "objectName": "crm_accounts.crm_accounts_pkey",
+      "objectType": "constraint",
+      "parentObjectName": "crm_accounts"
+    },
+    {
+      "definition": {
+        "constraintType": "check",
+        "expression": "status IN ('active', 'paused', 'archived')"
+      },
+      "objectName": "crm_accounts.crm_accounts_status_n4_chk",
+      "objectType": "constraint",
+      "parentObjectName": "crm_accounts"
+    },
+    {
+      "definition": {
+        "constraintType": "check",
+        "expression": "version > 0"
+      },
+      "objectName": "crm_accounts.crm_accounts_version_n1_chk",
+      "objectType": "constraint",
+      "parentObjectName": "crm_accounts"
+    },
+    {
+      "definition": {
+        "constraintType": "check",
+        "expression": "activity_type IN ('call', 'task', 'follow_up', 'email', 'note')"
+      },
+      "objectName": "crm_activities.crm_activities_activity_type_n4_chk",
+      "objectType": "constraint",
+      "parentObjectName": "crm_activities"
+    },
+    {
+      "definition": {
+        "columns": [
+          "case_id"
+        ],
+        "constraintType": "foreign key",
+        "onDelete": "restrict",
+        "references": {
+          "columns": [
+            "id"
+          ],
+          "table": "crm_cases"
+        }
+      },
+      "objectName": "crm_activities.crm_activities_case_id_n1_fk",
+      "objectType": "constraint",
+      "parentObjectName": "crm_activities"
+    },
+    {
+      "definition": {
+        "columns": [
+          "id"
+        ],
+        "constraintType": "primary key"
+      },
+      "objectName": "crm_activities.crm_activities_pkey",
+      "objectType": "constraint",
+      "parentObjectName": "crm_activities"
+    },
+    {
+      "definition": {
+        "constraintType": "check",
+        "expression": "status IN ('open', 'in_progress', 'completed', 'cancelled')"
+      },
+      "objectName": "crm_activities.crm_activities_status_n5_chk",
+      "objectType": "constraint",
+      "parentObjectName": "crm_activities"
+    },
+    {
+      "definition": {
+        "constraintType": "check",
+        "expression": "version > 0"
+      },
+      "objectName": "crm_activities.crm_activities_version_n1_chk",
+      "objectType": "constraint",
+      "parentObjectName": "crm_activities"
+    },
+    {
+      "definition": {
+        "columns": [
+          "appointment_id"
+        ],
+        "constraintType": "foreign key",
+        "onDelete": "cascade",
+        "references": {
+          "columns": [
+            "id"
+          ],
+          "table": "crm_appointments"
+        }
+      },
+      "objectName": "crm_appointment_participants.crm_appointment_participants_appointment_id_n1_fk",
+      "objectType": "constraint",
+      "parentObjectName": "crm_appointment_participants"
+    },
+    {
+      "definition": {
+        "columns": [
+          "appointment_id",
+          "participant_type",
+          "participant_id",
+          "role_key"
+        ],
+        "constraintType": "unique"
+      },
+      "objectName": "crm_appointment_participants.crm_appointment_participants_appointment_id_particip_e074f7fc69",
+      "objectType": "constraint",
+      "parentObjectName": "crm_appointment_participants"
+    },
+    {
+      "definition": {
+        "columns": [
+          "id"
+        ],
+        "constraintType": "primary key"
+      },
+      "objectName": "crm_appointment_participants.crm_appointment_participants_pkey",
+      "objectType": "constraint",
+      "parentObjectName": "crm_appointment_participants"
+    },
+    {
+      "definition": {
+        "columns": [
+          "appointment_id",
+          "aggregate_version"
+        ],
+        "constraintType": "unique"
+      },
+      "objectName": "crm_appointment_status_history.crm_appointment_status_history_appointment_id_aggreg_5c52a32e5b",
+      "objectType": "constraint",
+      "parentObjectName": "crm_appointment_status_history"
+    },
+    {
+      "definition": {
+        "columns": [
+          "appointment_id"
+        ],
+        "constraintType": "foreign key",
+        "onDelete": "restrict",
+        "references": {
+          "columns": [
+            "id"
+          ],
+          "table": "crm_appointments"
+        }
+      },
+      "objectName": "crm_appointment_status_history.crm_appointment_status_history_appointment_id_n1_fk",
+      "objectType": "constraint",
+      "parentObjectName": "crm_appointment_status_history"
+    },
+    {
+      "definition": {
+        "columns": [
+          "id"
+        ],
+        "constraintType": "primary key"
+      },
+      "objectName": "crm_appointment_status_history.crm_appointment_status_history_pkey",
+      "objectType": "constraint",
+      "parentObjectName": "crm_appointment_status_history"
+    },
+    {
+      "definition": {
+        "columns": [
+          "case_id"
+        ],
+        "constraintType": "foreign key",
+        "onDelete": "restrict",
+        "references": {
+          "columns": [
+            "id"
+          ],
+          "table": "crm_cases"
+        }
+      },
+      "objectName": "crm_appointments.crm_appointments_case_id_n1_fk",
+      "objectType": "constraint",
+      "parentObjectName": "crm_appointments"
+    },
+    {
+      "definition": {
+        "constraintType": "check",
+        "expression": "end_at IS NULL OR end_at > start_at"
+      },
+      "objectName": "crm_appointments.crm_appointments_end_at_start_at_n5_chk",
+      "objectType": "constraint",
+      "parentObjectName": "crm_appointments"
+    },
+    {
+      "definition": {
+        "columns": [
+          "id"
+        ],
+        "constraintType": "primary key"
+      },
+      "objectName": "crm_appointments.crm_appointments_pkey",
+      "objectType": "constraint",
+      "parentObjectName": "crm_appointments"
+    },
+    {
+      "definition": {
+        "constraintType": "check",
+        "expression": "status IN ('requested', 'scheduled', 'confirmed', 'rescheduled', 'cancelled', 'completed', 'no_show', 'sync_failed')"
+      },
+      "objectName": "crm_appointments.crm_appointments_status_n4_chk",
+      "objectType": "constraint",
+      "parentObjectName": "crm_appointments"
+    },
+    {
+      "definition": {
+        "constraintType": "check",
+        "expression": "version > 0"
+      },
+      "objectName": "crm_appointments.crm_appointments_version_n1_chk",
+      "objectType": "constraint",
+      "parentObjectName": "crm_appointments"
+    },
+    {
+      "definition": {
+        "constraintType": "check",
+        "expression": "outcome IN ('accepted', 'rejected')"
+      },
+      "objectName": "crm_audit_events.crm_audit_events_outcome_check",
+      "objectType": "constraint",
+      "parentObjectName": "crm_audit_events"
+    },
+    {
+      "definition": {
+        "columns": [
+          "audit_event_id"
+        ],
+        "constraintType": "primary key"
+      },
+      "objectName": "crm_audit_events.crm_audit_events_pkey",
+      "objectType": "constraint",
+      "parentObjectName": "crm_audit_events"
+    },
+    {
+      "definition": {
+        "columns": [
+          "case_id"
+        ],
+        "constraintType": "foreign key",
+        "onDelete": "cascade",
+        "references": {
+          "columns": [
+            "id"
+          ],
+          "table": "crm_cases"
+        }
+      },
+      "objectName": "crm_case_parties.crm_case_parties_case_id_n1_fk",
+      "objectType": "constraint",
+      "parentObjectName": "crm_case_parties"
+    },
+    {
+      "definition": {
+        "columns": [
+          "case_id",
+          "party_type",
+          "party_id",
+          "role_key",
+          "archived_at"
+        ],
+        "constraintType": "unique"
+      },
+      "objectName": "crm_case_parties.crm_case_parties_case_id_party_type_party_id_role_ke_f0574c804f",
+      "objectType": "constraint",
+      "parentObjectName": "crm_case_parties"
+    },
+    {
+      "definition": {
+        "columns": [
+          "id"
+        ],
+        "constraintType": "primary key"
+      },
+      "objectName": "crm_case_parties.crm_case_parties_pkey",
+      "objectType": "constraint",
+      "parentObjectName": "crm_case_parties"
+    },
+    {
+      "definition": {
+        "columns": [
+          "case_id",
+          "aggregate_version"
+        ],
+        "constraintType": "unique"
+      },
+      "objectName": "crm_case_status_history.crm_case_status_history_case_id_aggregate_version_n1_uq",
+      "objectType": "constraint",
+      "parentObjectName": "crm_case_status_history"
+    },
+    {
+      "definition": {
+        "columns": [
+          "case_id"
+        ],
+        "constraintType": "foreign key",
+        "onDelete": "restrict",
+        "references": {
+          "columns": [
+            "id"
+          ],
+          "table": "crm_cases"
+        }
+      },
+      "objectName": "crm_case_status_history.crm_case_status_history_case_id_n1_fk",
+      "objectType": "constraint",
+      "parentObjectName": "crm_case_status_history"
+    },
+    {
+      "definition": {
+        "columns": [
+          "id"
+        ],
+        "constraintType": "primary key"
+      },
+      "objectName": "crm_case_status_history.crm_case_status_history_pkey",
+      "objectType": "constraint",
+      "parentObjectName": "crm_case_status_history"
+    },
+    {
+      "definition": {
+        "columns": [
+          "account_id"
+        ],
+        "constraintType": "foreign key",
+        "onDelete": "restrict",
+        "references": {
+          "columns": [
+            "id"
+          ],
+          "table": "crm_accounts"
+        }
+      },
+      "objectName": "crm_cases.crm_cases_account_id_n1_fk",
+      "objectType": "constraint",
+      "parentObjectName": "crm_cases"
+    },
+    {
+      "definition": {
+        "columns": [
+          "contact_id"
+        ],
+        "constraintType": "foreign key",
+        "onDelete": "restrict",
+        "references": {
+          "columns": [
+            "id"
+          ],
+          "table": "crm_contacts"
+        }
+      },
+      "objectName": "crm_cases.crm_cases_contact_id_n2_fk",
+      "objectType": "constraint",
+      "parentObjectName": "crm_cases"
+    },
+    {
+      "definition": {
+        "columns": [
+          "id"
+        ],
+        "constraintType": "primary key"
+      },
+      "objectName": "crm_cases.crm_cases_pkey",
+      "objectType": "constraint",
+      "parentObjectName": "crm_cases"
+    },
+    {
+      "definition": {
+        "constraintType": "check",
+        "expression": "priority IN ('low', 'normal', 'high', 'urgent')"
+      },
+      "objectName": "crm_cases.crm_cases_priority_n5_chk",
+      "objectType": "constraint",
+      "parentObjectName": "crm_cases"
+    },
+    {
+      "definition": {
+        "constraintType": "check",
+        "expression": "status IN ('new', 'triaged', 'in_progress', 'waiting_external', 'resolved', 'closed', 'reopened', 'cancelled')"
+      },
+      "objectName": "crm_cases.crm_cases_status_n4_chk",
+      "objectType": "constraint",
+      "parentObjectName": "crm_cases"
+    },
+    {
+      "definition": {
+        "constraintType": "check",
+        "expression": "version > 0"
+      },
+      "objectName": "crm_cases.crm_cases_version_n1_chk",
+      "objectType": "constraint",
+      "parentObjectName": "crm_cases"
+    },
+    {
+      "definition": {
+        "constraintType": "check",
+        "expression": "consent_status IN ('unknown', 'recorded', 'revoked')"
+      },
+      "objectName": "crm_contact_preferences.crm_contact_preferences_consent_status_n2_chk",
+      "objectType": "constraint",
+      "parentObjectName": "crm_contact_preferences"
+    },
+    {
+      "definition": {
+        "columns": [
+          "contact_id"
+        ],
+        "constraintType": "foreign key",
+        "onDelete": "cascade",
+        "references": {
+          "columns": [
+            "id"
+          ],
+          "table": "crm_contacts"
+        }
+      },
+      "objectName": "crm_contact_preferences.crm_contact_preferences_contact_id_n1_fk",
+      "objectType": "constraint",
+      "parentObjectName": "crm_contact_preferences"
+    },
+    {
+      "definition": {
+        "columns": [
+          "contact_id",
+          "channel_key"
+        ],
+        "constraintType": "primary key"
+      },
+      "objectName": "crm_contact_preferences.crm_contact_preferences_pkey",
+      "objectType": "constraint",
+      "parentObjectName": "crm_contact_preferences"
+    },
+    {
+      "definition": {
+        "constraintType": "check",
+        "expression": "preference IN ('preferred', 'allowed', 'blocked')"
+      },
+      "objectName": "crm_contact_preferences.crm_contact_preferences_preference_n1_chk",
+      "objectType": "constraint",
+      "parentObjectName": "crm_contact_preferences"
+    },
+    {
+      "definition": {
+        "columns": [
+          "id"
+        ],
+        "constraintType": "primary key"
+      },
+      "objectName": "crm_contacts.crm_contacts_pkey",
+      "objectType": "constraint",
+      "parentObjectName": "crm_contacts"
+    },
+    {
+      "definition": {
+        "columns": [
+          "primary_account_id"
+        ],
+        "constraintType": "foreign key",
+        "onDelete": "restrict",
+        "references": {
+          "columns": [
+            "id"
+          ],
+          "table": "crm_accounts"
+        }
+      },
+      "objectName": "crm_contacts.crm_contacts_primary_account_id_n1_fk",
+      "objectType": "constraint",
+      "parentObjectName": "crm_contacts"
+    },
+    {
+      "definition": {
+        "constraintType": "check",
+        "expression": "status IN ('active', 'paused', 'archived')"
+      },
+      "objectName": "crm_contacts.crm_contacts_status_n4_chk",
+      "objectType": "constraint",
+      "parentObjectName": "crm_contacts"
+    },
+    {
+      "definition": {
+        "constraintType": "check",
+        "expression": "version > 0"
+      },
+      "objectName": "crm_contacts.crm_contacts_version_n1_chk",
+      "objectType": "constraint",
+      "parentObjectName": "crm_contacts"
+    },
+    {
+      "definition": {
+        "columns": [
+          "idempotency_key"
+        ],
+        "constraintType": "primary key"
+      },
+      "objectName": "crm_idempotency_results.crm_idempotency_results_pkey",
+      "objectType": "constraint",
+      "parentObjectName": "crm_idempotency_results"
+    },
+    {
+      "definition": {
+        "columns": [
+          "id"
+        ],
+        "constraintType": "primary key"
+      },
+      "objectName": "crm_import_batches.crm_import_batches_pkey",
+      "objectType": "constraint",
+      "parentObjectName": "crm_import_batches"
+    },
+    {
+      "definition": {
+        "columns": [
+          "source_fingerprint"
+        ],
+        "constraintType": "unique"
+      },
+      "objectName": "crm_import_batches.crm_import_batches_source_fingerprint_n1_uq",
+      "objectType": "constraint",
+      "parentObjectName": "crm_import_batches"
+    },
+    {
+      "definition": {
+        "constraintType": "check",
+        "expression": "status IN ('staged', 'validated', 'committed', 'rejected', 'rolled_back')"
+      },
+      "objectName": "crm_import_batches.crm_import_batches_status_n1_chk",
+      "objectType": "constraint",
+      "parentObjectName": "crm_import_batches"
+    },
+    {
+      "definition": {
+        "columns": [
+          "batch_id"
+        ],
+        "constraintType": "foreign key",
+        "onDelete": "cascade",
+        "references": {
+          "columns": [
+            "id"
+          ],
+          "table": "crm_import_batches"
+        }
+      },
+      "objectName": "crm_import_records.crm_import_records_batch_id_n1_fk",
+      "objectType": "constraint",
+      "parentObjectName": "crm_import_records"
+    },
+    {
+      "definition": {
+        "columns": [
+          "batch_id",
+          "source_row"
+        ],
+        "constraintType": "primary key"
+      },
+      "objectName": "crm_import_records.crm_import_records_pkey",
+      "objectType": "constraint",
+      "parentObjectName": "crm_import_records"
+    },
+    {
+      "definition": {
+        "constraintType": "check",
+        "expression": "status IN ('accepted', 'duplicate', 'quarantined', 'committed', 'rolled_back')"
+      },
+      "objectName": "crm_import_records.crm_import_records_status_n1_chk",
+      "objectType": "constraint",
+      "parentObjectName": "crm_import_records"
+    },
+    {
+      "definition": {
+        "constraintType": "check",
+        "expression": "kind IN ('report-run', 'export')"
+      },
+      "objectName": "crm_jobs.crm_jobs_kind_n1_chk",
+      "objectType": "constraint",
+      "parentObjectName": "crm_jobs"
+    },
+    {
+      "definition": {
+        "columns": [
+          "id"
+        ],
+        "constraintType": "primary key"
+      },
+      "objectName": "crm_jobs.crm_jobs_pkey",
+      "objectType": "constraint",
+      "parentObjectName": "crm_jobs"
+    },
+    {
+      "definition": {
+        "constraintType": "check",
+        "expression": "status IN ('accepted', 'running', 'completed', 'failed', 'expired')"
+      },
+      "objectName": "crm_jobs.crm_jobs_status_n2_chk",
+      "objectType": "constraint",
+      "parentObjectName": "crm_jobs"
+    },
+    {
+      "definition": {
+        "columns": [
+          "context_id"
+        ],
+        "constraintType": "primary key"
+      },
+      "objectName": "crm_operating_contexts.crm_operating_contexts_pkey",
+      "objectType": "constraint",
+      "parentObjectName": "crm_operating_contexts"
+    },
+    {
+      "definition": {
+        "columns": [
+          "platform_tenant_id",
+          "accounts_organization_id"
+        ],
+        "constraintType": "unique"
+      },
+      "objectName": "crm_operating_contexts.crm_operating_contexts_platform_tenant_id_accounts_organiza_key",
+      "objectType": "constraint",
+      "parentObjectName": "crm_operating_contexts"
+    },
+    {
+      "definition": {
+        "columns": [
+          "account_id"
+        ],
+        "constraintType": "foreign key",
+        "onDelete": "restrict",
+        "references": {
+          "columns": [
+            "id"
+          ],
+          "table": "crm_accounts"
+        }
+      },
+      "objectName": "crm_opportunities.crm_opportunities_account_id_n1_fk",
+      "objectType": "constraint",
+      "parentObjectName": "crm_opportunities"
+    },
+    {
+      "definition": {
+        "constraintType": "check",
+        "expression": "amount_minor >= 0"
+      },
+      "objectName": "crm_opportunities.crm_opportunities_amount_minor_n4_chk",
+      "objectType": "constraint",
+      "parentObjectName": "crm_opportunities"
+    },
+    {
+      "definition": {
+        "columns": [
+          "pipeline_id"
+        ],
+        "constraintType": "foreign key",
+        "onDelete": "restrict",
+        "references": {
+          "columns": [
+            "id"
+          ],
+          "table": "crm_pipelines"
+        }
+      },
+      "objectName": "crm_opportunities.crm_opportunities_pipeline_id_n2_fk",
+      "objectType": "constraint",
+      "parentObjectName": "crm_opportunities"
+    },
+    {
+      "definition": {
+        "columns": [
+          "id"
+        ],
+        "constraintType": "primary key"
+      },
+      "objectName": "crm_opportunities.crm_opportunities_pkey",
+      "objectType": "constraint",
+      "parentObjectName": "crm_opportunities"
+    },
+    {
+      "definition": {
+        "constraintType": "check",
+        "expression": "probability BETWEEN 0 AND 100"
+      },
+      "objectName": "crm_opportunities.crm_opportunities_probability_n5_chk",
+      "objectType": "constraint",
+      "parentObjectName": "crm_opportunities"
+    },
+    {
+      "definition": {
+        "columns": [
+          "stage_id"
+        ],
+        "constraintType": "foreign key",
+        "onDelete": "restrict",
+        "references": {
+          "columns": [
+            "id"
+          ],
+          "table": "crm_pipeline_stages"
+        }
+      },
+      "objectName": "crm_opportunities.crm_opportunities_stage_id_n3_fk",
+      "objectType": "constraint",
+      "parentObjectName": "crm_opportunities"
+    },
+    {
+      "definition": {
+        "constraintType": "check",
+        "expression": "status IN ('open', 'closed')"
+      },
+      "objectName": "crm_opportunities.crm_opportunities_status_n6_chk",
+      "objectType": "constraint",
+      "parentObjectName": "crm_opportunities"
+    },
+    {
+      "definition": {
+        "constraintType": "check",
+        "expression": "version > 0"
+      },
+      "objectName": "crm_opportunities.crm_opportunities_version_n1_chk",
+      "objectType": "constraint",
+      "parentObjectName": "crm_opportunities"
+    },
+    {
+      "definition": {
+        "columns": [
+          "opportunity_id",
+          "aggregate_version"
+        ],
+        "constraintType": "unique"
+      },
+      "objectName": "crm_opportunity_stage_history.crm_opportunity_stage_history_opportunity_id_aggrega_d14c78e306",
+      "objectType": "constraint",
+      "parentObjectName": "crm_opportunity_stage_history"
+    },
+    {
+      "definition": {
+        "columns": [
+          "opportunity_id"
+        ],
+        "constraintType": "foreign key",
+        "onDelete": "restrict",
+        "references": {
+          "columns": [
+            "id"
+          ],
+          "table": "crm_opportunities"
+        }
+      },
+      "objectName": "crm_opportunity_stage_history.crm_opportunity_stage_history_opportunity_id_n1_fk",
+      "objectType": "constraint",
+      "parentObjectName": "crm_opportunity_stage_history"
+    },
+    {
+      "definition": {
+        "columns": [
+          "id"
+        ],
+        "constraintType": "primary key"
+      },
+      "objectName": "crm_opportunity_stage_history.crm_opportunity_stage_history_pkey",
+      "objectType": "constraint",
+      "parentObjectName": "crm_opportunity_stage_history"
+    },
+    {
+      "definition": {
+        "constraintType": "check",
+        "expression": "contract_version = '1'"
+      },
+      "objectName": "crm_outbox_events.crm_outbox_events_contract_version_n1_chk",
+      "objectType": "constraint",
+      "parentObjectName": "crm_outbox_events"
+    },
+    {
+      "definition": {
+        "columns": [
+          "event_type",
+          "causation_id"
+        ],
+        "constraintType": "unique"
+      },
+      "objectName": "crm_outbox_events.crm_outbox_events_event_type_causation_id_n1_uq",
+      "objectType": "constraint",
+      "parentObjectName": "crm_outbox_events"
+    },
+    {
+      "definition": {
+        "columns": [
+          "event_id"
+        ],
+        "constraintType": "primary key"
+      },
+      "objectName": "crm_outbox_events.crm_outbox_events_pkey",
+      "objectType": "constraint",
+      "parentObjectName": "crm_outbox_events"
+    },
+    {
+      "definition": {
+        "constraintType": "check",
+        "expression": "status IN ('pending', 'delivered', 'failed', 'quarantined')"
+      },
+      "objectName": "crm_outbox_events.crm_outbox_events_status_n2_chk",
+      "objectType": "constraint",
+      "parentObjectName": "crm_outbox_events"
+    },
+    {
+      "definition": {
+        "constraintType": "check",
+        "expression": "default_probability BETWEEN 0 AND 100"
+      },
+      "objectName": "crm_pipeline_stages.crm_pipeline_stages_default_probability_n1_chk",
+      "objectType": "constraint",
+      "parentObjectName": "crm_pipeline_stages"
+    },
+    {
+      "definition": {
+        "columns": [
+          "pipeline_id"
+        ],
+        "constraintType": "foreign key",
+        "onDelete": "restrict",
+        "references": {
+          "columns": [
+            "id"
+          ],
+          "table": "crm_pipelines"
+        }
+      },
+      "objectName": "crm_pipeline_stages.crm_pipeline_stages_pipeline_id_n1_fk",
+      "objectType": "constraint",
+      "parentObjectName": "crm_pipeline_stages"
+    },
+    {
+      "definition": {
+        "columns": [
+          "pipeline_id",
+          "position"
+        ],
+        "constraintType": "unique"
+      },
+      "objectName": "crm_pipeline_stages.crm_pipeline_stages_pipeline_id_position_n2_uq",
+      "objectType": "constraint",
+      "parentObjectName": "crm_pipeline_stages"
+    },
+    {
+      "definition": {
+        "columns": [
+          "pipeline_id",
+          "stage_key"
+        ],
+        "constraintType": "unique"
+      },
+      "objectName": "crm_pipeline_stages.crm_pipeline_stages_pipeline_id_stage_key_n1_uq",
+      "objectType": "constraint",
+      "parentObjectName": "crm_pipeline_stages"
+    },
+    {
+      "definition": {
+        "columns": [
+          "id"
+        ],
+        "constraintType": "primary key"
+      },
+      "objectName": "crm_pipeline_stages.crm_pipeline_stages_pkey",
+      "objectType": "constraint",
+      "parentObjectName": "crm_pipeline_stages"
+    },
+    {
+      "definition": {
+        "constraintType": "check",
+        "expression": "terminal_kind IN ('null', 'won', 'lost')"
+      },
+      "objectName": "crm_pipeline_stages.crm_pipeline_stages_terminal_kind_n2_chk",
+      "objectType": "constraint",
+      "parentObjectName": "crm_pipeline_stages"
+    },
+    {
+      "definition": {
+        "columns": [
+          "id"
+        ],
+        "constraintType": "primary key"
+      },
+      "objectName": "crm_pipelines.crm_pipelines_pkey",
+      "objectType": "constraint",
+      "parentObjectName": "crm_pipelines"
+    },
+    {
+      "definition": {
+        "constraintType": "check",
+        "expression": "status IN ('active', 'retired')"
+      },
+      "objectName": "crm_pipelines.crm_pipelines_status_n1_chk",
+      "objectType": "constraint",
+      "parentObjectName": "crm_pipelines"
+    },
+    {
+      "definition": {
+        "constraintType": "check",
+        "expression": "version > 0"
+      },
+      "objectName": "crm_pipelines.crm_pipelines_version_n2_chk",
+      "objectType": "constraint",
+      "parentObjectName": "crm_pipelines"
+    },
+    {
+      "definition": {
+        "columns": [
+          "link_id"
+        ],
+        "constraintType": "primary key"
+      },
+      "objectName": "crm_platform_links.crm_platform_links_pkey",
+      "objectType": "constraint",
+      "parentObjectName": "crm_platform_links"
+    },
+    {
+      "definition": {
+        "columns": [
+          "service_slug",
+          "external_ref",
+          "purpose"
+        ],
+        "constraintType": "unique"
+      },
+      "objectName": "crm_platform_links.crm_platform_links_service_slug_external_ref_purpose_key",
+      "objectType": "constraint",
+      "parentObjectName": "crm_platform_links"
+    },
+    {
+      "definition": {
+        "columns": [
+          "id"
+        ],
+        "constraintType": "primary-key"
+      },
+      "objectName": "crm_recycle_bin_entries.crm_recycle_bin_entries_pkey",
+      "objectType": "constraint",
+      "parentObjectName": "crm_recycle_bin_entries"
+    },
+    {
+      "definition": {
+        "constraintType": "check",
+        "expression": "resource_class IN ('master','transaction')"
+      },
+      "objectName": "crm_recycle_bin_entries.crm_recycle_bin_entries_resource_class_chk",
+      "objectType": "constraint",
+      "parentObjectName": "crm_recycle_bin_entries"
+    },
+    {
+      "definition": {
+        "constraintType": "check",
+        "expression": "status IN ('active','restored')"
+      },
+      "objectName": "crm_recycle_bin_entries.crm_recycle_bin_entries_status_chk",
+      "objectType": "constraint",
+      "parentObjectName": "crm_recycle_bin_entries"
+    },
+    {
+      "definition": {
+        "columns": [
+          "version"
+        ],
+        "constraintType": "primary key"
+      },
+      "objectName": "crm_schema_migrations.crm_schema_migrations_pkey",
+      "objectType": "constraint",
+      "parentObjectName": "crm_schema_migrations"
+    },
+    {
+      "definition": {
+        "columns": [
+          "singleton_key"
+        ],
+        "constraintType": "primary key"
+      },
+      "objectName": "crm_tenant_configuration.crm_tenant_configuration_pkey",
+      "objectType": "constraint",
+      "parentObjectName": "crm_tenant_configuration"
+    },
+    {
+      "definition": {
+        "constraintType": "check",
+        "expression": "singleton_key = 'effective'"
+      },
+      "objectName": "crm_tenant_configuration.crm_tenant_configuration_singleton_key_n1_chk",
+      "objectType": "constraint",
+      "parentObjectName": "crm_tenant_configuration"
+    },
+    {
+      "definition": {
+        "constraintType": "check",
+        "expression": "version > 0"
+      },
+      "objectName": "crm_tenant_configuration.crm_tenant_configuration_version_n3_chk",
+      "objectType": "constraint",
+      "parentObjectName": "crm_tenant_configuration"
+    },
+    {
+      "definition": {
+        "columns": [
+          "account_id",
+          "contact_id",
+          "role_key",
+          "archived_at"
+        ],
+        "unique": true
+      },
+      "objectName": "crm_account_contact_links.crm_account_contact_links_account_id_contact_id_role_47fb949898",
+      "objectType": "index",
+      "parentObjectName": "crm_account_contact_links"
+    },
+    {
+      "definition": {
+        "columns": [
+          "id"
+        ],
+        "unique": true
+      },
+      "objectName": "crm_account_contact_links.crm_account_contact_links_pkey",
+      "objectType": "index",
+      "parentObjectName": "crm_account_contact_links"
+    },
+    {
+      "definition": {
+        "columns": [
+          "account_type",
+          "status"
+        ],
+        "unique": false
+      },
+      "objectName": "crm_accounts.crm_accounts_account_type_status_n2_idx",
+      "objectType": "index",
+      "parentObjectName": "crm_accounts"
+    },
+    {
+      "definition": {
+        "columns": [
+          "external_ref",
+          "archived_at"
+        ],
+        "unique": true
+      },
+      "objectName": "crm_accounts.crm_accounts_external_ref_archived_at_n1_uq",
+      "objectType": "index",
+      "parentObjectName": "crm_accounts"
+    },
+    {
+      "definition": {
+        "columns": [
+          "id"
+        ],
+        "unique": true
+      },
+      "objectName": "crm_accounts.crm_accounts_pkey",
+      "objectType": "index",
+      "parentObjectName": "crm_accounts"
+    },
+    {
+      "definition": {
+        "columns": [
+          "status",
+          "owner_id",
+          "updated_at"
+        ],
+        "unique": false
+      },
+      "objectName": "crm_accounts.crm_accounts_status_owner_id_updated_at_n1_idx",
+      "objectType": "index",
+      "parentObjectName": "crm_accounts"
+    },
+    {
+      "definition": {
+        "columns": [
+          "case_id",
+          "created_at"
+        ],
+        "unique": false
+      },
+      "objectName": "crm_activities.crm_activities_case_id_created_at_n1_idx",
+      "objectType": "index",
+      "parentObjectName": "crm_activities"
+    },
+    {
+      "definition": {
+        "columns": [
+          "owner_id",
+          "status",
+          "due_at"
+        ],
+        "unique": false
+      },
+      "objectName": "crm_activities.crm_activities_owner_id_status_due_at_n2_idx",
+      "objectType": "index",
+      "parentObjectName": "crm_activities"
+    },
+    {
+      "definition": {
+        "columns": [
+          "id"
+        ],
+        "unique": true
+      },
+      "objectName": "crm_activities.crm_activities_pkey",
+      "objectType": "index",
+      "parentObjectName": "crm_activities"
+    },
+    {
+      "definition": {
+        "columns": [
+          "appointment_id",
+          "participant_type",
+          "participant_id",
+          "role_key"
+        ],
+        "unique": true
+      },
+      "objectName": "crm_appointment_participants.crm_appointment_participants_appointment_id_particip_e074f7fc69",
+      "objectType": "index",
+      "parentObjectName": "crm_appointment_participants"
+    },
+    {
+      "definition": {
+        "columns": [
+          "id"
+        ],
+        "unique": true
+      },
+      "objectName": "crm_appointment_participants.crm_appointment_participants_pkey",
+      "objectType": "index",
+      "parentObjectName": "crm_appointment_participants"
+    },
+    {
+      "definition": {
+        "columns": [
+          "appointment_id",
+          "aggregate_version"
+        ],
+        "unique": true
+      },
+      "objectName": "crm_appointment_status_history.crm_appointment_status_history_appointment_id_aggreg_5c52a32e5b",
+      "objectType": "index",
+      "parentObjectName": "crm_appointment_status_history"
+    },
+    {
+      "definition": {
+        "columns": [
+          "id"
+        ],
+        "unique": true
+      },
+      "objectName": "crm_appointment_status_history.crm_appointment_status_history_pkey",
+      "objectType": "index",
+      "parentObjectName": "crm_appointment_status_history"
+    },
+    {
+      "definition": {
+        "columns": [
+          "id"
+        ],
+        "unique": true
+      },
+      "objectName": "crm_appointments.crm_appointments_pkey",
+      "objectType": "index",
+      "parentObjectName": "crm_appointments"
+    },
+    {
+      "definition": {
+        "columns": [
+          "resource_id",
+          "start_at",
+          "end_at"
+        ],
+        "unique": false
+      },
+      "objectName": "crm_appointments.crm_appointments_resource_id_start_at_end_at_n1_idx",
+      "objectType": "index",
+      "parentObjectName": "crm_appointments"
+    },
+    {
+      "definition": {
+        "columns": [
+          "status",
+          "start_at"
+        ],
+        "unique": false
+      },
+      "objectName": "crm_appointments.crm_appointments_status_start_at_n2_idx",
+      "objectType": "index",
+      "parentObjectName": "crm_appointments"
+    },
+    {
+      "definition": {
+        "columns": [
+          "actor_subject",
+          "occurred_at"
+        ],
+        "unique": false
+      },
+      "objectName": "crm_audit_events.crm_audit_events_actor_occurred_idx",
+      "objectType": "index",
+      "parentObjectName": "crm_audit_events"
+    },
+    {
+      "definition": {
+        "columns": [
+          "context_id",
+          "created_at"
+        ],
+        "expression": false,
+        "primary": false,
+        "unique": false
+      },
+      "objectName": "crm_audit_events.crm_audit_events_context_created_idx",
+      "objectType": "index",
+      "parentObjectName": "crm_audit_events"
+    },
+    {
+      "definition": {
+        "columns": [
+          "entity_type",
+          "entity_id"
+        ],
+        "expression": false,
+        "primary": false,
+        "unique": false
+      },
+      "objectName": "crm_audit_events.crm_audit_events_entity_idx",
+      "objectType": "index",
+      "parentObjectName": "crm_audit_events"
+    },
+    {
+      "definition": {
+        "columns": [
+          "entity_type",
+          "entity_id",
+          "occurred_at"
+        ],
+        "unique": false
+      },
+      "objectName": "crm_audit_events.crm_audit_events_entity_occurred_idx",
+      "objectType": "index",
+      "parentObjectName": "crm_audit_events"
+    },
+    {
+      "definition": {
+        "columns": [
+          "id"
+        ],
+        "unique": true
+      },
+      "objectName": "crm_audit_events.crm_audit_events_id_uq",
+      "objectType": "index",
+      "parentObjectName": "crm_audit_events"
+    },
+    {
+      "definition": {
+        "columns": [
+          "audit_event_id"
+        ],
+        "expression": false,
+        "primary": true,
+        "unique": true
+      },
+      "objectName": "crm_audit_events.crm_audit_events_pkey",
+      "objectType": "index",
+      "parentObjectName": "crm_audit_events"
+    },
+    {
+      "definition": {
+        "columns": [
+          "case_id",
+          "party_type",
+          "party_id",
+          "role_key",
+          "archived_at"
+        ],
+        "unique": true
+      },
+      "objectName": "crm_case_parties.crm_case_parties_case_id_party_type_party_id_role_ke_f0574c804f",
+      "objectType": "index",
+      "parentObjectName": "crm_case_parties"
+    },
+    {
+      "definition": {
+        "columns": [
+          "id"
+        ],
+        "unique": true
+      },
+      "objectName": "crm_case_parties.crm_case_parties_pkey",
+      "objectType": "index",
+      "parentObjectName": "crm_case_parties"
+    },
+    {
+      "definition": {
+        "columns": [
+          "case_id",
+          "aggregate_version"
+        ],
+        "unique": true
+      },
+      "objectName": "crm_case_status_history.crm_case_status_history_case_id_aggregate_version_n1_uq",
+      "objectType": "index",
+      "parentObjectName": "crm_case_status_history"
+    },
+    {
+      "definition": {
+        "columns": [
+          "id"
+        ],
+        "unique": true
+      },
+      "objectName": "crm_case_status_history.crm_case_status_history_pkey",
+      "objectType": "index",
+      "parentObjectName": "crm_case_status_history"
+    },
+    {
+      "definition": {
+        "columns": [
+          "id"
+        ],
+        "unique": true
+      },
+      "objectName": "crm_cases.crm_cases_pkey",
+      "objectType": "index",
+      "parentObjectName": "crm_cases"
+    },
+    {
+      "definition": {
+        "columns": [
+          "queue_id",
+          "owner_id",
+          "status"
+        ],
+        "unique": false
+      },
+      "objectName": "crm_cases.crm_cases_queue_id_owner_id_status_n2_idx",
+      "objectType": "index",
+      "parentObjectName": "crm_cases"
+    },
+    {
+      "definition": {
+        "columns": [
+          "status",
+          "priority",
+          "sla_due_at"
+        ],
+        "unique": false
+      },
+      "objectName": "crm_cases.crm_cases_status_priority_sla_due_at_n1_idx",
+      "objectType": "index",
+      "parentObjectName": "crm_cases"
+    },
+    {
+      "definition": {
+        "columns": [
+          "contact_id",
+          "channel_key"
+        ],
+        "unique": true
+      },
+      "objectName": "crm_contact_preferences.crm_contact_preferences_pkey",
+      "objectType": "index",
+      "parentObjectName": "crm_contact_preferences"
+    },
+    {
+      "definition": {
+        "columns": [
+          "contact_role",
+          "status"
+        ],
+        "unique": false
+      },
+      "objectName": "crm_contacts.crm_contacts_contact_role_status_n2_idx",
+      "objectType": "index",
+      "parentObjectName": "crm_contacts"
+    },
+    {
+      "definition": {
+        "columns": [
+          "id"
+        ],
+        "unique": true
+      },
+      "objectName": "crm_contacts.crm_contacts_pkey",
+      "objectType": "index",
+      "parentObjectName": "crm_contacts"
+    },
+    {
+      "definition": {
+        "columns": [
+          "primary_account_id",
+          "status"
+        ],
+        "unique": false
+      },
+      "objectName": "crm_contacts.crm_contacts_primary_account_id_status_n1_idx",
+      "objectType": "index",
+      "parentObjectName": "crm_contacts"
+    },
+    {
+      "definition": {
+        "columns": [
+          "idempotency_key"
+        ],
+        "unique": true
+      },
+      "objectName": "crm_idempotency_results.crm_idempotency_results_pkey",
+      "objectType": "index",
+      "parentObjectName": "crm_idempotency_results"
+    },
+    {
+      "definition": {
+        "columns": [
+          "id"
+        ],
+        "unique": true
+      },
+      "objectName": "crm_import_batches.crm_import_batches_pkey",
+      "objectType": "index",
+      "parentObjectName": "crm_import_batches"
+    },
+    {
+      "definition": {
+        "columns": [
+          "source_fingerprint"
+        ],
+        "unique": true
+      },
+      "objectName": "crm_import_batches.crm_import_batches_source_fingerprint_n1_uq",
+      "objectType": "index",
+      "parentObjectName": "crm_import_batches"
+    },
+    {
+      "definition": {
+        "columns": [
+          "batch_id",
+          "source_row"
+        ],
+        "unique": true
+      },
+      "objectName": "crm_import_records.crm_import_records_pkey",
+      "objectType": "index",
+      "parentObjectName": "crm_import_records"
+    },
+    {
+      "definition": {
+        "columns": [
+          "id"
+        ],
+        "unique": true
+      },
+      "objectName": "crm_jobs.crm_jobs_pkey",
+      "objectType": "index",
+      "parentObjectName": "crm_jobs"
+    },
+    {
+      "definition": {
+        "columns": [
+          "context_id"
+        ],
+        "expression": false,
+        "primary": true,
+        "unique": true
+      },
+      "objectName": "crm_operating_contexts.crm_operating_contexts_pkey",
+      "objectType": "index",
+      "parentObjectName": "crm_operating_contexts"
+    },
+    {
+      "definition": {
+        "columns": [
+          "platform_tenant_id",
+          "accounts_organization_id"
+        ],
+        "expression": false,
+        "primary": false,
+        "unique": true
+      },
+      "objectName": "crm_operating_contexts.crm_operating_contexts_platform_tenant_id_accounts_organiza_key",
+      "objectType": "index",
+      "parentObjectName": "crm_operating_contexts"
+    },
+    {
+      "definition": {
+        "columns": [
+          "owner_id",
+          "status",
+          "updated_at"
+        ],
+        "unique": false
+      },
+      "objectName": "crm_opportunities.crm_opportunities_owner_id_status_updated_at_n2_idx",
+      "objectType": "index",
+      "parentObjectName": "crm_opportunities"
+    },
+    {
+      "definition": {
+        "columns": [
+          "pipeline_id",
+          "stage_id",
+          "status"
+        ],
+        "unique": false
+      },
+      "objectName": "crm_opportunities.crm_opportunities_pipeline_id_stage_id_status_n1_idx",
+      "objectType": "index",
+      "parentObjectName": "crm_opportunities"
+    },
+    {
+      "definition": {
+        "columns": [
+          "id"
+        ],
+        "unique": true
+      },
+      "objectName": "crm_opportunities.crm_opportunities_pkey",
+      "objectType": "index",
+      "parentObjectName": "crm_opportunities"
+    },
+    {
+      "definition": {
+        "columns": [
+          "opportunity_id",
+          "aggregate_version"
+        ],
+        "unique": true
+      },
+      "objectName": "crm_opportunity_stage_history.crm_opportunity_stage_history_opportunity_id_aggrega_d14c78e306",
+      "objectType": "index",
+      "parentObjectName": "crm_opportunity_stage_history"
+    },
+    {
+      "definition": {
+        "columns": [
+          "id"
+        ],
+        "unique": true
+      },
+      "objectName": "crm_opportunity_stage_history.crm_opportunity_stage_history_pkey",
+      "objectType": "index",
+      "parentObjectName": "crm_opportunity_stage_history"
+    },
+    {
+      "definition": {
+        "columns": [
+          "event_type",
+          "causation_id"
+        ],
+        "unique": true
+      },
+      "objectName": "crm_outbox_events.crm_outbox_events_event_type_causation_id_n1_uq",
+      "objectType": "index",
+      "parentObjectName": "crm_outbox_events"
+    },
+    {
+      "definition": {
+        "columns": [
+          "event_id"
+        ],
+        "unique": true
+      },
+      "objectName": "crm_outbox_events.crm_outbox_events_pkey",
+      "objectType": "index",
+      "parentObjectName": "crm_outbox_events"
+    },
+    {
+      "definition": {
+        "columns": [
+          "status",
+          "available_at"
+        ],
+        "unique": false
+      },
+      "objectName": "crm_outbox_events.crm_outbox_events_status_available_at_n1_idx",
+      "objectType": "index",
+      "parentObjectName": "crm_outbox_events"
+    },
+    {
+      "definition": {
+        "columns": [
+          "pipeline_id",
+          "position"
+        ],
+        "unique": true
+      },
+      "objectName": "crm_pipeline_stages.crm_pipeline_stages_pipeline_id_position_n2_uq",
+      "objectType": "index",
+      "parentObjectName": "crm_pipeline_stages"
+    },
+    {
+      "definition": {
+        "columns": [
+          "pipeline_id",
+          "stage_key"
+        ],
+        "unique": true
+      },
+      "objectName": "crm_pipeline_stages.crm_pipeline_stages_pipeline_id_stage_key_n1_uq",
+      "objectType": "index",
+      "parentObjectName": "crm_pipeline_stages"
+    },
+    {
+      "definition": {
+        "columns": [
+          "id"
+        ],
+        "unique": true
+      },
+      "objectName": "crm_pipeline_stages.crm_pipeline_stages_pkey",
+      "objectType": "index",
+      "parentObjectName": "crm_pipeline_stages"
+    },
+    {
+      "definition": {
+        "columns": [
+          "id"
+        ],
+        "unique": true
+      },
+      "objectName": "crm_pipelines.crm_pipelines_pkey",
+      "objectType": "index",
+      "parentObjectName": "crm_pipelines"
+    },
+    {
+      "definition": {
+        "columns": [
+          "link_id"
+        ],
+        "expression": false,
+        "primary": true,
+        "unique": true
+      },
+      "objectName": "crm_platform_links.crm_platform_links_pkey",
+      "objectType": "index",
+      "parentObjectName": "crm_platform_links"
+    },
+    {
+      "definition": {
+        "columns": [
+          "service_slug",
+          "external_ref",
+          "purpose"
+        ],
+        "expression": false,
+        "primary": false,
+        "unique": true
+      },
+      "objectName": "crm_platform_links.crm_platform_links_service_slug_external_ref_purpose_key",
+      "objectType": "index",
+      "parentObjectName": "crm_platform_links"
+    },
+    {
+      "definition": {
+        "columns": [
+          "resource_type",
+          "resource_id"
+        ],
+        "predicate": "status = 'active'",
+        "unique": true
+      },
+      "objectName": "crm_recycle_bin_entries.crm_recycle_bin_entries_active_resource_uk",
+      "objectType": "index",
+      "parentObjectName": "crm_recycle_bin_entries"
+    },
+    {
+      "definition": {
+        "columns": [
+          "status",
+          "created_at"
+        ],
+        "unique": false
+      },
+      "objectName": "crm_recycle_bin_entries.crm_recycle_bin_entries_inventory_idx",
+      "objectType": "index",
+      "parentObjectName": "crm_recycle_bin_entries"
+    },
+    {
+      "definition": {
+        "columns": [
+          "id"
+        ],
+        "unique": true
+      },
+      "objectName": "crm_recycle_bin_entries.crm_recycle_bin_entries_pkey",
+      "objectType": "index",
+      "parentObjectName": "crm_recycle_bin_entries"
+    },
+    {
+      "definition": {
+        "columns": [
+          "version"
+        ],
+        "expression": false,
+        "primary": true,
+        "unique": true
+      },
+      "objectName": "crm_schema_migrations.crm_schema_migrations_pkey",
+      "objectType": "index",
+      "parentObjectName": "crm_schema_migrations"
+    },
+    {
+      "definition": {
+        "columns": [
+          "singleton_key"
+        ],
+        "unique": true
+      },
+      "objectName": "crm_tenant_configuration.crm_tenant_configuration_pkey",
+      "objectType": "index",
+      "parentObjectName": "crm_tenant_configuration"
+    }
+  ],
+  "predecessors": [
+    {
+      "checksum": "sha256:28903513446a638d78677a5d086e37336ac15debaa1534cc981f7dece926ca46",
+      "relation": "supersedes",
+      "sourceId": "logical-source:crm-tenant-product:2026.08.19.0"
+    }
+  ],
+  "invariants": [
+    "runtime roles remain DDL-free and public is never a fallback",
+    "trash preserves the aggregate and records one active tenant-local tombstone",
+    "restore consumes the tombstone under optimistic concurrency; permanent purge is absent",
+    "crm_audit_events compatibility is column-order neutral across governed legacy cohorts"
+  ]
+}
