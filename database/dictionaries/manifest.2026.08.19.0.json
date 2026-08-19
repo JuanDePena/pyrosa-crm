@@ -12,6 +12,14 @@
     "sha256": "sha256:28903513446a638d78677a5d086e37336ac15debaa1534cc981f7dece926ca46",
     "objectCount": 439
   },
+  "bridge": {
+    "appSlug": "pyrosa-democrm",
+    "checksum": "sha256:a1830678b88b511792449b526ffad12f683044fe43b3587d85da716bb2002565",
+    "migrationBaseChecksum": "sha256:77352e59ba5d888362ccd7189dca4ecc7f5c6bae9ff59f7fd32e79b6192c3149",
+    "objectCount": 413,
+    "path": "database/dictionaries/pyrosa-democrm-tenant-product.2026.08.18.0.owner-v2.json",
+    "version": "2026.08.18.0"
+  },
   "manifests": [
     {
       "appSlug": "pyrosa-democrm",
@@ -20,7 +28,7 @@
       "owner": "pyrosa-democrm",
       "path": "database/dictionaries/pyrosa-democrm-tenant-product.2026.08.19.0.owner-v2.json",
       "scopeType": "tenant-product",
-      "sha256": "sha256:0b6c68b26fd42a42b9fb8aef50d314995fd3f040a837ab8007e224bd4037a736",
+      "sha256": "sha256:5e82d4e7aeeb0de2839e7f120e4ed7138427aec41069cc8e96682878ff1b525a",
       "version": "2026.08.19.0"
     },
     {

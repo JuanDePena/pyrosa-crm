@@ -200,6 +200,23 @@ test("CRM recycle-bin successor is target-neutral, additive and bound to separat
   assert.equal(bundle.schemaVersion, "pyrosa-platform-dictionary-successor-owner-bundle-v1");
   assert.equal(bundle.predecessorVersion, "2026.07.17.0");
   assert.equal(bundle.runtimeDdlAllowed, false);
+  assert.deepEqual(bundle.bridge, {
+    appSlug: "pyrosa-democrm",
+    checksum: bundle.bridge.checksum,
+    migrationBaseChecksum: "sha256:77352e59ba5d888362ccd7189dca4ecc7f5c6bae9ff59f7fd32e79b6192c3149",
+    objectCount: 413,
+    path: "database/dictionaries/pyrosa-democrm-tenant-product.2026.08.18.0.owner-v2.json",
+    version: "2026.08.18.0"
+  });
+  const bridgeRaw = await readFile(resolve(repoRoot, bundle.bridge.path), "utf8");
+  const bridge = JSON.parse(bridgeRaw);
+  assert.equal(bridge.checksum, bundle.bridge.checksum);
+  assert.equal(bridge.checksum, dictionaryChecksum(bridge));
+  assert.equal(bridge.migrationBaseVersion, bundle.predecessorVersion);
+  assert.equal(bridge.migrationBaseChecksum, bundle.bridge.migrationBaseChecksum);
+  assert.equal(bridge.objectCount, 413);
+  assert.equal(bridge.objects.length, 413);
+  assert.equal(bridge.runtimeDdlAllowed, false);
   assert.equal(source.version, version);
   assert.equal(source.runtimeDdlAllowed, false);
   assert.equal(source.objectCount, 439);
@@ -216,7 +233,8 @@ test("CRM recycle-bin successor is target-neutral, additive and bound to separat
     assert.equal(entry.sha256, `sha256:${createHash("sha256").update(raw).digest("hex")}`);
     assert.equal(manifest.version, version);
     assert.equal(manifest.runtimeDdlAllowed, false);
-    assert.equal(manifest.migrationBaseVersion, bundle.predecessorVersion);
+    assert.equal(manifest.migrationBaseVersion,
+      entry.appSlug === "pyrosa-democrm" ? bundle.bridge.version : bundle.predecessorVersion);
     assert.equal(manifest.objectCount, source.objectCount);
     assert.equal(manifest.objects.length, source.objectCount);
     assert.equal(manifest.checksum, dictionaryChecksum(manifest));

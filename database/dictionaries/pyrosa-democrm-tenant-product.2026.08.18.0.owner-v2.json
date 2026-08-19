@@ -1,16 +1,16 @@
 {
   "appSlug": "pyrosa-democrm",
   "artifactKind": "desired-state",
-  "checksum": "sha256:0387b8d5a9afa54a537892c22cb5ae6fdbb7b1c9e50bedad71414d1124a7a1c8",
+  "checksum": "sha256:a1830678b88b511792449b526ffad12f683044fe43b3587d85da716bb2002565",
   "checksumScheme": "dictionary-content-v2",
   "dictionarySlug": "pyrosa-democrm-tenant-product",
   "governedInstallationLane": "migration.execute",
-  "key": "pyrosa-democrm:pyrosa-democrm-tenant-product@2026.08.19.0#tenant-product",
-  "migrationBaseChecksum": "sha256:a1830678b88b511792449b526ffad12f683044fe43b3587d85da716bb2002565",
+  "key": "pyrosa-democrm:pyrosa-democrm-tenant-product@2026.08.18.0#tenant-product",
+  "migrationBaseChecksum": "sha256:77352e59ba5d888362ccd7189dca4ecc7f5c6bae9ff59f7fd32e79b6192c3149",
   "migrationBaseDictionarySlug": "pyrosa-democrm-tenant-product",
   "migrationBaseObjectCount": 413,
-  "migrationBaseVersion": "2026.08.18.0",
-  "objectCount": 439,
+  "migrationBaseVersion": "2026.07.17.0",
+  "objectCount": 413,
   "objects": [
     {
       "definition": {
@@ -1455,120 +1455,6 @@
       "objectType": "table",
       "parentObjectName": null,
       "objectChecksum": "sha256:42f350fe64b2695b7e4ff2d3b48ee98c0f27cb15a5aa0107ae83b81b8db00134"
-    },
-    {
-      "definition": {
-        "fields": [
-          {
-            "name": "id",
-            "dataType": "text",
-            "nullable": false
-          },
-          {
-            "name": "resource_type",
-            "dataType": "text",
-            "nullable": false
-          },
-          {
-            "name": "resource_id",
-            "dataType": "text",
-            "nullable": false
-          },
-          {
-            "name": "resource_label",
-            "dataType": "text",
-            "nullable": false
-          },
-          {
-            "name": "resource_class",
-            "dataType": "text",
-            "nullable": false
-          },
-          {
-            "name": "previous_status",
-            "dataType": "text",
-            "nullable": false
-          },
-          {
-            "name": "previous_version",
-            "dataType": "bigint",
-            "nullable": false
-          },
-          {
-            "name": "snapshot_json",
-            "dataType": "jsonb",
-            "nullable": false
-          },
-          {
-            "name": "dependency_count",
-            "dataType": "bigint",
-            "nullable": false,
-            "default": "0"
-          },
-          {
-            "name": "policy_reason_code",
-            "dataType": "text",
-            "nullable": false
-          },
-          {
-            "name": "trashed_by",
-            "dataType": "text",
-            "nullable": false
-          },
-          {
-            "name": "trash_operation_ref",
-            "dataType": "text",
-            "nullable": false
-          },
-          {
-            "name": "status",
-            "dataType": "text",
-            "nullable": false
-          },
-          {
-            "name": "version",
-            "dataType": "bigint",
-            "nullable": false,
-            "default": "1"
-          },
-          {
-            "name": "created_at",
-            "dataType": "timestamp with time zone",
-            "nullable": false
-          },
-          {
-            "name": "updated_at",
-            "dataType": "timestamp with time zone",
-            "nullable": false
-          },
-          {
-            "name": "restored_at",
-            "dataType": "timestamp with time zone",
-            "nullable": true
-          },
-          {
-            "name": "restored_by",
-            "dataType": "text",
-            "nullable": true
-          },
-          {
-            "name": "restore_operation_ref",
-            "dataType": "text",
-            "nullable": true
-          }
-        ],
-        "primaryKey": [
-          "id"
-        ],
-        "semanticChecks": [
-          "resource_type follows the exact CRM resource allowlist",
-          "snapshot_json is internal and never projected by the API"
-        ]
-      },
-      "objectName": "crm_recycle_bin_entries",
-      "objectType": "table",
-      "parentObjectName": null,
-      "objectChecksum": "sha256:0cdcc315b56021bc982d4ce9ecc56d7982e68868b4a0ca284dbed2a6fe3dc1e9"
     },
     {
       "definition": {
@@ -4063,198 +3949,6 @@
     },
     {
       "definition": {
-        "dataType": "timestamp with time zone",
-        "nullable": false
-      },
-      "objectName": "crm_recycle_bin_entries.created_at",
-      "objectType": "column",
-      "parentObjectName": "crm_recycle_bin_entries",
-      "objectChecksum": "sha256:19cf475ee735461140edc5424227922d3f55907e7c80050af04c407d3e087464"
-    },
-    {
-      "definition": {
-        "dataType": "bigint",
-        "nullable": false,
-        "default": "0"
-      },
-      "objectName": "crm_recycle_bin_entries.dependency_count",
-      "objectType": "column",
-      "parentObjectName": "crm_recycle_bin_entries",
-      "objectChecksum": "sha256:7673cb0096bd7d7fa4a67ded38de8a4f60cfb9b70b5e3d5029a2848c8cc12fde"
-    },
-    {
-      "definition": {
-        "dataType": "text",
-        "nullable": false
-      },
-      "objectName": "crm_recycle_bin_entries.id",
-      "objectType": "column",
-      "parentObjectName": "crm_recycle_bin_entries",
-      "objectChecksum": "sha256:d326f00ec7086d1d1a0870c4be54e581f4817c6fd499df0e9cf95eaca253ada9"
-    },
-    {
-      "definition": {
-        "dataType": "text",
-        "nullable": false
-      },
-      "objectName": "crm_recycle_bin_entries.policy_reason_code",
-      "objectType": "column",
-      "parentObjectName": "crm_recycle_bin_entries",
-      "objectChecksum": "sha256:dc2d98c8ff69646c6814b3a56a8c00dbc0314cfa093173b841a8cc26a49e6646"
-    },
-    {
-      "definition": {
-        "dataType": "text",
-        "nullable": false
-      },
-      "objectName": "crm_recycle_bin_entries.previous_status",
-      "objectType": "column",
-      "parentObjectName": "crm_recycle_bin_entries",
-      "objectChecksum": "sha256:b60d6d34eb17e35079a8afaeac07b2662c7ea68f61200b738244a6ddafc28d41"
-    },
-    {
-      "definition": {
-        "dataType": "bigint",
-        "nullable": false
-      },
-      "objectName": "crm_recycle_bin_entries.previous_version",
-      "objectType": "column",
-      "parentObjectName": "crm_recycle_bin_entries",
-      "objectChecksum": "sha256:83c2d3aa57d98b420bde20f080260df5a1a8986e63278372dd1fe0329c4865b2"
-    },
-    {
-      "definition": {
-        "dataType": "text",
-        "nullable": false
-      },
-      "objectName": "crm_recycle_bin_entries.resource_class",
-      "objectType": "column",
-      "parentObjectName": "crm_recycle_bin_entries",
-      "objectChecksum": "sha256:5873a4cb7da268bfa619a9d767e7cceb294f51c8b5a211153dd1ae257d49ec58"
-    },
-    {
-      "definition": {
-        "dataType": "text",
-        "nullable": false
-      },
-      "objectName": "crm_recycle_bin_entries.resource_id",
-      "objectType": "column",
-      "parentObjectName": "crm_recycle_bin_entries",
-      "objectChecksum": "sha256:e1fa8f8a39da0b0d67813821e838859784e67663081fac40dc32d7747aac147a"
-    },
-    {
-      "definition": {
-        "dataType": "text",
-        "nullable": false
-      },
-      "objectName": "crm_recycle_bin_entries.resource_label",
-      "objectType": "column",
-      "parentObjectName": "crm_recycle_bin_entries",
-      "objectChecksum": "sha256:4dc52ff3cab4720e403d2da6bd573680d3bd512a5df55d2cb51d3b4c4c505bb4"
-    },
-    {
-      "definition": {
-        "dataType": "text",
-        "nullable": false
-      },
-      "objectName": "crm_recycle_bin_entries.resource_type",
-      "objectType": "column",
-      "parentObjectName": "crm_recycle_bin_entries",
-      "objectChecksum": "sha256:c52de551191f43e1688928907bd8ad9eb72394168ebac2670b2d06b1b7acbaf1"
-    },
-    {
-      "definition": {
-        "dataType": "text",
-        "nullable": true
-      },
-      "objectName": "crm_recycle_bin_entries.restore_operation_ref",
-      "objectType": "column",
-      "parentObjectName": "crm_recycle_bin_entries",
-      "objectChecksum": "sha256:ca135dfb8f26f9a9ee77237c93f1df2c7c1d33416c831413c7a452a339ecc8d9"
-    },
-    {
-      "definition": {
-        "dataType": "timestamp with time zone",
-        "nullable": true
-      },
-      "objectName": "crm_recycle_bin_entries.restored_at",
-      "objectType": "column",
-      "parentObjectName": "crm_recycle_bin_entries",
-      "objectChecksum": "sha256:b13050de4bcfb22e8c683d42be32f09e2fe5138cfebbf778da64ca265b3bddc2"
-    },
-    {
-      "definition": {
-        "dataType": "text",
-        "nullable": true
-      },
-      "objectName": "crm_recycle_bin_entries.restored_by",
-      "objectType": "column",
-      "parentObjectName": "crm_recycle_bin_entries",
-      "objectChecksum": "sha256:e558333a60b9292fe511d774c856adfae2a9da82e16a0e1c550f6b43815a5b20"
-    },
-    {
-      "definition": {
-        "dataType": "jsonb",
-        "nullable": false
-      },
-      "objectName": "crm_recycle_bin_entries.snapshot_json",
-      "objectType": "column",
-      "parentObjectName": "crm_recycle_bin_entries",
-      "objectChecksum": "sha256:3bb4ea7e13116740291a68c334f0fdbc3719b1cbccacd6504f5653a634e31a4b"
-    },
-    {
-      "definition": {
-        "dataType": "text",
-        "nullable": false
-      },
-      "objectName": "crm_recycle_bin_entries.status",
-      "objectType": "column",
-      "parentObjectName": "crm_recycle_bin_entries",
-      "objectChecksum": "sha256:e4e152b2978bcc33efd4a525baa7af1ccb7ad898dea8412bbc0d5818bcd9c896"
-    },
-    {
-      "definition": {
-        "dataType": "text",
-        "nullable": false
-      },
-      "objectName": "crm_recycle_bin_entries.trash_operation_ref",
-      "objectType": "column",
-      "parentObjectName": "crm_recycle_bin_entries",
-      "objectChecksum": "sha256:5ebf5f1d1caeaf10e28e97b5dd38fa766f5363a61b573af839fc7fd4bc780ef0"
-    },
-    {
-      "definition": {
-        "dataType": "text",
-        "nullable": false
-      },
-      "objectName": "crm_recycle_bin_entries.trashed_by",
-      "objectType": "column",
-      "parentObjectName": "crm_recycle_bin_entries",
-      "objectChecksum": "sha256:dbe10214f06d0a634634f63187606392a6309d6b1580d7dc11ca9778ad7d2fdc"
-    },
-    {
-      "definition": {
-        "dataType": "timestamp with time zone",
-        "nullable": false
-      },
-      "objectName": "crm_recycle_bin_entries.updated_at",
-      "objectType": "column",
-      "parentObjectName": "crm_recycle_bin_entries",
-      "objectChecksum": "sha256:377f090bbb9354cfa56caa97a7b12ae914aaef7d6b709947947be36c228363e1"
-    },
-    {
-      "definition": {
-        "dataType": "bigint",
-        "nullable": false,
-        "default": "1"
-      },
-      "objectName": "crm_recycle_bin_entries.version",
-      "objectType": "column",
-      "parentObjectName": "crm_recycle_bin_entries",
-      "objectChecksum": "sha256:5595d36c69eb237a57bab6726549114e6e1217046227ede54cf1b11378406897"
-    },
-    {
-      "definition": {
         "dataType": "timestamptz",
         "default": "now()",
         "nullable": false,
@@ -5435,38 +5129,6 @@
     {
       "definition": {
         "columns": [
-          "id"
-        ],
-        "constraintType": "primary-key"
-      },
-      "objectName": "crm_recycle_bin_entries.crm_recycle_bin_entries_pkey",
-      "objectType": "constraint",
-      "parentObjectName": "crm_recycle_bin_entries",
-      "objectChecksum": "sha256:333f914742d8e0ca693dbaab90337ab9facb5d2b8d8fa59cd24832c9dda0ae40"
-    },
-    {
-      "definition": {
-        "constraintType": "check",
-        "expression": "resource_class IN ('master','transaction')"
-      },
-      "objectName": "crm_recycle_bin_entries.crm_recycle_bin_entries_resource_class_chk",
-      "objectType": "constraint",
-      "parentObjectName": "crm_recycle_bin_entries",
-      "objectChecksum": "sha256:44ef15556a92d8c253f45293fb54ced5d4f2d28f24629df02a54a8b25f442ec3"
-    },
-    {
-      "definition": {
-        "constraintType": "check",
-        "expression": "status IN ('active','restored')"
-      },
-      "objectName": "crm_recycle_bin_entries.crm_recycle_bin_entries_status_chk",
-      "objectType": "constraint",
-      "parentObjectName": "crm_recycle_bin_entries",
-      "objectChecksum": "sha256:05c5a05ee2712f6f1a218af7cbe392214b6b13c37d3ab761540e3dd81adf591a"
-    },
-    {
-      "definition": {
-        "columns": [
           "version"
         ],
         "constraintType": "primary key"
@@ -6220,45 +5882,6 @@
     {
       "definition": {
         "columns": [
-          "resource_type",
-          "resource_id"
-        ],
-        "predicate": "status = 'active'",
-        "unique": true
-      },
-      "objectName": "crm_recycle_bin_entries.crm_recycle_bin_entries_active_resource_uk",
-      "objectType": "index",
-      "parentObjectName": "crm_recycle_bin_entries",
-      "objectChecksum": "sha256:33a21adc8afc5e99bb3a597aed352e4385a2da2d67c47bac666b82baa663d2df"
-    },
-    {
-      "definition": {
-        "columns": [
-          "status",
-          "created_at"
-        ],
-        "unique": false
-      },
-      "objectName": "crm_recycle_bin_entries.crm_recycle_bin_entries_inventory_idx",
-      "objectType": "index",
-      "parentObjectName": "crm_recycle_bin_entries",
-      "objectChecksum": "sha256:01f0048e6e6a50b45e61e1a50ac684658c7d4c715482a93cd47dbbb147cb37b3"
-    },
-    {
-      "definition": {
-        "columns": [
-          "id"
-        ],
-        "unique": true
-      },
-      "objectName": "crm_recycle_bin_entries.crm_recycle_bin_entries_pkey",
-      "objectType": "index",
-      "parentObjectName": "crm_recycle_bin_entries",
-      "objectChecksum": "sha256:3dfd1f6e77f6aae22f40fd27d00fe3c8d2c6b55e6720e8fa93f0583566757d0d"
-    },
-    {
-      "definition": {
-        "columns": [
           "version"
         ],
         "expression": false,
@@ -6287,24 +5910,19 @@
   "ownerDecisions": [],
   "predecessors": [
     {
-      "checksum": "sha256:a1830678b88b511792449b526ffad12f683044fe43b3587d85da716bb2002565",
+      "checksum": "sha256:77352e59ba5d888362ccd7189dca4ecc7f5c6bae9ff59f7fd32e79b6192c3149",
       "relation": "supersedes",
-      "sourceId": "owner-manifest:pyrosa-democrm-tenant-product:2026.08.18.0"
-    },
-    {
-      "checksum": "sha256:28903513446a638d78677a5d086e37336ac15debaa1534cc981f7dece926ca46",
-      "relation": "consolidates",
-      "sourceId": "owner-file:database:dictionaries:crm-tenant-product.2026.08.19.0.json"
+      "sourceId": "platform-catalog:pyrosa-democrm-tenant-product:2026.07.17.0"
     }
   ],
   "productFamily": "pyrosa-crm-v2607",
   "release": {
-    "checksum": "sha256:0387b8d5a9afa54a537892c22cb5ae6fdbb7b1c9e50bedad71414d1124a7a1c8",
+    "checksum": "sha256:a1830678b88b511792449b526ffad12f683044fe43b3587d85da716bb2002565",
     "checksumScheme": "dictionary-content-v2",
-    "version": "2026.08.19.0"
+    "version": "2026.08.18.0"
   },
   "runtimeDdlAllowed": false,
   "schemaVersion": "pyrosa-platform-dictionary-owner-candidate-v2",
   "scopeType": "tenant-product",
-  "version": "2026.08.19.0"
+  "version": "2026.08.18.0"
 }

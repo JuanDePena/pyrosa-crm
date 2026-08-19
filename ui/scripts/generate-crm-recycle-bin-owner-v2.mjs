@@ -6,6 +6,7 @@ import { fileURLToPath } from "node:url";
 
 const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
 const predecessorVersion = "2026.07.17.0";
+const demoCrmBridgeVersion = "2026.08.18.0";
 const version = "2026.08.19.0";
 const checksumScheme = "dictionary-content-v2";
 const objectChecksumScheme = "dictionary-object-content-v2";
@@ -17,6 +18,7 @@ const expectedBaseOwners = {
   "pyrosa-crm": "81da473e2ea4f606fab72ddb9bd0008b74e1a050935818bcc8ae594cbf9982c0",
   "pyrosa-democrm": "8826feadf533948b4aa6d4ff2cee78ccadc2002bd9ce5de708da20ace0b1ea5f"
 };
+const demoCrmLegacyCatalogChecksum = "sha256:77352e59ba5d888362ccd7189dca4ecc7f5c6bae9ff59f7fd32e79b6192c3149";
 const bindings = [
   { appSlug: "pyrosa-democrm", dictionarySlug: "pyrosa-democrm-tenant-product" },
   { appSlug: "pyrosa-crm", dictionarySlug: "pyrosa-crm-tenant-product" }
@@ -55,12 +57,48 @@ const source = {
 };
 const sourceText = serialize(source);
 
+const demoCrmBaseOwner = JSON.parse(await readFile(resolve(repoRoot, "database/dictionaries/pyrosa-democrm-tenant-product.owner-v2.json"), "utf8"));
+const bridgeObjects = baseSource.objects.map((object) => ({ ...object, objectChecksum: objectChecksum(object) }));
+const demoCrmBridge = {
+  appSlug: "pyrosa-democrm",
+  artifactKind: "desired-state",
+  checksum: null,
+  checksumScheme,
+  dictionarySlug: "pyrosa-democrm-tenant-product",
+  governedInstallationLane: "migration.execute",
+  key: `pyrosa-democrm:pyrosa-democrm-tenant-product@${demoCrmBridgeVersion}#tenant-product`,
+  migrationBaseChecksum: demoCrmLegacyCatalogChecksum,
+  migrationBaseDictionarySlug: "pyrosa-democrm-tenant-product",
+  migrationBaseObjectCount: baseSource.objectCount,
+  migrationBaseVersion: predecessorVersion,
+  objectCount: bridgeObjects.length,
+  objects: bridgeObjects,
+  owner: "pyrosa-democrm",
+  ownerDecisions: [],
+  predecessors: [{
+    checksum: demoCrmLegacyCatalogChecksum,
+    relation: "supersedes",
+    sourceId: `platform-catalog:pyrosa-democrm-tenant-product:${predecessorVersion}`
+  }],
+  productFamily: baseSource.productFamily,
+  release: { checksum: null, checksumScheme, version: demoCrmBridgeVersion },
+  runtimeDdlAllowed: false,
+  schemaVersion: "pyrosa-platform-dictionary-owner-candidate-v2",
+  scopeType: "tenant-product",
+  version: demoCrmBridgeVersion
+};
+demoCrmBridge.checksum = dictionaryChecksum(demoCrmBridge);
+demoCrmBridge.release.checksum = demoCrmBridge.checksum;
+const demoCrmBridgeRelativePath = `database/dictionaries/pyrosa-democrm-tenant-product.${demoCrmBridgeVersion}.owner-v2.json`;
+const demoCrmBridgeText = serialize(demoCrmBridge);
+
 const outputs = [];
 for (const binding of bindings) {
   const baseOwnerRelativePath = `database/dictionaries/${binding.dictionarySlug}.owner-v2.json`;
   const baseOwnerBytes = await readFile(resolve(repoRoot, baseOwnerRelativePath));
   if (rawSha256(baseOwnerBytes) !== expectedBaseOwners[binding.appSlug]) throw new Error(`${binding.appSlug} owner predecessor changed`);
-  const baseOwner = JSON.parse(baseOwnerBytes);
+  const sourceBaseOwner = JSON.parse(baseOwnerBytes);
+  const baseOwner = binding.appSlug === "pyrosa-democrm" ? demoCrmBridge : sourceBaseOwner;
   const objects = source.objects.map((object) => ({ ...object, objectChecksum: objectChecksum(object) }));
   const owner = {
     appSlug: binding.appSlug,
@@ -79,7 +117,7 @@ for (const binding of bindings) {
     owner: binding.appSlug,
     ownerDecisions: [],
     predecessors: [
-      { checksum: baseOwner.checksum, relation: "supersedes", sourceId: `owner-manifest:${binding.dictionarySlug}:${predecessorVersion}` },
+      { checksum: baseOwner.checksum, relation: "supersedes", sourceId: `owner-manifest:${binding.dictionarySlug}:${baseOwner.version}` },
       { checksum: sha256(sourceText), relation: "consolidates", sourceId: `owner-file:${sourceRelativePath.replaceAll("/", ":")}` }
     ],
     productFamily: source.productFamily,
@@ -103,6 +141,14 @@ const bundle = {
   scopeCoverage: ["tenant-product"],
   runtimeDdlAllowed: false,
   source: { path: sourceRelativePath, sha256: sha256(sourceText), objectCount: source.objectCount },
+  bridge: {
+    appSlug: demoCrmBridge.appSlug,
+    checksum: demoCrmBridge.checksum,
+    migrationBaseChecksum: demoCrmBridge.migrationBaseChecksum,
+    objectCount: demoCrmBridge.objectCount,
+    path: demoCrmBridgeRelativePath,
+    version: demoCrmBridge.version
+  },
   manifests: outputs.map(({ binding, content, owner, relativePath }) => ({
     appSlug: binding.appSlug,
     dictionarySlug: binding.dictionarySlug,
@@ -118,11 +164,13 @@ const bundleText = serialize(bundle);
 
 if (checkOnly) {
   await assertCurrent(resolve(repoRoot, sourceRelativePath), sourceText);
+  await assertCurrent(resolve(repoRoot, demoCrmBridgeRelativePath), demoCrmBridgeText);
   for (const output of outputs) await assertCurrent(resolve(repoRoot, output.relativePath), output.content);
   await assertCurrent(resolve(repoRoot, bundleRelativePath), bundleText);
   process.stdout.write(`CRM recycle-bin successor is current (${source.objectCount} objects, ${outputs.length} owner manifests).\n`);
 } else {
   await writeFile(resolve(repoRoot, sourceRelativePath), sourceText, "utf8");
+  await writeFile(resolve(repoRoot, demoCrmBridgeRelativePath), demoCrmBridgeText, "utf8");
   for (const output of outputs) await writeFile(resolve(repoRoot, output.relativePath), output.content, "utf8");
   await writeFile(resolve(repoRoot, bundleRelativePath), bundleText, "utf8");
   process.stdout.write(`${JSON.stringify({ version, objectCount: source.objectCount, manifests: outputs.map((entry) => ({ path: entry.relativePath, checksum: entry.owner.checksum })) }, null, 2)}\n`);
